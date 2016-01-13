@@ -1,0 +1,130 @@
+#!/usr/bin/R
+library(getopt)
+
+script_dir = dirname(get_Rscript_filename())
+source(paste0(script_dir,"/qq.R"))
+source(paste0(script_dir, "/getopt.R"))
+
+wd = getwd()
+libloc=NULL
+# set default values 
+file_fit  = qq("@{wd}/fit.txt")
+nperm     = 200
+min.width = 2000
+undo.SD   = 8
+trim      = 1e-6
+alphaTCN  = 1e-6
+alphaDH   = 1e-6
+h         = 0
+crest     = "yes"
+################################################################################
+## description field should be filled here
+################################################################################
+getopt2(matrix(c('file_data',        'd', 1, "character", "", # input  /ibios/co02/bludau/ACEseq/medullo_pediatric/MBBL8/pscbs_data.txt
+                 'file_breakpoints', 'b', 1, "character", "", # input  /ibios/co02/bludau/ACEseq/medullo_pediatric/MBBL8/breakpoints.txt
+		 'chrLengthFile',    'x', 1, "character", "chromosome length file",
+                 'file_fit',         'f', 2, "character", "", # output
+                 'nperm',            'p', 2, "numeric",   "",
+                 'minwidth',         'w', 2, "integer",   "",
+                 'undo.SD',          's', 2, "integer",   "",
+                 'trim',             't', 2, "numeric",   "",
+                 'alphaTCN',         'T', 2, "numeric",   "",
+                 'alphaDH',          'D', 2, "numeric",   "",
+                 'h',                'h', 2, "numeric",   "",
+                 'crest',            'c', 0, "character", "whether crest is used, should be specified",
+                 'libloc',           'l', 2, "character", "location of package"
+                ), ncol = 5, byrow = TRUE));
+     
+cat(qq("file_data: @{file_data}\n\n"))
+cat(qq("file_breakpoints: @{file_breakpoints}\n\n"))
+cat(qq("chrLengthFile: @{chrLengthFile}\n\n"))
+cat(qq("file_fit: @{file_fit}\n\n"))
+cat(qq("nperm: @{nperm}\n\n"))
+cat(qq("minwidth: @{minwidth}\n\n"))
+cat(qq("undo.SD: @{undo.SD}\n\n"))
+cat(qq("trim: @{trim}\n\n"))
+cat(qq("alphaTCN: @{alphaTCN}\n\n"))
+cat(qq("alphaDH: @{alphaDH}\n\n"))
+cat(qq("h: @{h}\n\n"))
+cat(qq("crest: @{crest}\n\n"))
+cat("\n")
+
+if( libloc == ""  | libloc == TRUE )
+    libloc=NULL
+
+library(PSCBS, lib.loc=libloc)
+# read datatable                        
+cat(qq("reading @{file_data}...\n\n"))
+colNamesData <- c( "a", "chromosome", "betaT", "betaN", "x", "Atumor", "Btumor", "Anormal", "Bnormal", "haplotype", "CT", "covT", "covN" )
+chromosomes = 1:24
+
+data = lapply(chromosomes, function(chr){
+		cat( "Reading chr ", chr," from ", file_data, "...\n" )
+		dataList.chr <- try( read.table( pipe( paste( "tabix", file_data, chr ) ), header=FALSE, sep='\t', as.is=TRUE ) )
+		if ( is.data.frame(dataList.chr)  ){
+			colnames( dataList.chr ) = colNamesData
+			dataList.chr
+		}else{
+			cat(chr," not found in ", file_data, "skipping!\n")
+			NULL
+		}
+	})
+
+data <- do.call(rbind, data)
+
+chrLength = read.table(chrLengthFile, header = FALSE, as.is = TRUE)
+chrLength = data.frame(chrLength)
+chrLength$V1 <- gsub('chr','',chrLength$V1)
+
+sel = which(chrLength$V1 == "X")
+chrLength$V1[sel] = 23
+sel = which(chrLength$V1 == "Y")
+chrLength$V1[sel] = 24
+
+# read knownSegments
+################################################################################
+## I think `crest` should be a logical variable.
+## What is the difference between using crest and not using crest?
+## according to following code, it seems same for using crest or not
+################################################################################
+cat(qq("reading @{file_breakpoints}...\n\n"))
+knownSegments = read.table(file_breakpoints, sep = "\t", as.is = TRUE, header=FALSE ) 
+colnames(knownSegments) = c("chromosome", "start", "end", "length")
+
+    
+# start pscbs
+cat("start pscbs\n")
+#library(PSCBS, lib.loc="/home/bludau/R/x86_64-unknown-linux-gnu-library/2.13")
+# lib.loc needs to be specified since source code has been modified
+# remove a line in `DNAcopy::segment`
+body(segment)[[4]] = substitute(print("hack")) # minimum width 
+
+
+fit = segmentByPairedPSCBS(data, knownSegments = knownSegments, tbn = FALSE, 
+	nperm = nperm, min.width = min.width, undoTCN = 5, undoDH = 5, 
+	undo.splits = "sdundo", undo.SD = undo.SD, trim = trim, alphaTCN = alphaTCN, 
+	alphaDH = alphaDH, verbose = -10, seed = 25041988)
+    
+if (h != 0) {
+	fit = pruneByHClust(fit, h = h, merge = TRUE, update = TRUE, verbose = -10)
+}
+   
+segments = getSegments(fit, simplify = TRUE)
+
+#round coordinates with .5 to closest integer (down for end, up dor start)
+if( any( segments$start == -Inf, na.rm=TRUE ) ){
+	selStart <- which( segments$start == -Inf )
+	segments$start[ selStart ] = 0
+}
+
+if( any( segments$end == Inf, na.rm=TRUE ) ){
+	sel <- which( segments$end == Inf )
+	segments$end[ sel ] <-  chrLength$V2[  sapply(sel, function(i) which( chrLength$V1  == segments$chromosome[i] ) )]
+}
+
+segments$start	<- as.integer(ceiling(segments$start))
+segments$end	<- as.integer(floor(segments$end))
+
+segments = format(segments, scientific = FALSE, trim = TRUE)
+
+write.table(segments, file = file_fit, sep = "\t", row.names = FALSE, quote = FALSE )
