@@ -1,7 +1,7 @@
 <configuration name='copyNumberEstimationAnalysis' description='SNV Calling for NGS data.'
                configurationType='analysis' class='de.dkfz.roddy.core.Analysis' workflowClass='de.dkfz.b080.co.aceseq.ACESeqWorkflow'
+               runtimeServiceClass='de.dkfz.b080.co.common.BasicCOProjectsRuntimeService'
                imports="commonCOWorkflowsSettings"
-               canCreateTestdata='true'
                listOfUsedTools="mergeAndFilterSnpFiles,cnvSnpGeneration,annotateCnvFiles,imputeGenotypes,imputeGenotypes_X,addHaplotypesToSnpFile,getBreakpoints,mergeBreakpointsAndSv,getSegmentsAndSnps,markHomozygousDeletions"
                usedToolFolders="copyNumberEstimationWorkflow,tools">
     <configurationvalues>
