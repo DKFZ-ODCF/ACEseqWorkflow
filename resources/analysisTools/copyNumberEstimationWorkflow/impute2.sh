@@ -1,8 +1,8 @@
 #!/bin/bash
 
-set -o pipefail
+
 source ${CONFIG_FILE}
-set -x
+
 
 #CHR_NAME=${CHR_NR}
 #CHR_NR=${CHR_PREFIX}${CHR_NR}${CHR_SUFFIX}
@@ -26,8 +26,6 @@ CHR_NR=${CHR_PREFIX}${CHR_NAME}
 
 #DEFINE FILE NAMES
 
-UNPHASED="${FILE_UNPHASED_PRE}${CHR_NAME}.${FILE_VCF_SUF}"
-UNPHASED_GENOTYPE="${FILE_UNPHASED_GENOTYPE}${CHR_NAME}.${FILE_TXT_SUF}"
 PHASED_GENOTYPE="${FILE_PHASED_GENOTYPE}${CHR_NAME}.${FILE_TXT_SUF}"
 PHASED_HAPS="${PHASED_GENOTYPE}_haps"
 PHASED_HAPS_CONF="${PHASED_GENOTYPE}_haps_confidence"
@@ -38,23 +36,29 @@ PHASED_WARNINGS="${PHASED_GENOTYPE}_warnings"
 tmpPhased="${FILENAME_PHASED_GENOTYPES}_tmp"
 tmpHaploblocks="${FILENAME_HAPLOBLOCK_GROUPS}_tmp"
 
-${SAMTOOLS_BINARY} mpileup ${MPILEUP_OPTS} -u \
-	    -f "${REFERENCE_GENOME}" \
-	    -r ${CHR_NR} \
-	    "${FILE_CONTROL_BAM}" \
-	    | \
-	    ${BCFTOOLS_BINARY} view ${BCFTOOLS_OPTS} - \
-	    > "${UNPHASED}"
-
-if [[ "$?" != 0 ]]
+if [[ ${runWithoutControl} == false ]]
 then
-	echo "Non zero exit status for mpileup in impute2.sh"
-	exit 2
+	UNPHASED="${FILE_UNPHASED_PRE}${CHR_NAME}.${FILE_VCF_SUF}"
+	UNPHASED_GENOTYPE="${FILE_UNPHASED_GENOTYPE}${CHR_NAME}.${FILE_TXT_SUF}"
+
+         ${SAMTOOLS_BINARY} mpileup ${MPILEUP_OPTS} -u \
+         	    -f "${REFERENCE_GENOME}" \
+         	    -r ${CHR_NR} \
+         	    "${FILE_CONTROL_BAM}" \
+         	    | \
+         	    ${BCFTOOLS_BINARY} view ${BCFTOOLS_OPTS} - \
+         	    > "${UNPHASED}"
+         
+         if [[ "$?" != 0 ]]
+         then
+         	echo "Non zero exit status for mpileup in impute2.sh"
+         	exit 2
+         fi
 fi
 
-	${PYTHON_BINARY} "${TOOL_EXTRACT_GENOTYPE_VCF}" \
-	    --vcf_file "${UNPHASED}" \
-	    --outfile  "${UNPHASED_GENOTYPE}"
+${PYTHON_BINARY} "${TOOL_EXTRACT_GENOTYPE_VCF}" \
+    --vcf_file "${UNPHASED}" \
+    --outfile  "${UNPHASED_GENOTYPE}"
 
 if [[ "$?" != 0 ]]
 then
@@ -131,10 +135,10 @@ fi
 		    "${PHASED_WARNINGS_PART}"
 	done
 
-		${PYTHON_BINARY} "${TOOL_EMBED_HAPLOTYPES_VCF}" \
-		    --hap_file "${PHASED_HAPS}" \
-		    --vcf_file "${UNPHASED}" \
-		    --outfile  "${tmpPhased}"
+${PYTHON_BINARY} "${TOOL_EMBED_HAPLOTYPES_VCF}" \
+    --hap_file "${PHASED_HAPS}" \
+    --vcf_file "${UNPHASED}" \
+    --outfile  "${tmpPhased}"
 
 if [[ "$?" != 0 ]]
 then
@@ -143,10 +147,10 @@ then
 fi
 
 
-		${PYTHON_BINARY} "${TOOL_GROUP_HAPLOTYPES}" \
-			--infile "${tmpPhased}" \
-			--out "${tmpHaploblocks}" \
-			--minHT ${minHT}
+${PYTHON_BINARY} "${TOOL_GROUP_HAPLOTYPES}" \
+	--infile "${tmpPhased}" \
+	--out "${tmpHaploblocks}" \
+	--minHT ${minHT}
 	
 if [[ "$?" != 0 ]]
 then

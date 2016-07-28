@@ -10,7 +10,7 @@ if options:
 	
 	for line in vcf_infile:
 		if line[0] != "#":
-			line = line.split("\t")
+			line = line.rstrip("\n").split("\t")
 			if len(line) > 9:
 				gt_index = line[8].split(":").index("GT")
 				genotype = line[9].split(":")[gt_index].split("/")

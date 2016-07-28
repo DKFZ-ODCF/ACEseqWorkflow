@@ -1,8 +1,8 @@
 #!/bin/bash
 
-set -o pipefail
+
 source ${CONFIG_FILE}
-set -x
+
 
 
 sex=`cat ${FILENAME_SEX}`

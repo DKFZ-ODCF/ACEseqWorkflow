@@ -63,7 +63,7 @@ if (sex == "female") {
 }
 
 allele = lapply(chromosomes, function(chr){
-		chrom= paste0("chr",chr)
+		chrom= paste0(chr)
 		cat( "Reading ", chrom," from ", file_snp, "...\n" )
 		alleleList.chr <- try( read.table( pipe( paste( "tabix ", file_snp, chrom ) ), header=FALSE, sep='\t' )  )
 		if ( is.data.frame(alleleList.chr)  ){

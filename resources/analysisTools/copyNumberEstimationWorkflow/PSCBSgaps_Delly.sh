@@ -1,8 +1,8 @@
 #!/bin/bash
 
-set -o pipefail
+
 source ${CONFIG_FILE}
-set -x
+
 
 echo "starting to merge PSCBS breakpoints and crest points"
 
@@ -22,7 +22,7 @@ then
 else
 	cp ${FILE_KNOWNSEGMENTS} ${tmp_breakpoints}
 	sed -i '1s/^chr/#chr/' ${tmp_breakpoints}
-	echo "" > "${FILE_SV_POINTS}"
+	echo "" > "${svPoints_tmp}"
 
 fi
 

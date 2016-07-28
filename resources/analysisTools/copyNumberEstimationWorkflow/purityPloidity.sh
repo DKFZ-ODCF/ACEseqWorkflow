@@ -1,8 +1,8 @@
 #!/bin/bash
 
-set -o pipefail
+
 source ${CONFIG_FILE}
-set -x
+
 
 tmpSegmentsPeaks=${FILENAME_SEGMENTS_W_PEAKS}_tmp
 

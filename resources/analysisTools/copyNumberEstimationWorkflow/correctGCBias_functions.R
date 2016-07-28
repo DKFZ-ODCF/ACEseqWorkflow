@@ -179,7 +179,7 @@ plotCoverage <- function(coverageTab, chromosomeBorders=NULL, chr=NULL, ylims=c(
     
     labelposition=NULL
     if ( ! is.null(chromosomeBorders) )
-	labelPosition <- (diff(chromosomeBorders)/2+chromosomeBorders[1:24])/100000
+	labelPosition <- (diff(chromosomeBorders)/2+chromosomeBorders[1:24])/1e6
 	
     par(mfrow=c(3,1), cex.lab=1.5, cex.main=2)
     

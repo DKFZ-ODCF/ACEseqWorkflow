@@ -77,6 +77,7 @@ BEGIN {
   $opts{bFileType} = lc($opts{bFileType});
 
   my %valid_bFileTypes = ( 'vcf' => 1,
+			   'vcflike' => 1,
 			   'bed' => 1,
 			   'gff3' => 1,
 			   'bed_refvar' => 1,
@@ -90,7 +91,7 @@ BEGIN {
   $valid_aFileTypes{$opts{aFileType}} || die "Only a-files of type ". join(" ", sort keys %valid_aFileTypes). " are supported";
 
   if (! defined($opts{bReportColumn})) {
-    $opts{bReportColumn} = ($opts{bFileType} eq 'vcf') ? 7 : ($opts{bFileType} eq 'gff3') ? 8 : 3;
+    $opts{bReportColumn} = ($opts{bFileType} eq 'vcf' || $opts{bFileType} eq 'vcflike' ) ? 7 : ($opts{bFileType} eq 'gff3') ? 8 : 3;
   }
 
   ### Now make constants
@@ -108,7 +109,7 @@ BEGIN {
   }
 
 }
-if (BFILETYPE eq 'vcf') {
+if (BFILETYPE eq 'vcf' || BFILETYPE eq "vcflike" ) {
   @standardColnames = qw(CHROM POS ID REF ALT QUAL FILTER INFO);
 } elsif (BFILETYPE eq 'gff3') {
   @standardColnames = qw(seqid source type start end score strand phase attributes);
@@ -305,12 +306,16 @@ AFILE_LOOP: while ($a_line=<A>) {
       # $b_linectr++;
       @b_fields = split(/\t/, $b_line);
       # ($b_fields[0] eq $b_chr_prefix.$chr.$b_chr_suffix) || die "Chromosomes between tumor and germline file do not match: $b_fields[0] ne ${b_chr_prefix}${chr}${b_chr_suffix}";
-      if (BFILETYPE eq 'vcf') { ### b-file is vcf file
+      if (BFILETYPE eq 'vcf' || BFILETYPE eq "vcflike") { ### b-file is vcf file
 	$next_b_line->{left} =  $b_fields[1];
         $next_b_line->{ref} = $b_fields[3];
         $next_b_line->{alt} = $b_fields[4];
         $next_b_line->{report} = 'POS='.$next_b_line->{left}.';' if (REPORTBFEATCOORD);
-	$next_b_line->{right} = $next_b_line->{left} + length($next_b_line->{ref}) - 1;
+	if (BFILETYPE eq "vcf") {
+		$next_b_line->{right} = $next_b_line->{left} + length($next_b_line->{ref}) - 1;
+	} else {
+		$next_b_line->{right} = $next_b_line->{left};
+	}
         if ($b_fields[7] !~ /END=(\d+)/) {
           $next_b_line->{report} .= 'END='.$next_b_line->{right}.';' if (REPORTBFEATCOORD);
         }

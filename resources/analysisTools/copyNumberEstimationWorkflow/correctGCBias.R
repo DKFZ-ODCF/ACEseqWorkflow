@@ -16,12 +16,12 @@ scale_factor <- 0.9
 lowess_f <- 0.1
 magnification_factor <- 1e9
 coverageYlims <- 4
-
+email <- ""
 getopt2(matrix(c('timefile',				 't', 1, "character", 'file for replication timing',
 		         'windowFile',			 'f', 1, "character", 'file with 10kb window coordinates and coverage',
 		         'chrLengthFile',		 'h', 1, "character", 'file with chromosomelength',
 	                 'pid',				 'p', 1, "character", 'patient ID',
-        	         'email',			 'e', 1, "character", "email adress to enable contact in case of evidence for sample errors",
+        	         'email',			 'e', 2, "character", "email adress to enable contact in case of evidence for sample errors",
                 	 'outfile',			 'o', 1, "character", 'new file with corrected and raw coverage',
 	                 'corPlot',			 'c', 1, "character", 'Name for plot with corrected GC bias',
         	         'corTab',			 'r', 1, "character", 'Name for table with GC bias parameter',
@@ -48,6 +48,9 @@ cat(qq("gcFile: @{gcFile}\n\n"))
 cat(qq("outDir: @{outDir}\n\n"))
 cat(qq("coverageYlims: @{coverageYlims}\n\n"))
 cat("\n")
+
+if( email == "")
+	email=NULL
 
 coverageLims <- c( -abs(coverageYlims), abs(coverageYlims) )
 source(functionPath)
@@ -442,7 +445,7 @@ pdf( paste0(plotDir, "/", pid, "_qc_coverageDensityByChroomosome.pdf") )
 dev.off()
 
 cat(diffPeaks, "\n")
-if ( ! length(diffPeaks) == sum( is.na(diffPeaks) ) ) {
+if ( ! is.null(email) & length(diffPeaks) != sum( is.na(diffPeaks) ) ) {
   sel <- paste( which( ! is.na( diffPeaks ) ), collapse=", " )
   bodyText <- paste0("Warning ", pid, ": Errors found for chromosome ", sel )
   system(qq("echo @{bodyText} | mail -s @{pid} @{email}"))

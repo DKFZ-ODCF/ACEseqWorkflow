@@ -16,6 +16,7 @@
 # page 17, lines 11-17.
 
 import gzip
+import subprocess
 
 from python_modules import Tabfile
 from python_modules import Options
@@ -24,9 +25,9 @@ options = Options.parse( { "inputpath" : str, "inputsuffix" : str,
                            "output"    : str, "coverage"    : int } )
 if options:
 
-	outfile = gzip.open( options["output"], "wb" )
+	outfile = subprocess.Popen("bgzip >%s"% options["output"], shell=True, stdin=subprocess.PIPE)
 	
-	outfile.write("chr\tstartPos\tAnormal\tBnormal\tAtumor\tBtumor\thaplotype\n")		#header
+	outfile.stdin.write("chr\tstartPos\tAnormal\tBnormal\tAtumor\tBtumor\thaplotype\n")		#header
 
 	for chromo in [ str( n ) for n in range( 1, 22+1 ) ] + [ "X", "Y" ]:
 
@@ -38,13 +39,14 @@ if options:
 
 				line['haplotype'] = 0 
 
-				if not line["chr"].startswith( "chr" ):
-					line["chr"] = "chr" + line["chr"]
+				if line["chr"].startswith( "chr" ):
+					line["chr"] = line["chr"].replace("chr", "")
 
-				line["chr"] = line["chr"].replace( "chrX", "chr23" );
-				line["chr"] = line["chr"].replace( "chrY", "chr24" );
 
-				outfile.write(
+				line["chr"] = line["chr"].replace( "X", "23" );
+				line["chr"] = line["chr"].replace( "Y", "24" );
+
+				outfile.stdin.write(
 				    line["chr"]+'\t'+line["pos"]+'\t'+line["An"]+'\t'+
 				    line["Bn" ]+'\t'+line["At" ]+'\t'+line["Bt"]+'\t'+
 				    str(line['haplotype'])      +'\n' )

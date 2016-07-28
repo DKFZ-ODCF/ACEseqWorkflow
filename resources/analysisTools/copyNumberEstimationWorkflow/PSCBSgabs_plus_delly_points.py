@@ -69,21 +69,8 @@ chromosomes = [ str(a) for a in range(1,24+1) ]
 
 for f in files:
 	for line in f:
-		if line['svtype'] == 'DEL':
-			line["LENGTH"] = str(int(line["start2"])-int(line["start1"])+1)
 
-			if( int(line["LENGTH"]) >= args.DDI_length and "chrom1" in line ):
-
-				line["chrom1"] = line["chrom1"].replace( "chr", "" ).replace( "X", "23" ).replace("Y", "24" )
-				#ignore decoy sequences
-				if line["chrom1"] in chromosomes :
-
-					sv_out.write( "%s\t%i\t%i\t%s\tDEL\tNA\tNA\t%s\n"% (line["chrom1"], int(line["start1"])+1, int(line["start2"])+1, line["LENGTH"], line['id']) )
-
-					breakpoints += [ ( int(line["chrom1"]), int(line["start1"])+1 ) ]
-					breakpoints += [ ( int(line["chrom1"]), int(line["start2"])+1 ) ]
-
-		elif line['svtype'] == 'DUP':
+		if line['svtype'] == 'INV' or line['svtype'] == 'DUP' or line['svtype'] == 'DEL':
 
 			line["LENGTH"] = str(int(line["start2"])-int(line["start1"])+1)
 
@@ -93,63 +80,48 @@ for f in files:
 
 				#ignore decoy sequences
 				if line["chrom1"] in chromosomes :
+					sv_out.write( "%s\t%i\t%i\t%s\t%s\tNA\tNA\t%s\n"% (line["chrom1"], int(line["start1"])+1, int(line["start2"])+1, line["LENGTH"], line['svtype'], line.get('id',"NA")) )
 
 
-					sv_out.write( "%s\t%i\t%i\t%s\tDUP\tNA\tNA\t%s\n"% (line["chrom1"], int(line["start1"])+1, int(line["start2"])+1, line["LENGTH"], line['id']) )
+					breakpoints += [ ( str(line["chrom1"]), int(line["start1"])+1 ) ]
+					breakpoints += [ ( str(line["chrom1"]), int(line["start2"])+1 ) ]
 
-					breakpoints += [ ( int(line["chrom1"]), int(line["start1"])+1 ) ]
-					breakpoints += [ ( int(line["chrom1"]), int(line["start2"])+1 ) ]
-
-		elif line['svtype'] == 'INV':
-
-			line["LENGTH"] = str(int(line["start2"])-int(line["start1"])+1)
-
-			if( int(line["LENGTH"]) >= args.DDI_length and "chrom1" in line ):
-
-				line["chrom1"] = line["chrom1"].replace( "chr", "" ).replace( "X", "23" ).replace("Y", "24" )
-
-				#ignore decoy sequences
-				if line["chrom1"] in chromosomes :
-
-
-					sv_out.write( "%s\t%i\t%i\t%s\tINV\tNA\tNA\t%s\n"% (line["chrom1"], int(line["start1"])+1, int(line["start2"])+1, line["LENGTH"], line['id']) )
-
-					breakpoints += [ ( int(line["chrom1"]), int(line["start1"])+1 ) ]
-					breakpoints += [ ( int(line["chrom1"]), int(line["start2"])+1 ) ]
-
-		elif line['svtype'] == 'TRA':
+		elif line['svtype'] == 'TRA' or line['svtype']=='INS':
 
 			line["chrom1"] = line["chrom1"].replace( "chr", "" ).replace( "X", "23" ).replace("Y", "24" )
 			line["chrom2"  ] = line["chrom2"  ].replace( "chr", "" ).replace( "X", "23" ).replace("Y", "24" )
 				
-			if( line["chrom1"] in [ str(i) for i in range( 1, 24+1 ) ] and
-			    line["chrom2"  ] in [ str(i) for i in range( 1, 24+1 ) ] ):
+			if( line["chrom1"] in [ str(i) for i in range( 1, 24+1 ) ] ): # and
+#			    line["chrom2"  ] in [ str(i) for i in range( 1, 24+1 ) ] ):
 
 				if line["chrom1"] != line["chrom2"]:
 
 					line["SV_TYPE"] = "CTX"
 
 
-					sv_out.write( "%s\t%i\tNA\tNA\t%s\t%s\t%i\t%s\n"% (line["chrom1"], int(line["start1"])+1, line["SV_TYPE"], line["chrom2"], int(line["start2"])+1, line['id']) )
+					sv_out.write( "%s\t%i\tNA\tNA\t%s\t%s\t%i\t%s\n"% (line["chrom1"], int(line["start1"])+1, line["SV_TYPE"], line["chrom2"], int(line["start2"])+1, line.get('id', "NA")) )
+					sv_out.write( "%s\t%i\tNA\tNA\t%s\t%s\t%i\t%s\n"% (line["chrom2"], int(line["start2"])+1, line["SV_TYPE"], line["chrom1"], int(line["start1"])+1, line.get('id', "NA")) )
 
-					sv_out.write( "%s\t%i\tNA\tNA\t%s\t%s\t%i\t%s\n"% (line["chrom2"], int(line["start2"])+1, line["SV_TYPE"], line["chrom1"], int(line["start1"])+1, line['id']) )
 
-					breakpoints += [ ( int(line["chrom1"]), int(line["start1"])+1 ) ]
-					breakpoints += [ ( int(line["chrom2"]), int(line["start2"])+1 ) ]
+					breakpoints += [ ( str(line["chrom1"]), int(line["start1"])+1 ) ]
+
+					#don't add second breakpoint to breakpoint file if it maps to decoy
+					if ( line["chrom2"] in [ str(i) for i in range( 1, 24+1 ) ] ):
+						breakpoints += [ ( str(line["chrom2"]), int(line["start2"])+1 ) ]
 
 				elif line["chrom1"] == line["chrom2"]:
 
 					line["SV_TYPE"] = "ITX"
 
-					sv_out.write( "%s\t%i\t%i\tNA\t%s\tNA\tNA\t%s\n"% (line["chrom1"], int(line["start1"])+1, int(line["start2"])+1, line["SV_TYPE"], line['id']) )
+					sv_out.write( "%s\t%i\t%i\tNA\t%s\tNA\tNA\t%s\n"% (line["chrom1"], int(line["start1"])+1, int(line["start2"])+1, line["SV_TYPE"], line.get('id',"NA") ) )
 
-					breakpoints += [ ( int(line["chrom1"]), int(line["start1"])+1 ) ]
-					breakpoints += [ ( int(line["chrom2"]), int(line["start2"])+1 ) ]
+					breakpoints += [ ( str(line["chrom1"]), int(line["start1"])+1 ) ]
+					breakpoints += [ ( str(line["chrom2"]), int(line["start2"])+1 ) ]
 
 
 for line in knownseg_file:
 	if line["start"] != "-Inf":
-		breakpoints.append( ( int(line["chromosome"]), int(line["start"]) ) )
+		breakpoints.append( ( str(line["chromosome"]), int(line["start"]) ) )
 
 breakpoints.sort();
 

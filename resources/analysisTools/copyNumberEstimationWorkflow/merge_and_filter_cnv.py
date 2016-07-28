@@ -29,11 +29,11 @@ if options:
 
 			chromo = lines[0]["chr"]
 			
-			if not chromo.startswith( "chr" ):
-				chromo = "chr" + chromo
+			if chromo.startswith( "chr" ):
+				chromo = chromo.replace("chr", "")
 				
-			chromo = chromo.replace( "chrX", "chr23" )
-			chromo = chromo.replace( "chrY", "chr24" )
+			chromo = chromo.replace( "X", "23" )
+			chromo = chromo.replace( "Y", "24" )
 			
 			position = ( int( lines[0]["pos"] ) // 10000 ) * 10000 + 1
 			

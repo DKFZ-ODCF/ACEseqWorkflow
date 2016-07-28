@@ -1,8 +1,8 @@
 #!/bin/bash
 
-set -o pipefail
+
 source ${CONFIG_FILE}
-set -x
+
 
 #estimate sex of patient from X and Y coverage
 Y_FILE="${SNP_VCF_CNV_PATH}Y.${CNV_SUFFIX}"
@@ -10,7 +10,9 @@ X_FILE="${SNP_VCF_CNV_PATH}X.${CNV_SUFFIX}"
 
 tmp_sex_file=${FILENAME_SEX}_tmp
 
-${RSCRIPT_BINARY} ${TOOL_ESTIMATE_SEX} \
+if [[ ${runWithoutControl} != "true" ]]
+then
+	${RSCRIPT_BINARY} ${TOOL_ESTIMATE_SEX} \
 	 --file_dataY ${Y_FILE} \
 	 --file_dataX ${X_FILE} \
 	 --file_size ${CHROMOSOME_LENGTH_FILE} \
@@ -19,6 +21,12 @@ ${RSCRIPT_BINARY} ${TOOL_ESTIMATE_SEX} \
 	 --min_X_ratio ${min_X_ratio} \
 	 --file_out ${tmp_sex_file}
 
+elif [[ $PATIENTSEX ]]
+then
+	echo $PATIENTSEX > ${tmp_sex_file}
+else
+	echo "male" > ${tmp_sex_file} #temporary solution, file need to be flagges somehow
+fi
 
 if [[ "$?" != 0 ]]
 then

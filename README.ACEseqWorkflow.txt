@@ -9,8 +9,16 @@ runWithDelly          		true    Run with delly output (from EMBLs delly workflow
 runQualityCheckOnly      	false   Stop the workflow after the gc correction.
 runMetaCNVGeneration        false   Run a meta step for the cnv generation. This submits a single,
 									slightly optimized step instead of several (per chromosome) jobs.
+runWithoutControl	    false Run analysis with matching control and estimate control genotypes based on tumor BAF
 
 == Changelist
+
+- add noControl options
+- cluster and prune take mean if two equally high peaks appear or for single peak remove bug
+- add chromosome labels to general coverage plots
+- remove chr prefixes throughout analysis
+- make email option optional for gcCorrection
+- be flexible on sv_type file, "id" column optional
 
 * Version update to 1.0.189
 

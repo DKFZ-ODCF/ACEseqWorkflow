@@ -19,7 +19,7 @@ if options:
 		
 		if vcf_line[0] != "#":
 			
-			vcf_line = vcf_line.split("\t")
+			vcf_line = vcf_line.rstrip().split("\t")
 			vcf_line[0] = vcf_line[0].replace('chr', '')
 			vcf_line[0] = vcf_line[0].replace( 'X', '23' )
 
@@ -39,6 +39,6 @@ if options:
 					vcf_line[9][genotype_pos] = haplo_line[5]+"|"+haplo_line[6]
 					vcf_line[9] = ":".join( vcf_line[9] )
 					
-			vcf_line = "\t".join( vcf_line )
+			vcf_line = "\t".join( vcf_line )+"\n"
 			
 		outfile.write( vcf_line )

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-set -o pipefail
+
 source ${CONFIG_FILE}
-set -x
+
 
 [[ -z ${PARM_CHR_INDEX-} ]] && echo "Variable is missing" && exit -5
 
@@ -13,17 +13,34 @@ source ${TOOL_ANALYZE_BAM_HEADER}
 getRefGenomeAndChrPrefixFromHeader ${FILE_TUMOR_BAM} # Sets CHR_PREFIX and REFERENCE_GENOME
 
 CHR_NR=${CHR_PREFIX}${CHR_NAME}
+runWithoutControl=${runWithoutControl^}
 
-$SAMTOOLS_BINARY mpileup ${MPILEUP_OPTS} \
+if [[ $runWithoutControl == "True" ]]
+then
+     $SAMTOOLS_BINARY mpileup ${MPILEUP_OPTS} \
+	-f "${REFERENCE_GENOME}" \
+	-r ${CHR_NR} \
+	"${FILE_TUMOR_BAM}" \
+	| ${PYTHON_BINARY} ${TOOL_SNP_POS_CNV_WIN_GENERATOR} \
+	--quality $mpileup_qual \
+	--dbsnp "${dbSNP_FILE}" \
+	--infile - \
+	--outsnps ${tmpFileSnpPos} \
+        --outcov ${tmpFileCovWin} \
+	--withoutcontrol ${runWithoutControl} 
+else
+     $SAMTOOLS_BINARY mpileup ${MPILEUP_OPTS} \
 	-f "${REFERENCE_GENOME}" \
 	-r ${CHR_NR} \
 	"${FILE_CONTROL_BAM}" "${FILE_TUMOR_BAM}" \
 	| ${PYTHON_BINARY} ${TOOL_SNP_POS_CNV_WIN_GENERATOR} \
-	-Q $mpileup_qual \
-	"${dbSNP_FILE}" \
-	- \
-	${tmpFileSnpPos} \
-        ${tmpFileCovWin}
+	--quality $mpileup_qual \
+	--dbsnp "${dbSNP_FILE}" \
+	--infile - \
+	--outsnps ${tmpFileSnpPos} \
+        --outcov ${tmpFileCovWin}
+
+fi
 
 if [[ "$?" != 0 ]]
 then
