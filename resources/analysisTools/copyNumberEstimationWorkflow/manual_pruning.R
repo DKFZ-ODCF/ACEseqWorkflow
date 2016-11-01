@@ -704,12 +704,29 @@ for (chr in  seq_len(maxChr) ) {
    	}
 }
  
-dataAll <- do.call(rbind, dataAll)
+
  
-#change columnnames for saving file so segments to data works
-colnames(dataAll) = c("chromosome", "x", "a", "end", "crest", "CT", "covT", "meanTCN", "betaT","betaN", "Atumor", "Btumor", "Anormal", "Bnormal", 'haplotype', "map")
-dataAll = format(dataAll, scientific = FALSE, trim = TRUE)
-write.table(dataAll, pipe(paste0("bgzip >",newFile) ), sep='\t', col.names=TRUE, row.names=FALSE, quote=FALSE) 
+# for chromosome 1 to change columnnames for saving file so segments to data work
+new_colnames <- c("chromosome", "x", "a", "end", "crest", "CT", "covT", "meanTCN", "betaT","betaN", "Atumor", "Btumor", "Anormal", "Bnormal", 'haplotype', "map")
+
+dataAll[[1]] = format(dataAll[[1]], scientific = FALSE, trim = TRUE)
+write.table(dataAll[[1]], pipe(paste0("bgzip >", newFile) ), sep='\t', col.names=new_colnames, row.names=FALSE, quote=FALSE) 
+
+# append chr 2 - 24
+writetable <- function(data, newFile){
+  format = format(data, scientific = FALSE, trim = TRUE)
+  write.table(format, pipe( paste0( "bgzip >>",newFile ) ), append=TRUE, sep='\t', col.names=FALSE,  row.names=FALSE, quote=FALSE)
+}
+
+lapply(dataAll[-1], writetable, newFile = newFile)
+
+
+#dataAll <- do.call(rbind, dataAll)
+# 
+##change columnnames for saving file so segments to data works
+#colnames(dataAll) = c("chromosome", "x", "a", "end", "crest", "CT", "covT", "meanTCN", "betaT","betaN", "Atumor", "Btumor", "Anormal", "Bnormal", 'haplotype', "map")
+#dataAll = format(dataAll, scientific = FALSE, trim = TRUE)
+#write.table(dataAll, pipe(paste0("bgzip >",newFile) ), sep='\t', col.names=TRUE, row.names=FALSE, quote=FALSE) 
 
 #write segments
 test_new2 = format(test_new, scientific = FALSE, trim = TRUE)
