@@ -35,15 +35,19 @@ source( file.path(pipelineDir, "pscbs_plots_functions.R") )
 cat(qq("reading \n\n"))
 
 #read data and set variables
-
 if (crest_YN == "yes") {
-	crest = read.table(crestFile, sep = "\t", header = FALSE, as.is = TRUE, stringsAsFactors = TRUE)[1:6]
-	colnames(crest) = c("chromosome", "start", "end", "length", "type", "chr2")
-	crestAll = data.frame(crest)
+	crest <- try( read.table(crestFile, sep = "\t", header = FALSE, as.is = TRUE, stringsAsFactors = TRUE)[1:6], silent=TRUE )
+	if ( is.data.frame(crest) ){
+		colnames(crest) = c("chromosome", "start", "end", "length", "type", "chr2")
+		crestAll = data.frame(crest)
+	}else{
+		crest=NULL
+	}
+	
 }else{
 	crest = NULL
 }
-	          
+
 segments = read.table(segments, sep = "\t", header = TRUE, as.is = TRUE, stringsAsFactors = TRUE)
 segAll = data.frame(segments) 
 combi = segAll 
