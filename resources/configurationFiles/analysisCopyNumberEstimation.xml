@@ -83,6 +83,7 @@
 	<cvalue name='MALE_FAKE_CONTROL_PRE' value="/icgc/dkfzlsdf/analysis/mmml/whole_genome_pcawg/results_per_pid/4128477/ACEseq/cnv_snp/4128477.chr" type='path'/> 
 	<cvalue name='FEMALE_FAKE_CONTROL_PRE' value="/icgc/dkfzlsdf/analysis/mmml/whole_genome_pcawg/results_per_pid/4109142/ACEseq/cnv_snp/4109142.chr" type='path'/> 
 	<cvalue name='FAKE_CONTROL_POST' value=".cnv.anno.tab.gz" type='string'/> 
+	<cvalue name='PATIENTSEX' value="male" type='string'/> 
 
         <!--annotateCnvFiles Opts-->
         <cvalue name='VCF_SUFFIX' value='cnv.anno.tab.gz' type="string"/>
@@ -107,6 +108,7 @@
         <!--getBreakpointsAndMergeCrest/datatablePSCBSgaps Opts-->
         <cvalue name='FILE_DENSITYBETA' value='${aceseqOutputDirectory}/densityBeta.pdf' type="path"/>
         <cvalue name='min_DDI_length' value='1000' type="integer"/>
+        <cvalue name='selSVColumn' value='id' type="string/>
 
         <!--getSegmentsAndSnps/pscbsAll Opts-->
         <cvalue name='min_seg_width' value='2000' type="integer"/>

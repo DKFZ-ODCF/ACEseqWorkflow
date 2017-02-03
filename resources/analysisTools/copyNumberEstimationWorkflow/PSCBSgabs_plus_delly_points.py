@@ -17,9 +17,12 @@ parser.add_argument('--tx',	   '-t', type = str, help = 'DELLY translocations')
 parser.add_argument('--known_segments','-k', type=str, help = "File containing breakpoints")
 parser.add_argument('--sv_out',	   '-s', type = str, help = 'Outfile for delly SVs')
 parser.add_argument('--output',	   '-o', type = str, help = 'Outfile for new breakpoints')
+parser.add_argument('--selectCol', '-c', default = "id", type = str, help = 'column name of column to annotate in sv_points.txt')
 parser.add_argument('--DDI_length','-l', type = int, help= 'minimum length of del,dup,inv to be considered')
 
 args = parser.parse_args()
+
+selCol = args.selectCol
 filenumber = 4		#svs split up into 4 bedpe files
 if not args.dele  or not args.dup or not args.inv or not args.tx:
 	if not args.variants:
@@ -80,7 +83,7 @@ for f in files:
 
 				#ignore decoy sequences
 				if line["chrom1"] in chromosomes :
-					sv_out.write( "%s\t%i\t%i\t%s\t%s\tNA\tNA\t%s\n"% (line["chrom1"], int(line["start1"])+1, int(line["start2"])+1, line["LENGTH"], line['svtype'], line.get('id',"NA")) )
+					sv_out.write( "%s\t%i\t%i\t%s\t%s\tNA\tNA\t%s\n"% (line["chrom1"], int(line["start1"])+1, int(line["start2"])+1, line["LENGTH"], line['svtype'], line.get(selCol,"NA")) )
 
 
 					breakpoints += [ ( str(line["chrom1"]), int(line["start1"])+1 ) ]
@@ -99,8 +102,8 @@ for f in files:
 					line["SV_TYPE"] = "CTX"
 
 
-					sv_out.write( "%s\t%i\tNA\tNA\t%s\t%s\t%i\t%s\n"% (line["chrom1"], int(line["start1"])+1, line["SV_TYPE"], line["chrom2"], int(line["start2"])+1, line.get('id', "NA")) )
-					sv_out.write( "%s\t%i\tNA\tNA\t%s\t%s\t%i\t%s\n"% (line["chrom2"], int(line["start2"])+1, line["SV_TYPE"], line["chrom1"], int(line["start1"])+1, line.get('id', "NA")) )
+					sv_out.write( "%s\t%i\tNA\tNA\t%s\t%s\t%i\t%s\n"% (line["chrom1"], int(line["start1"])+1, line["SV_TYPE"], line["chrom2"], int(line["start2"])+1, line.get(selCol, "NA")) )
+					sv_out.write( "%s\t%i\tNA\tNA\t%s\t%s\t%i\t%s\n"% (line["chrom2"], int(line["start2"])+1, line["SV_TYPE"], line["chrom1"], int(line["start1"])+1, line.get(selCol, "NA")) )
 
 
 					breakpoints += [ ( str(line["chrom1"]), int(line["start1"])+1 ) ]
@@ -113,7 +116,7 @@ for f in files:
 
 					line["SV_TYPE"] = "ITX"
 
-					sv_out.write( "%s\t%i\t%i\tNA\t%s\tNA\tNA\t%s\n"% (line["chrom1"], int(line["start1"])+1, int(line["start2"])+1, line["SV_TYPE"], line.get('id',"NA") ) )
+					sv_out.write( "%s\t%i\t%i\tNA\t%s\tNA\tNA\t%s\n"% (line["chrom1"], int(line["start1"])+1, int(line["start2"])+1, line["SV_TYPE"], line.get(selCol,"NA") ) )
 
 					breakpoints += [ ( str(line["chrom1"]), int(line["start1"])+1 ) ]
 					breakpoints += [ ( str(line["chrom2"]), int(line["start2"])+1 ) ]

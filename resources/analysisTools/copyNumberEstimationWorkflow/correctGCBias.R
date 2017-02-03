@@ -27,7 +27,7 @@ getopt2(matrix(c('timefile',				 't', 1, "character", 'file for replication timi
         	         'corTab',			 'r', 1, "character", 'Name for table with GC bias parameter',
         	         'qcTab',			 'q', 1, "character", 'Name for table with GC bias parameters relevant for qc',
 	                 'gcFile',			 'g', 1, "character", 'table with gc content per 10kb window',
-        	         'outDir',			 'x', 1, "character", 'directory for outputfiles',
+        	         'outDir',			 'x', 2, "character", 'directory for outputfiles',
 	        	 'scaleFactor',			 's', 2, "double"   , 'scaling factor to determine range of points to take as main cloud',
 		         'lowess_f',			 'l', 2, "double"   , 'smoothing parameter of lowess function',
 		         'magnification_factor',	 'm', 2, "double"   , 'factor to prevent underflow in slope and curvature',

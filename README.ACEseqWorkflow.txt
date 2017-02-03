@@ -13,6 +13,10 @@ runWithoutControl	    false Run analysis with matching control and estimate cont
 
 == Changelist
 
+- removed "set -x", pipefail etc.
+- PSCBSgabs_delly.py
+	- improved code
+	- added selective column
 - add noControl options
 - cluster and prune take mean if two equally high peaks appear or for single peak remove bug
 - add chromosome labels to general coverage plots
