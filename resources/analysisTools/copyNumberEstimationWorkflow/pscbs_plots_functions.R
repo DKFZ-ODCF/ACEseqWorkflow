@@ -225,7 +225,7 @@ completeSNP = function( chr, dat, Ploidy, Purity, fullPloidy ) {
 	return(dat)
 }
 
-completeSeg = function( comb, Ploidy, Purity, id, solution_possible=NA ) {
+completeSeg = function( comb, Ploidy, Purity, id, solutionPossible=NA ) {
 
 	comb$tcnMeanRaw <- comb$tcnMean
 
@@ -508,7 +508,13 @@ completeSeg = function( comb, Ploidy, Purity, id, solution_possible=NA ) {
 	important_cols <- c('#chromosome', 'start', 'end', 'length', 'tcnMeanRaw', 'tcnMean', 'crest', 'c1Mean', 'c2Mean', 'dhMean', 'dhMax', 'genotype', 'GNL', 'tcnNbrOfHets','minStart', 'maxStart', 'minStop', 'maxStop')
   	important_sub  <- comb_out[,important_cols]
   
-  	colnames(important_sub) <- c('#chromosome', 'start', 'end', 'length', 'covRatio', 'TCN', 'SV.Type', 'c1Mean', 'c2Mean', 'dhEst', 'dhSNPs',  'genotype', 'GNL', 'NbrOfHetSNPs','minStart', 'maxStart', 'minEnd', 'maxEnd' )
+  	colnames(important_sub) <- sub('tcnMeanRaw', 'covRatio', colnames(important_sub))
+  	colnames(important_sub) <- sub('tcnMean',    'TCN',      colnames(important_sub))
+  	colnames(important_sub) <- sub('crest',      'SV.Type',  colnames(important_sub))
+  	colnames(important_sub) <- sub('dhMean',     'dhEst',    colnames(important_sub))
+  	colnames(important_sub) <- sub('dhMax',      'dhSNPs',   colnames(important_sub))
+  	colnames(important_sub) <- sub('tcnNbrOfHets', 'NbrOfHetSNPs', colnames(important_sub))
+
 	important_sub 	    <- format(important_sub, scientific = FALSE, trim = TRUE)
 
 	qual = sum( important_sub$GNL != 'sub', na.rm=TRUE) / sum(!is.na(important_sub$GNL))
@@ -517,10 +523,12 @@ completeSeg = function( comb, Ploidy, Purity, id, solution_possible=NA ) {
 	#change parameter names for json conversion output
 	normalContamination= 1-purity
 	goodnessOfFit=qual
+	ploidyFactor=Ploidy
+	ploidy=fullPloidy
 	caller = "ACEseq"
 	gender = sex
 	tabFileForJson = qq("@{outDir}/@{id}_cnv_parameter_@{round(Ploidy, digits = 3)}_@{Purity}.txt")
-	write.table( data.frame( normalContamination, Ploidy, goodnessOfFit, gender, solution_possible ), tabFileForJson, row.names=FALSE, col.names=TRUE, quote=FALSE, sep='\t' )
+	write.table( data.frame( normalContamination, ploidyFactor, ploidy, goodnessOfFit, gender, solutionPossible ), tabFileForJson, row.names=FALSE, col.names=TRUE, quote=FALSE, sep='\t' )
 
 	write.table(qq("#purity:@{Purity}\n#ploidy:@{Ploidy}\n#roundPloidy:@{fullPloidy}\n#fullPloidy:@{fullPloidy}\n#quality:@{qual}\n#assumed sex:@{sex}"), importantFile, col.names=FALSE, row.names=FALSE, quote=FALSE )
 	write.table( important_sub,
