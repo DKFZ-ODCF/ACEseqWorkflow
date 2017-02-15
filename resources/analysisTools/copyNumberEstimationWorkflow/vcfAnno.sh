@@ -21,7 +21,7 @@ then
 	 --min_X_ratio ${min_X_ratio} \
 	 --file_out ${tmp_sex_file}
 
-elif [[ -n $PATIENTSEX ]]
+elif [[ -n ${PATIENTSEX-} ]]
 then
 	echo $PATIENTSEX > ${tmp_sex_file}
 else
