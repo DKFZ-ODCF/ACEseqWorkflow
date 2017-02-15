@@ -17,7 +17,7 @@ parser.add_argument('--tx',	   '-t', type = str, help = 'DELLY translocations')
 parser.add_argument('--known_segments','-k', type=str, help = "File containing breakpoints")
 parser.add_argument('--sv_out',	   '-s', type = str, help = 'Outfile for delly SVs')
 parser.add_argument('--output',	   '-o', type = str, help = 'Outfile for new breakpoints')
-parser.add_argument('--selectCol', '-c', default = "id", type = str, help = 'column name of column to annotate in sv_points.txt')
+parser.add_argument('--selectCol', '-c', default = "eventscore", type = str, help = 'column name of column to annotate in sv_points.txt')
 parser.add_argument('--DDI_length','-l', type = int, help= 'minimum length of del,dup,inv to be considered')
 
 args = parser.parse_args()
