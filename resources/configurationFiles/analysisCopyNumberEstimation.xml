@@ -6,8 +6,10 @@
                usedToolFolders="copyNumberEstimationWorkflow,tools">
     <configurationvalues>
 
-        <cvalue name="RSCRIPT_BINARY" value="Rscript-2.15.0"/>
-        <cvalue name="RSCRIPT_BINARY_3" value="Rscript-3.3.0"/>
+        <cvalue name="RSCRIPT_BINARY" value="Rscript-3.3.1"/>
+
+        <cvalue name="test" value="" description="this value can be set to 'test' in case ACEseq is run with a smaller test set, otherwise impute2 will fail" type="string" />
+
         <cvalue name='aceseqOutputDirectory' value='${outputAnalysisBaseDirectory}/ACEseq' type="path"/>
         <cvalue name='dellyOutputDirectory' value='${outputAnalysisBaseDirectory}/delly' type="path"/>
         <cvalue name='crestOutputDirectory' value='${outputAnalysisBaseDirectory}/crest' type="path"/>
@@ -48,7 +50,7 @@
 
         <!--cnv_snpMpileup Opts-->
         <cvalue name="mpileup_qual" value="0" type="integer"/>
-        <cvalue name='MPILEUP_OPTS' value='"-A -R -B -Q ${mpileup_qual} -q 1 -I "' type="string"/>
+        <cvalue name='CNV_MPILEUP_OPTS' value='"-A -R -B -Q ${mpileup_qual} -q 1 -I "' type="string"/>
 
 	<!--addHaplotypes Opts-->
         <cvalue name="FILE_VCF_SUF" value="vcf" type="string"/>
@@ -108,7 +110,7 @@
         <!--getBreakpointsAndMergeCrest/datatablePSCBSgaps Opts-->
         <cvalue name='FILE_DENSITYBETA' value='${aceseqOutputDirectory}/densityBeta.pdf' type="path"/>
         <cvalue name='min_DDI_length' value='1000' type="integer"/>
-        <cvalue name='selSVColumn' value='id' type="string/>
+        <cvalue name='selSVColumn' value='eventScore' type="string"/>
 
         <!--getSegmentsAndSnps/pscbsAll Opts-->
         <cvalue name='min_seg_width' value='2000' type="integer"/>
