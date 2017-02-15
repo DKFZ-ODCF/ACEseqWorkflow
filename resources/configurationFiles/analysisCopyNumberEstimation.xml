@@ -6,8 +6,9 @@
                usedToolFolders="copyNumberEstimationWorkflow,tools">
     <configurationvalues>
 
-        <cvalue name="RSCRIPT_BINARY" value="Rscript-2.15.0"/>
-        <cvalue name="RSCRIPT_BINARY_3" value="Rscript-3.3.0"/>
+        <cvalue name="RSCRIPT_BINARY" value="Rscript-3.3.1"/>
+        <cvalue name="test" value="" type="string" description="value to be set to 'test' in case this is run on a smaller not WGS bamfile to speed up testing, required for impute2"/>
+
         <cvalue name='aceseqOutputDirectory' value='${outputAnalysisBaseDirectory}/ACEseq' type="path"/>
         <cvalue name='dellyOutputDirectory' value='${outputAnalysisBaseDirectory}/delly' type="path"/>
         <cvalue name='crestOutputDirectory' value='${outputAnalysisBaseDirectory}/crest' type="path"/>
@@ -26,8 +27,8 @@
 
         <cvalue name='runOnPancan' value='' type='boolean'/>
 
-        <cvalue name='libloc_PSCBS' value='/home/schlesne/R/x86_64-unknown-linux-gnu-library/2.12' type='string'/>
-        <cvalue name='libloc_flexclust' value='/ibios/tbi_cluster/11.4/x86_64/R/R-2.15.2/lib64/R/library/' type='string'/>
+        <cvalue name='libloc_PSCBS' value='' type='string'/>
+        <cvalue name='libloc_flexclust' value='' type='string'/>
 
 	<cvalue name='runWithoutControl' value='false' type='boolean' />
 
@@ -48,7 +49,7 @@
 
         <!--cnv_snpMpileup Opts-->
         <cvalue name="mpileup_qual" value="0" type="integer"/>
-        <cvalue name='MPILEUP_OPTS' value='"-A -R -B -Q ${mpileup_qual} -q 1 -I "' type="string"/>
+        <cvalue name='CNV_MPILEUP_OPTS' value='"-A -R -B -Q ${mpileup_qual} -q 1 -I "' type="string"/>
 
 	<!--addHaplotypes Opts-->
         <cvalue name="FILE_VCF_SUF" value="vcf" type="string"/>
@@ -108,7 +109,7 @@
         <!--getBreakpointsAndMergeCrest/datatablePSCBSgaps Opts-->
         <cvalue name='FILE_DENSITYBETA' value='${aceseqOutputDirectory}/densityBeta.pdf' type="path"/>
         <cvalue name='min_DDI_length' value='1000' type="integer"/>
-        <cvalue name='selSVColumn' value='id' type="string/>
+        <cvalue name='selSVColumn' value='eventScore' type="string"/>
 
         <!--getSegmentsAndSnps/pscbsAll Opts-->
         <cvalue name='min_seg_width' value='2000' type="integer"/>
