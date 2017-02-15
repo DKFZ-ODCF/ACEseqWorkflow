@@ -54,13 +54,13 @@ cat("\n")
 if( libloc == ""  | libloc == TRUE )
     libloc=NULL
 
-#library(DNAcopy)
-#originalSegmentFunction <- get("segment", mode = "function", envir = getNamespace("DNAcopy"))
-#segment.CODE = deparse(originalSegmentFunction)
-#lineToModify = grep("stop\\(\"minimum segment width should be between 2 and 5\"\\)", segment.CODE)
-#segment.CODE[lineToModify] = "#HACK... - do not stop here"
-#modifiedSegmentFunction = eval(parse(text = segment.CODE))
-#R.utils::reassignInPackage("segment", "DNAcopy", modifiedSegmentFunction, keepOld=F)
+library(DNAcopy)
+originalSegmentFunction <- get("segment", mode = "function", envir = getNamespace("DNAcopy"))
+segment.CODE = deparse(originalSegmentFunction)
+lineToModify = grep("stop\\(\"minimum segment width should be between 2 and 5\"\\)", segment.CODE)
+segment.CODE[lineToModify] = "#HACK... - do not stop here"
+modifiedSegmentFunction = eval(parse(text = segment.CODE))
+R.utils::reassignInPackage("segment", "DNAcopy", modifiedSegmentFunction, keepOld=F)
 
 library(PSCBS, lib.loc=libloc)
 # read datatable                        
@@ -109,7 +109,7 @@ cat("start pscbs\n")
 #library(PSCBS, lib.loc="/home/bludau/R/x86_64-unknown-linux-gnu-library/2.13")
 # lib.loc needs to be specified since source code has been modified
 # remove a line in `DNAcopy::segment`
-body(segment)[[4]] = substitute(print("hack")) # minimum width 
+#body(segment)[[4]] = substitute(print("hack")) # minimum width 
 
 
 fit = segmentByPairedPSCBS(data, knownSegments = knownSegments, tbn = FALSE, 
