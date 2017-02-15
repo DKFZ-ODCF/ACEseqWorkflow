@@ -39,7 +39,7 @@ if [[ ${runWithoutControl} == false ]]
 then
 
 
-        ${SAMTOOLS_BINARY} mpileup ${MPILEUP_OPTS} -u \
+        ${SAMTOOLS_BINARY} mpileup ${CNV_MPILEUP_OPTS} -u \
         	    -f "${REFERENCE_GENOME}" \
         	    -r ${CHR_NR} \
         	    "${FILE_CONTROL_BAM}" \
@@ -112,10 +112,29 @@ fi
 
 		if [[ "$?" != 0 ]]
 			then
-			echo "WARNING: Non zero exit status during segmentation of segment ${SEGMENT} on chr ${CHR_NAME} in impute2.sh"
-			exit 2
-		fi
+			if [[ $test == "test" ]]
+			then
+				grep 'ERROR: There are no type 2 SNPs after applying the command-line settings for this run, which makes it impossible to perform imputation.' ${target_dir}/phasing/phased_genotypes_chr${CHR_NAME}_part${SEGMENT}.txt_summary > ${target_dir}/phasing/exit_check_temp.txt
+			
+				var=$(ls -s1 ${target_dir}/phasing/exit_check_temp.txt | awk '{print $1}')
+	
+				if [[ $var == 0 ]]
+				then
+					echo "WARNING: Non zero exit status during segmentation of segment ${SEGMENT} on chr ${CHR_NAME} in impute2.sh"
+					exit 2
+				else
+					echo "Warning of no type 2 SNPs was issued but is ignored during segmentation of segment ${SEGMENT} on chr ${CHR_NAME} in impute2.sh"
+				fi
 
+				rm ${target_dir}/phasing/exit_check_temp.txt
+				var=0
+			else
+				echo "WARNING: Non zero exit status during segmentation of segment ${SEGMENT} on chr ${CHR_NAME} in impute2.sh"
+				exit 2
+
+			fi
+
+		fi
 
 		cat "${PHASED_HAPS_PART}" \
 		    >> "${PHASED_HAPS}"
