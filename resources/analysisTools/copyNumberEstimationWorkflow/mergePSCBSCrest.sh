@@ -4,7 +4,7 @@ set -p pipefail
 source ${CONFIG_FILE}
 
 
-breakpoints_tmp=${FILENAME_BREAKPOINTS}.tmp
+tmp_breakpoints=${FILENAME_BREAKPOINTS}.tmp
 svPoints_tmp=${FILENAME_SV_POINTS}.tmp
 
 if [[ "${CREST}" == 'yes' ]]
@@ -13,11 +13,11 @@ then
             --crest_deldupinv "${FILENAME_CREST_DELDUPINV}" \
             --crest_tx        "${FILENAME_CREST_TRANSLOC}" \
             --known_segments  "${FILENAME_KNOWNSEGMENTS}" \
-            --output          "${breakpoints_tmp}" \
+            --output          "${tmp_breakpoints}" \
             --crest_out       "${svPoints_tmp}" \
             --DDI_length      $min_DDI_length 
 else
-	cp ${FILE_KNOWNSEGMENTS} ${tmp_breakpoints}
+	cp ${FILENAME_KNOWNSEGMENTS} ${tmp_breakpoints}
 	sed -i '1s/^chr/#chr/' ${tmp_breakpoints}
 	echo "" > "${svPoints_tmp}"
 
@@ -30,7 +30,7 @@ then
 	exit 2
 fi
 
- mv ${breakpoints_tmp} ${FILENAME_BREAKPOINTS}
+ mv ${tmp_breakpoints} ${FILENAME_BREAKPOINTS}
  mv ${svPoints_tmp} ${FILENAME_SV_POINTS}
 
 

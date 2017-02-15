@@ -54,6 +54,14 @@ cat("\n")
 if( libloc == ""  | libloc == TRUE )
     libloc=NULL
 
+#library(DNAcopy)
+#originalSegmentFunction <- get("segment", mode = "function", envir = getNamespace("DNAcopy"))
+#segment.CODE = deparse(originalSegmentFunction)
+#lineToModify = grep("stop\\(\"minimum segment width should be between 2 and 5\"\\)", segment.CODE)
+#segment.CODE[lineToModify] = "#HACK... - do not stop here"
+#modifiedSegmentFunction = eval(parse(text = segment.CODE))
+#R.utils::reassignInPackage("segment", "DNAcopy", modifiedSegmentFunction, keepOld=F)
+
 library(PSCBS, lib.loc=libloc)
 # read datatable                        
 cat(qq("reading @{file_data}...\n\n"))

@@ -22,6 +22,8 @@ PHASED_SUMMARY=${PHASED_GENOTYPE}_summary
 PHASED_WARNINGS=${PHASED_GENOTYPE}_warnings
 tmpphased=${FILENAME_PHASED_GENOTYPES}_tmp #These two files should have 23 as chromosomes name rather than 'X'
 tmphaploblocks=${FILENAME_HAPLOBLOCK_GROUPS}_tmp
+UNPHASED="${FILE_UNPHASED_PRE}${CHR_NAME}.${FILE_VCF_SUF}"
+FILENAME_UNPHASED_GENOTYPE=${FILE_UNPHASED_GENOTYPE}${CHR_NAME}.${FILE_TXT_SUF}
 
 
 #check whether the patient is female or male
@@ -36,8 +38,6 @@ if grep -Pv 'female|klinefelter'  "${FILENAME_SEX}"
 if [[ ${runWithoutControl} == false ]]
 then
 
-	UNPHASED="${FILE_UNPHASED_PRE}${CHR_NAME}.${FILE_VCF_SUF}"
-	FILENAME_UNPHASED_GENOTYPE=${FILE_UNPHASED_GENOTYPE}${CHR_NAME}.${FILE_TXT_SUF}
 
         ${SAMTOOLS_BINARY} mpileup ${MPILEUP_OPTS} -u \
         	    -f "${REFERENCE_GENOME}" \

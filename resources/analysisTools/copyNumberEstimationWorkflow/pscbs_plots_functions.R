@@ -498,15 +498,17 @@ completeSeg = function( comb, Ploidy, Purity, id, solution_possible=NA ) {
 	#format data so that no e-x is used and 0.5 is rounded to the next bigger value for start and next lower for end of a segment
 	comb$start	<- as.integer(ceiling(comb$start))
 	comb$end	<- as.integer(floor(comb$end))
+	comb		<- comb[order(comb$chromosome, comb$start),]
 	comb_out   	<- format(comb, scientific = FALSE, trim = TRUE)
+	colnames(comb_out)[1] <- "#chromosome"
 
 
 	write.table(comb_out, qq("@{outDir}/@{id}_comb_pro_extra@{round(Ploidy, digits = 3)}_@{Purity}.txt"), sep = "\t", row.names = FALSE, quote = FALSE) 
 
-	important_cols <- c('chromosome', 'start', 'end', 'length', 'tcnMeanRaw', 'tcnMean', 'crest', 'c1Mean', 'c2Mean', 'dhMean', 'dhMax', 'genotype', 'GNL', 'tcnNbrOfHets','minStart', 'maxStart', 'minStop', 'maxStop')
+	important_cols <- c('#chromosome', 'start', 'end', 'length', 'tcnMeanRaw', 'tcnMean', 'crest', 'c1Mean', 'c2Mean', 'dhMean', 'dhMax', 'genotype', 'GNL', 'tcnNbrOfHets','minStart', 'maxStart', 'minStop', 'maxStop')
   	important_sub  <- comb_out[,important_cols]
   
-  	colnames(important_sub) <- c('chromosome', 'start', 'end', 'length', 'covRatio', 'TCN', 'SV.Type', 'c1Mean', 'c2Mean', 'dhEst', 'dhSNPs',  'genotype', 'GNL', 'NbrOfHetSNPs','minStart', 'maxStart', 'minEnd', 'maxEnd' )
+  	colnames(important_sub) <- c('#chromosome', 'start', 'end', 'length', 'covRatio', 'TCN', 'SV.Type', 'c1Mean', 'c2Mean', 'dhEst', 'dhSNPs',  'genotype', 'GNL', 'NbrOfHetSNPs','minStart', 'maxStart', 'minEnd', 'maxEnd' )
 	important_sub 	    <- format(important_sub, scientific = FALSE, trim = TRUE)
 
 	qual = sum( important_sub$GNL != 'sub', na.rm=TRUE) / sum(!is.na(important_sub$GNL))
