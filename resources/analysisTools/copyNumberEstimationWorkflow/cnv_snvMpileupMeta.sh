@@ -2,7 +2,6 @@
 
 source $CONFIG_FILE
 
-set -xuv
 
 outpath=${aceseqOutputDirectory}
 

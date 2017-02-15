@@ -21,44 +21,35 @@
 
 
 def mod_snp_cnv(sysargv):
-	usage = "snp_cnv.py [-Q INT] <dbSNP.tabix> <mpileup.tab> <snp.tab> <coverage.tab>"
 	import sys
 	import pysam
 	import gzip	
-			
+	import argparse	
 	#######################################
 	# arguments, filehandles
 
 	#print sysargv
 	#print len(sysargv) 
-	if len(sysargv) <= 4:														# at least five arguments
-		sys.exit("usage: %s" % usage)
+	parser=argparse.ArgumentParser(description = "Parse mpileup output for ACEseq raw data")
+	parser.add_argument('--withoutcontrol', '-w', default=False, type = bool, help = "")
+	parser.add_argument('--dbsnp',   '-d', required=1, type = str, help = "dbSNP position vcf")
+	parser.add_argument('--outsnps', '-s', required=1, help = "Output file for snp coverage")
+	parser.add_argument('--outcov',  '-c', required=1, help = 'Output file for coverage window output')
+	parser.add_argument('--infile',  '-i', type=argparse.FileType('r'), default='-' ,help="mpileup output, usually given as stdin")
+	parser.add_argument('--quality', '-q', default=13 , type=int, help="minimum base quality for base in read to be considered")
 
-	try:										
-		print sysargv[-4]
-		print sysargv[-3]
-		print sysargv[-2]
-		print sysargv[-1]
-		tabixPositions = pysam.Tabixfile(sysargv[-4], "r")					# dbSNP positions
-		
-		if sysargv[-3] == "-": fin = sys.stdin							# mpileup input
-		else: fin = open(sysargv[-3], "r")
-		
-		if sysargv[-2] == "-": fout = sys.stdout						# snp output
-		else: fout = gzip.open(sysargv[-2], "wb")
+	args = parser.parse_args()
 
-		if sysargv[-1] == "-": fout2 = sys.stdout						# coverage output
-		else: fout2 = open(sysargv[-1], "w")
-
-	except IndexError:
-		sys.stderr.write("usage: %s\n" % usage)
-		sys.exit()
-	except IOError:
-		sys.stderr.write("I/O error: please check in- and output filenames again\n")
-		sys.exit()
-
-	if "-Q" in sysargv: bq = int(sysargv[sysargv.index("-Q")+1])				# skip bases with baseQ smaller than INT (Phred+33), default [13]
-	else: bq = 13
+	
+	if not args.dbsnp or not args.outsnps or not args.outcov:	# at least five arguments
+		sys.exit("not all parameters set, please use option -h for mor information")
+	
+	withoutControl = args.withoutcontrol
+	tabixPositions = pysam.Tabixfile( args.dbsnp, "r")
+	fin   = args.infile
+	fout  = gzip.open( args.outsnps, "wb" )
+	fout2 = open( args.outcov, "w" )
+	bq = args.quality
 
 
 	#######################################
@@ -126,7 +117,6 @@ def mod_snp_cnv(sysargv):
 			print mpq
 		return [bc,mrn]																# return base count and index of reference base
 
-
 	#######################################
 	# main
 
@@ -142,7 +132,8 @@ def mod_snp_cnv(sysargv):
 		l[0] = l[0].replace('chr','')
 
 		if l[0] != r:															# new chromosome
-			if bsn > 0 or bst > 0: fout2.write("%s\t%i\t%i\t%i\n" % (r, bl*1000+1, bsn, bst))
+			if ( (  ( bsn > 0 or bst > 0 ) and not withoutControl ) or withoutControl ) and r != "foo" :
+				 fout2.write("%s\t%i\t%i\t%i\t%i\n" % (r, bl*1000+1, (bl+1)*1000, bsn, bst))
 			[bl, bsn, bst] = [0, 0, 0]											# write last cnv bin and reset
 				
 			r = l[0]
@@ -152,9 +143,13 @@ def mod_snp_cnv(sysargv):
 		
 		l[1] = int(l[1])
 		
-		if l[1] in dp:															# if in dbSNP
-			[b1, ref] = mp2bc(l[4], l[5], l[2], bq)									# calculate base count
-			b2 = mp2bc(l[7], l[8], l[2], bq)[0]
+		if l[1] in dp:
+			if not withoutControl:														# if in dbSNP
+				[b1, ref] = mp2bc(l[4], l[5], l[2], bq)									# calculate base count
+				b2 = mp2bc(l[7], l[8], l[2], bq)[0]
+			else:
+				b1	 = [ 0 ,0 ,0 ,0 ]
+				[b2,ref] = mp2bc(l[4], l[5], l[2], bq)
 			
 			b_ref = zip( [b1[ref]], [b2[ref]] )
 			b1 = [ b1[i] for i in range(len(b1)) if i != ref ]
@@ -163,19 +158,30 @@ def mod_snp_cnv(sysargv):
 #			if b[2][0] != 0 and b_ref[0][0] != 0: 		#control has alternative allele count
 			fout.write("%s\t%i\t%s\t%i\t%i\t%i\t%i\n" % (r, l[1], dp[l[1]], b_ref[0][0], b[2][0], b_ref[0][1], b[2][1]))
 		
-		bi = int((l[1]-1)/1000)													# cnv bin id
-		if bi == bl:															# if not new
-			bsn += int(l[3])													# .. add to coverage
-			bst += int(l[6])
+		bi = int((l[1]-1)/1000)												# cnv bin id
+		if bi == bl:
+			if not withoutControl:													# if not new
+				bsn += int(l[3])													# .. add to coverage
+				bst += int(l[6])
+			else:
+				bsn = 0
+				bst += int(l[3])
 		else:																	# else write last bin and make new bin
-			if bsn > 0 or bst > 0: fout2.write("%s\t%i\t%i\t%i\t%i\n" % (r, bl*1000+1, (bl+1)*1000, bsn, bst))
+			if ( ( bsn > 0 or bst > 0 ) and not withoutControl ) or withoutControl :
+				 fout2.write("%s\t%i\t%i\t%i\t%i\n" % (r, bl*1000+1, (bl+1)*1000, bsn, bst))
 			bl = bi
-			bsn = int(l[3])
-			bst = int(l[6])			
+			if not withoutControl:
+				bsn = int(l[3])
+				bst = int(l[6])
+			else:
+				bsn = 0
+				bst = int(l[3])
 						
 		l = fin.readline()
 	
-	if bsn > 0 or bst > 0: fout2.write("%s\t%i\t%i\t%i\t%i\n" % (r, bl*1000+1, (bl+1)*1000, bsn, bst))
+	if ( bsn > 0 or bst > 0 and not withoutControl ) or withoutControl :
+		 fout2.write("%s\t%i\t%i\t%i\t%i\n" % (r, bl*1000+1, (bl+1)*1000, bsn, bst))
+		
 	
 	fin.close
 	fout.close

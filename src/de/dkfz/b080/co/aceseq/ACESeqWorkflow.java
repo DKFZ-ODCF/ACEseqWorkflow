@@ -22,6 +22,7 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         boolean runQualityCheckOnly = context.getConfiguration().getConfigurationValues().getBoolean("runQualityCheckOnly", false);
         boolean runMetaCNVGeneration = context.getConfiguration().getConfigurationValues().getBoolean("runMetaCNVGeneration", false);
         boolean runWithFakeControl = context.getConfiguration().getConfigurationValues().getBoolean("runWithFakeControl", false);
+        boolean runWithoutControl = context.getConfiguration().getConfigurationValues().getBoolean("runWithoutControl", false);
 
         CnvSnpGeneratorResultByType resultByType = null;
         if (runMetaCNVGeneration) {
@@ -35,7 +36,7 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         CoverageWindowsFileAnnotationResult annotationResult = resultByType.getCoverageWindowsFiles().annotate();
         TextFile replaceControlFile = null;
         TextFile mergedAndFilteredCoverageWindowFiles = null;
-        if (runWithFakeControl) {
+        if (runWithFakeControl || runWithoutControl ) {
             replaceControlFile = ACESeqMethods.replaceControl(annotationResult.getGenderFile());
             mergedAndFilteredCoverageWindowFiles = GenericMethod.callGenericTool("mergeAndFilterCnvFiles_withReplaceBadControl", replaceControlFile, new GenericFileGroup(annotationResult.getListOfFiles()));
         } else {
@@ -46,10 +47,26 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         if (runQualityCheckOnly)
             return true;
 
-        ImputeGenotypeByChromosome imputedGenotypeByChromosome = ACESeqMethods.imputeGenotypes(bamControlMerged);
-        TextFile mergedAndFilteredSNPFile = resultByType.getPositionFiles().mergeAndFilter();
-        Tuple2<PhasedGenotypeFile, HaploblockGroupFile> phasedGenotypeX = ACESeqMethods.imputeGenotypeX(annotationResult.getGenderFile(), bamControlMerged);
-        TextFile haplotypedSNPFile = ACESeqMethods.addHaploTypes(mergedAndFilteredSNPFile, imputedGenotypeByChromosome.getPhasedSnpFiles(), phasedGenotypeX.value0);
+	ImputeGenotypeByChromosome imputedGenotypeByChromosome = null;
+	Tuple2<PhasedGenotypeFile, HaploblockGroupFile> phasedGenotypeX = null;
+	TextFile haplotypedSNPFile = null;
+
+	if (runWithoutControl) {
+	        TextFile mergedAndFilteredSNPFile = resultByType.getPositionFiles().mergeAndFilter();
+	        TextFile genotypeSNPFile = ACESeqMethods.getGenotypes(mergedAndFilteredSNPFile);
+	        UnphasedGenotypeFileGroupByChromosome unphasedGenotypeFile = ACESeqMethods.createUnphased(genotypeSNPFile);
+	        imputedGenotypeByChromosome = ACESeqMethods.imputeGenotypes( unphasedGenotypeFile );
+        	phasedGenotypeX = ACESeqMethods.imputeGenotypeX(annotationResult.getGenderFile(), unphasedGenotypeFile);
+	        haplotypedSNPFile = ACESeqMethods.addHaploTypes(genotypeSNPFile, imputedGenotypeByChromosome.getPhasedSnpFiles(), phasedGenotypeX.value0);
+	
+	} else {
+
+	        TextFile mergedAndFilteredSNPFile = resultByType.getPositionFiles().mergeAndFilter();
+	        imputedGenotypeByChromosome = ACESeqMethods.imputeGenotypes(bamControlMerged);
+        	phasedGenotypeX = ACESeqMethods.imputeGenotypeX(annotationResult.getGenderFile(), bamControlMerged);
+	        haplotypedSNPFile = ACESeqMethods.addHaploTypes(mergedAndFilteredSNPFile, imputedGenotypeByChromosome.getPhasedSnpFiles(), phasedGenotypeX.value0);
+	}
+
         Tuple2<TextFile, TextFile> breakpoints = ACESeqMethods.pscbsGaps(haplotypedSNPFile, correctedWindowFile.value0, annotationResult.getGenderFile());
         Tuple2<TextFile, TextFile> mergedSvs = null;
 

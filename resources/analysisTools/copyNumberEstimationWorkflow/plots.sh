@@ -1,8 +1,8 @@
 #!/bin/bash
 
-set -o pipefail
+
 source ${CONFIG_FILE}
-set -x 
+ 
 
 ${RSCRIPT_BINARY} 	--vanilla "${TOOL_GENERATE_PLOTS}" \
 		--SNPfile "${FILENAME_ALL_SNP_UPDATE3}" \

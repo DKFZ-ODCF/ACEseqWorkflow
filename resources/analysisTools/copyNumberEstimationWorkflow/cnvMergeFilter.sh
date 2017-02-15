@@ -1,8 +1,6 @@
 #!/bin/bash
 #
-set -o pipefail
 source ${CONFIG_FILE}
-set -x
 #
 #PID=$PID
 #

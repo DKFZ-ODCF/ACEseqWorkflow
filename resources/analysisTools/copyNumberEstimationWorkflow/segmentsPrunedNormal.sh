@@ -1,8 +1,8 @@
 #!/bin/bash
 
-set -o pipefail
+
 source ${CONFIG_FILE}
-set -x
+
 
 tmpUpdatedSnps=${FILENAME_ALL_SNP_UPDATE3}_tmp
 

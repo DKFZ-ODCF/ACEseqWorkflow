@@ -40,7 +40,7 @@ defineMainCluster <- function(cov, fit, type="unknown", plotFlag=NULL){
   max_index = which(my_density$y==max(my_density$y))
   abs_max			<- my_density$x[ max_index ]
   my_density  <- remove_duplicated_values(my_density, max_index)
-  my_local_minima_ind  	<- which(diff(sign(diff(my_density$y)))==2)
+  my_local_minima_ind  	<- which(diff(sign(diff(my_density$y)))==2) + 1	#shift index by one due to double diff that removes first entry
   my_local_minima		    <- my_density$x[which(diff(sign(diff(my_density$y)))==2)]
   my_local_dist_from_max	<- my_local_minima - matrix(abs_max,length(my_local_minima))
   my_left_min_index	<- max(which(my_local_dist_from_max<0))
@@ -179,7 +179,7 @@ plotCoverage <- function(coverageTab, chromosomeBorders=NULL, chr=NULL, ylims=c(
     
     labelposition=NULL
     if ( ! is.null(chromosomeBorders) )
-	labelPosition <- (diff(chromosomeBorders)/2+chromosomeBorders[1:24])/100000
+	labelPosition <- (diff(chromosomeBorders)/2+chromosomeBorders[1:24])/1e6
 	
     par(mfrow=c(3,1), cex.lab=1.5, cex.main=2)
     

@@ -17,12 +17,15 @@ parser=argparse.ArgumentParser(description = "Add imputed haplotypes")
 parser.add_argument('--inputsuffix', '-i', type = str, help = "suffix of vcf file with phased genotypes")
 parser.add_argument('--inputpath', '-p', type = str, help = "path and prefix to vcf file with phased genotypes")
 parser.add_argument('--out', '-o', default=sys.stdout, help = "Output file. Default: STDOUT")
-parser.add_argument('--snps', '-s', type = str, help = 'File containing SNP information with allele frequencies')
+parser.add_argument('--snps', '-s', default="", type = str, help = 'File containing SNP information with allele frequencies')
 args = parser.parse_args()
 
-if not args.inputpath or not args.snps or not args.inputsuffix:
+if not args.inputpath or not args.inputsuffix:
 	sys.stderr.write("Please specify input and SNP file. For more information use -h\n")
-	sys.exit(2)
+	sys.exit(2)	
+
+if not args.snps:
+	args.snps=""
 
 out=args.out
 
@@ -36,16 +39,19 @@ if args.out != sys.stdout:
 try:
 	snpFile = Tabfile.Input( gzip.open( args.snps ) )
 except IOError as (errno, strerr):
-	sys.stderr.write( "IOError %i: %s\n"% (errno, strerr) )
-	sys.exit(errno)
+	try:
+		snpFile = Tabfile.Input( sys.stdin )
+	except IOError:
+		sys.stderr.write( "IOError %i: %s\n"% (errno, strerr) )
+		sys.exit(errno)
 
 curr_chrom = ''
 
 for line in snpFile:
-	
 	chrom = line['chr']
 	if chrom.startswith('chr'):
 		chrom = chrom.replace('chr', '')
+		line['chr'] = line['chr'].replace('chr', '')
 	pos   = int( line['startPos'] )
 	line['haplotype'] = 0
 	

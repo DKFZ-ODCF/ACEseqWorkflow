@@ -1,8 +1,8 @@
 #!/bin/bash
 
-set -o pipefail
+
 source ${CONFIG_FILE}
-set -x
+
 
 #annotate_vcf & addMappability: add mappability values to fit.txt segments
 #homozygous_del: add crest information (DEL,CTX...) and mappability classification (mappable, unmappable or homozygDel (if no tcn defined) )

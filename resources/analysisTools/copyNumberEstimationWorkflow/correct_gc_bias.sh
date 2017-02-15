@@ -1,8 +1,8 @@
 #!/usr/bin/sh
 
-set -o pipefail
+
 source ${CONFIG_FILE}
-set -x
+
 
 tmp_corrected_windowfile=${FILENAME_GC_CORRECTED_WINDOWS}.tmp
 tmp_corrected_table=${FILENAME_GC_CORRECTED_QUALITY}.tmp

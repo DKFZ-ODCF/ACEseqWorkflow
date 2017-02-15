@@ -17,6 +17,7 @@ alphaTCN  = 1e-6
 alphaDH   = 1e-6
 h         = 0
 crest     = "yes"
+nocontrol = FALSE 
 ################################################################################
 ## description field should be filled here
 ################################################################################
@@ -32,7 +33,8 @@ getopt2(matrix(c('file_data',        'd', 1, "character", "", # input  /ibios/co
                  'alphaDH',          'D', 2, "numeric",   "",
                  'h',                'h', 2, "numeric",   "",
                  'crest',            'c', 0, "character", "whether crest is used, should be specified",
-                 'libloc',           'l', 2, "character", "location of package"
+                 'libloc',           'l', 2, "character", "location of package",
+		 'nocontrol',	     'n', 2, "logical", "is the sample run without control"
                 ), ncol = 5, byrow = TRUE));
      
 cat(qq("file_data: @{file_data}\n\n"))
@@ -52,17 +54,27 @@ cat("\n")
 if( libloc == ""  | libloc == TRUE )
     libloc=NULL
 
+library(DNAcopy)
+originalSegmentFunction <- get("segment", mode = "function", envir = getNamespace("DNAcopy"))
+segment.CODE = deparse(originalSegmentFunction)
+lineToModify = grep("stop\\(\"minimum segment width should be between 2 and 5\"\\)", segment.CODE)
+segment.CODE[lineToModify] = "#HACK... - do not stop here"
+modifiedSegmentFunction = eval(parse(text = segment.CODE))
+R.utils::reassignInPackage("segment", "DNAcopy", modifiedSegmentFunction, keepOld=F)
+
 library(PSCBS, lib.loc=libloc)
 # read datatable                        
 cat(qq("reading @{file_data}...\n\n"))
 colNamesData <- c( "a", "chromosome", "betaT", "betaN", "x", "Atumor", "Btumor", "Anormal", "Bnormal", "haplotype", "CT", "covT", "covN" )
 chromosomes = 1:24
 
-data = lapply(chromosomes, function(chr){
+data = lapply( chromosomes, function(chr){
 		cat( "Reading chr ", chr," from ", file_data, "...\n" )
 		dataList.chr <- try( read.table( pipe( paste( "tabix", file_data, chr ) ), header=FALSE, sep='\t', as.is=TRUE ) )
 		if ( is.data.frame(dataList.chr)  ){
 			colnames( dataList.chr ) = colNamesData
+			if (nocontrol)
+				dataList.chr$betaN <- jitter(dataList.chr$betaN)
 			dataList.chr
 		}else{
 			cat(chr," not found in ", file_data, "skipping!\n")
@@ -97,18 +109,18 @@ cat("start pscbs\n")
 #library(PSCBS, lib.loc="/home/bludau/R/x86_64-unknown-linux-gnu-library/2.13")
 # lib.loc needs to be specified since source code has been modified
 # remove a line in `DNAcopy::segment`
-body(segment)[[4]] = substitute(print("hack")) # minimum width 
+#body(segment)[[4]] = substitute(print("hack")) # minimum width 
 
 
 fit = segmentByPairedPSCBS(data, knownSegments = knownSegments, tbn = FALSE, 
-	nperm = nperm, min.width = min.width, undoTCN = 5, undoDH = 5, 
-	undo.splits = "sdundo", undo.SD = undo.SD, trim = trim, alphaTCN = alphaTCN, 
-	alphaDH = alphaDH, verbose = -10, seed = 25041988)
+        nperm = nperm, min.width = min.width, undoTCN = 5, undoDH = 5, 
+        undo.splits = "sdundo", undo.SD = undo.SD, trim = trim, alphaTCN = alphaTCN, 
+        alphaDH = alphaDH, verbose = FALSE, seed = 25041988)
     
 if (h != 0) {
-	fit = pruneByHClust(fit, h = h, merge = TRUE, update = TRUE, verbose = -10)
+        fit = pruneByHClust(fit, h = h, merge = TRUE, update = TRUE, verbose = -10)
 }
-   
+
 segments = getSegments(fit, simplify = TRUE)
 
 #round coordinates with .5 to closest integer (down for end, up dor start)
@@ -126,5 +138,6 @@ segments$start	<- as.integer(ceiling(segments$start))
 segments$end	<- as.integer(floor(segments$end))
 
 segments = format(segments, scientific = FALSE, trim = TRUE)
+colnames(segments) <- gsub("^chromosome", "#chromosome", colnames(segments))
 
 write.table(segments, file = file_fit, sep = "\t", row.names = FALSE, quote = FALSE )

@@ -90,13 +90,13 @@ plotTCN = function (chromosome, ratio, seg, Ploidy, Purity, fullPloidy, chrLen, 
 				}
 
 				if (length(crestList$ITX) > 0){ 
-					p <- p + geom_linerange( data=crestList$ITX, aes( x=start,  y=ymaxcov, ymin=ymaxcov, ymax=ymaxcov+1 ), col="#7CFC00", lty=1, lwd=0.3 ) 
+					p <- p + geom_arch( data=crestList$ITX, aes( x=start, xend=end, height=1.2, y=ymaxcov ), col="#7CFC00", lwd=0.3 ) 
 				}
 			  
 				if (length(crestList$CTX) > 0){
 					p <- p + geom_linerange( data = crestList$CTX, aes(x=start,  y=ymaxcov, ymin=ymaxcov, ymax=ymaxcov+1 ), col="#006400", lty=1, lwd=0.3) 
 					for ( i in seq_len( nrow(crestList$CTX) ) ){
-						if (crestList$CTX$chromosome[i]==crestList$CTX$chr2[i]){ #?????==chr?
+						if (crestList$CTX$chromosome[i]==crestList$CTX$chr2[i]){
 							p <- p + geom_text(data=crestList$CTX[i,], aes(x=start+0.001, y=ymaxcov+1, label = chr2 ), cex = 2, col = "#006400")
 						} else {
 							p <- p + geom_text(data=crestList$CTX[i,], aes(x=start+0.001, y=ymaxcov+1, label = chr2), cex = 2, col = "#006400")
@@ -225,7 +225,7 @@ completeSNP = function( chr, dat, Ploidy, Purity, fullPloidy ) {
 	return(dat)
 }
 
-completeSeg = function( comb, Ploidy, Purity, id, solution_possible=NA ) {
+completeSeg = function( comb, Ploidy, Purity, id, solutionPossible=NA ) {
 
 	comb$tcnMeanRaw <- comb$tcnMean
 
@@ -498,15 +498,23 @@ completeSeg = function( comb, Ploidy, Purity, id, solution_possible=NA ) {
 	#format data so that no e-x is used and 0.5 is rounded to the next bigger value for start and next lower for end of a segment
 	comb$start	<- as.integer(ceiling(comb$start))
 	comb$end	<- as.integer(floor(comb$end))
+	comb		<- comb[order(comb$chromosome, comb$start),]
 	comb_out   	<- format(comb, scientific = FALSE, trim = TRUE)
+	colnames(comb_out)[1] <- "#chromosome"
 
 
 	write.table(comb_out, qq("@{outDir}/@{id}_comb_pro_extra@{round(Ploidy, digits = 3)}_@{Purity}.txt"), sep = "\t", row.names = FALSE, quote = FALSE) 
 
-	important_cols <- c('chromosome', 'start', 'end', 'length', 'tcnMeanRaw', 'tcnMean', 'crest', 'c1Mean', 'c2Mean', 'dhMean', 'dhMax', 'genotype', 'GNL', 'tcnNbrOfHets','minStart', 'maxStart', 'minStop', 'maxStop')
+	important_cols <- c('#chromosome', 'start', 'end', 'length', 'tcnMeanRaw', 'tcnMean', 'crest', 'c1Mean', 'c2Mean', 'dhMean', 'dhMax', 'genotype', 'GNL', 'tcnNbrOfHets','minStart', 'maxStart', 'minStop', 'maxStop')
   	important_sub  <- comb_out[,important_cols]
   
-  	colnames(important_sub) <- c('chromosome', 'start', 'end', 'length', 'covRatio', 'TCN', 'SV.Type', 'c1Mean', 'c2Mean', 'dhEst', 'dhSNPs',  'genotype', 'GNL', 'NbrOfHetSNPs','minStart', 'maxStart', 'minEnd', 'maxEnd' )
+	colnames(important_sub) <- sub("tcnMeanRaw", "covRatio", colnames(important_sub))
+	colnames(important_sub) <- sub("tcnMean", "TCN", colnames(important_sub))
+	colnames(important_sub) <- sub("crest", "SV.Type", colnames(important_sub))
+	colnames(important_sub) <- sub("dhMean", "dhEst", colnames(important_sub))
+	colnames(important_sub) <- sub("dhMax", "dhSNPs", colnames(important_sub))
+	colnames(important_sub) <- sub("tcnNbrOfHets", "NbrOfHetsSNPs", colnames(important_sub))
+
 	important_sub 	    <- format(important_sub, scientific = FALSE, trim = TRUE)
 
 	qual = sum( important_sub$GNL != 'sub', na.rm=TRUE) / sum(!is.na(important_sub$GNL))
@@ -515,12 +523,14 @@ completeSeg = function( comb, Ploidy, Purity, id, solution_possible=NA ) {
 	#change parameter names for json conversion output
 	normalContamination= 1-purity
 	goodnessOfFit=qual
+	ploidyFactor=Ploidy
+	ploidy=fullPloidy
 	caller = "ACEseq"
 	gender = sex
 	tabFileForJson = qq("@{outDir}/@{id}_cnv_parameter_@{round(Ploidy, digits = 3)}_@{Purity}.txt")
-	write.table( data.frame( normalContamination, Ploidy, goodnessOfFit, gender, solution_possible ), tabFileForJson, row.names=FALSE, col.names=TRUE, quote=FALSE, sep='\t' )
+	write.table( data.frame( normalContamination, ploidyFactor, ploidy, goodnessOfFit, gender, solutionPossible ), tabFileForJson, row.names=FALSE, col.names=TRUE, quote=FALSE, sep='\t' )
 
-	write.table(qq("#purity:@{Purity}\n#ploidy:@{Ploidy}\n#roundPloidy:@{fullPloidy}\n#fullPloidy:@{fullPloidy}\n#quality:@{qual}\n#assumed sex:@{sex}"), importantFile, col.names=FALSE, row.names=FALSE, quote=FALSE )
+	write.table(qq("#purity:@{Purity}\n#ploidy:@{ploidyFactor}\n#roundPloidy:@{fullPloidy}\n#fullPloidy:@{fullPloidy}\n#quality:@{qual}\n#assumed sex:@{sex}"), importantFile, col.names=FALSE, row.names=FALSE, quote=FALSE )
 	write.table( important_sub,
 		     importantFile,
 		     sep = "\t", row.names = FALSE, quote = FALSE, append=TRUE ) 

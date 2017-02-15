@@ -1,8 +1,8 @@
 #!/usr/bin/sh
 
-set -o pipefail
+
 source ${CONFIG_FILE}
-set -x
+
 
 cd ${aceseqOutputDirectory}
 

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 source ${CONFIG_FILE}
-set -o pipefail
-set -x
+
+
 
 
 source ${TOOL_ANALYZE_BAM_HEADER}
@@ -13,8 +13,6 @@ CHR_NAME=X
 CHR_NR=${CHR_PREFIX}${CHR_NAME}
 
 #DEFINE FILENAMES
-UNPHASED="${FILE_UNPHASED_PRE}${CHR_NAME}.${FILE_VCF_SUF}"
-UNPHASED_GENOTYPE=${FILE_UNPHASED_GENOTYPE}${CHR_NAME}.${FILE_TXT_SUF}
 PHASED_GENOTYPE=${FILE_PHASED_GENOTYPE}${CHR_NAME}.${FILE_TXT_SUF}
 PHASED_HAPS=${PHASED_GENOTYPE}_haps
 PHASED_HAPS_CONF=${PHASED_GENOTYPE}_haps_confidence
@@ -24,6 +22,8 @@ PHASED_SUMMARY=${PHASED_GENOTYPE}_summary
 PHASED_WARNINGS=${PHASED_GENOTYPE}_warnings
 tmpphased=${FILENAME_PHASED_GENOTYPES}_tmp #These two files should have 23 as chromosomes name rather than 'X'
 tmphaploblocks=${FILENAME_HAPLOBLOCK_GROUPS}_tmp
+UNPHASED="${FILE_UNPHASED_PRE}${CHR_NAME}.${FILE_VCF_SUF}"
+FILENAME_UNPHASED_GENOTYPE=${FILE_UNPHASED_GENOTYPE}${CHR_NAME}.${FILE_TXT_SUF}
 
 
 #check whether the patient is female or male
@@ -35,6 +35,8 @@ if grep -Pv 'female|klinefelter'  "${FILENAME_SEX}"
    exit 0
  fi
 
+if [[ ${runWithoutControl} == false ]]
+then
 
         ${SAMTOOLS_BINARY} mpileup ${CNV_MPILEUP_OPTS} -u \
         	    -f "${REFERENCE_GENOME}" \
@@ -49,10 +51,11 @@ if grep -Pv 'female|klinefelter'  "${FILENAME_SEX}"
         	echo "Non zero exit status for mpileup in impute2.sh"
         	exit 2
         fi
+fi
 
-	${PYTHON_BINARY} "${TOOL_EXTRACT_GENOTYPE_VCF}" \
-	    --vcf_file "${UNPHASED}" \
-	    --outfile  "${UNPHASED_GENOTYPE}"
+${PYTHON_BINARY} "${TOOL_EXTRACT_GENOTYPE_VCF}" \
+    --vcf_file "${UNPHASED}" \
+    --outfile  "${FILENAME_UNPHASED_GENOTYPE}"
 
 if [[ "$?" != 0 ]]
 then
@@ -101,7 +104,7 @@ fi
 		    -m $(echo "${GENETIC_MAP_FILE_X}" | sed "s/\${CHR_NR}/${CHR_NAME}/g") \
 		    -h $(echo "${KNOWN_HAPLOTYPES_FILE_X}" | sed "s/\${CHR_NR}/${CHR_NAME}/g") \
 		    -l $(echo "${KNOWN_HAPLOTYPES_LEGEND_FILE_X}" | sed "s/\${CHR_NR}/${CHR_NAME}/g") \
-		    -g "${UNPHASED_GENOTYPE}" \
+		    -g "${FILENAME_UNPHASED_GENOTYPE}" \
 		    -int $[5000000*${SEGMENT}] $[5000000*${SEGMENT} + 4999999] \
 		    -Ne 20000 \
 		    -o "${PHASED_GENOTYPE_PART}"
@@ -154,10 +157,10 @@ fi
 		    "${PHASED_WARNINGS_PART}"
 	done
 
-		${PYTHON_BINARY} "${TOOL_EMBED_HAPLOTYPES_VCF}" \
-		    --hap_file "${PHASED_HAPS}" \
-		    --vcf_file "${UNPHASED}" \
-		    --outfile  "${tmpphased}"
+${PYTHON_BINARY} "${TOOL_EMBED_HAPLOTYPES_VCF}" \
+	    --hap_file "${PHASED_HAPS}" \
+	    --vcf_file "${UNPHASED}" \
+	    --outfile  "${tmpphased}"
 
 if [[ "$?" != 0 ]]
 then
@@ -165,10 +168,10 @@ then
 	exit 2
 fi
 
-		${PYTHON_BINARY} "${TOOL_GROUP_HAPLOTYPES}" \
-			--infile "${tmpphased}" \
-			--out "${tmphaploblocks}" \
-			--minHT ${minHT}
+${PYTHON_BINARY} "${TOOL_GROUP_HAPLOTYPES}" \
+	--infile "${tmpphased}" \
+	--out "${tmphaploblocks}" \
+	--minHT ${minHT}
 	
 if [[ "$?" != 0 ]]
 then
