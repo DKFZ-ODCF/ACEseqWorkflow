@@ -7,8 +7,7 @@
     <configurationvalues>
 
         <cvalue name="RSCRIPT_BINARY" value="Rscript-3.3.1"/>
-
-        <cvalue name="test" value="" description="this value can be set to 'test' in case ACEseq is run with a smaller test set, otherwise impute2 will fail" type="string" />
+        <cvalue name="test" value="" type="string" description="value to be set to 'test' in case this is run on a smaller not WGS bamfile to speed up testing, required for impute2"/>
 
         <cvalue name='aceseqOutputDirectory' value='${outputAnalysisBaseDirectory}/ACEseq' type="path"/>
         <cvalue name='dellyOutputDirectory' value='${outputAnalysisBaseDirectory}/delly' type="path"/>
@@ -28,8 +27,8 @@
 
         <cvalue name='runOnPancan' value='' type='boolean'/>
 
-        <cvalue name='libloc_PSCBS' value='/home/schlesne/R/x86_64-unknown-linux-gnu-library/2.12' type='string'/>
-        <cvalue name='libloc_flexclust' value='/ibios/tbi_cluster/11.4/x86_64/R/R-2.15.2/lib64/R/library/' type='string'/>
+        <cvalue name='libloc_PSCBS' value='' type='string'/>
+        <cvalue name='libloc_flexclust' value='' type='string'/>
 
 	<cvalue name='runWithoutControl' value='false' type='boolean' />
 

@@ -199,7 +199,7 @@ for( index in seq_len( nrow(pp) ) ) {
 #	roundPloidy = full_Ploidies[index]
 
 	#Read and complete data; get chromsome wise and genome wide plot
-	tmp <- completeSeg( combi, ploidy, purity, ID, solution_possible=nrow(pp) )
+	tmp <- completeSeg( combi, ploidy, purity, ID, solutionPossible=nrow(pp) )
 	combi.tmp <- tmp[[1]]
 	roundPloidy = tmp[[2]]
 
