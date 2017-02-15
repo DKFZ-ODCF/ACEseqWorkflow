@@ -13,6 +13,8 @@ runWithoutControl	    false Run analysis with matching control and estimate cont
 
 == Changelist
 
+- enable upgrade to R-3.3.1
+- better format of cnv_parameter files
 - removed "set -x", pipefail etc.
 - PSCBSgabs_delly.py
 	- improved code
