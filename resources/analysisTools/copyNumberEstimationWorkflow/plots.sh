@@ -23,4 +23,8 @@ then
 	exit 2
 fi
 
+#create json file for OTP
+optimalSolution=`python ${TOOL_GET_FINAL_PURITY_PLOIDY} $PID $aceseqOutputDirectory`
+${FILENAME_PURITY_PLOIDY} $optimalSolution
+
 touch ${FILENAME_CHECKPOINT_PLOTS}

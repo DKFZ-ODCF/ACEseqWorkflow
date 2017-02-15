@@ -14,7 +14,21 @@ getRefGenomeAndChrPrefixFromHeader ${FILE_TUMOR_BAM} # Sets CHR_PREFIX and REFER
 
 CHR_NR=${CHR_PREFIX}${CHR_NAME}
 
-$SAMTOOLS_BINARY mpileup ${MPILEUP_OPTS} \
+if [[ $runWithoutControl == "True" ]]
+then
+     $SAMTOOLS_BINARY mpileup ${CNV_MPILEUP_OPTS} \
+	-f "${REFERENCE_GENOME}" \
+	-r ${CHR_NR} \
+	"${FILE_TUMOR_BAM}" \
+	| ${PYTHON_BINARY} ${TOOL_SNP_POS_CNV_WIN_GENERATOR} \
+	--quality $mpileup_qual \
+	--dbsnp "${dbSNP_FILE}" \
+	--infile - \
+	--outsnps ${tmpFileSnpPos} \
+        --outcov ${tmpFileCovWin} \
+	--withoutcontrol ${runWithoutControl} 
+else
+     $SAMTOOLS_BINARY mpileup ${CNV_MPILEUP_OPTS} \
 	-f "${REFERENCE_GENOME}" \
 	-r ${CHR_NR} \
 	"${FILE_CONTROL_BAM}" "${FILE_TUMOR_BAM}" \
@@ -24,6 +38,7 @@ $SAMTOOLS_BINARY mpileup ${MPILEUP_OPTS} \
 	- \
 	${tmpFileSnpPos} \
         ${tmpFileCovWin}
+fi
 
 if [[ "$?" != 0 ]]
 then
