@@ -17,7 +17,7 @@ runWithoutControl=${runWithoutControl^}
 
 if [[ $runWithoutControl == "True" ]]
 then
-     $SAMTOOLS_BINARY mpileup ${MPILEUP_OPTS} \
+     $SAMTOOLS_BINARY mpileup ${CNV_MPILEUP_OPTS} \
 	-f "${REFERENCE_GENOME}" \
 	-r ${CHR_NR} \
 	"${FILE_TUMOR_BAM}" \
@@ -29,7 +29,7 @@ then
         --outcov ${tmpFileCovWin} \
 	--withoutcontrol ${runWithoutControl} 
 else
-     $SAMTOOLS_BINARY mpileup ${MPILEUP_OPTS} \
+     $SAMTOOLS_BINARY mpileup ${CNV_MPILEUP_OPTS} \
 	-f "${REFERENCE_GENOME}" \
 	-r ${CHR_NR} \
 	"${FILE_CONTROL_BAM}" "${FILE_TUMOR_BAM}" \
