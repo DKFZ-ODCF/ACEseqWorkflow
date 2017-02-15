@@ -225,12 +225,12 @@ completeSNP = function( chr, dat, Ploidy, Purity, fullPloidy ) {
 	return(dat)
 }
 
-completeSeg = function( comb, Ploidy, Purity, id, solution_possible=NA ) {
+completeSeg = function( comb, ploidy, Purity, id, solutionPossible=NA ) {
 
 	comb$tcnMeanRaw <- comb$tcnMean
 
 	#calculate correct TCN with estimated ploidy and purity
-	D = Purity * Ploidy + 2 * ( 1 - Purity )
+	D = Purity * ploidy + 2 * ( 1 - Purity )
 	comb$tcnMean = (comb$tcnMean - ( 2 *( 1-Purity ))/D ) / (Purity/D)
 
 	fullPloidyLength <- sapply(unique(round(comb$tcnMean)), function(i) sum( as.numeric( comb$length[round(comb$tcnMean)==i] ) ) )
@@ -243,7 +243,7 @@ completeSeg = function( comb, Ploidy, Purity, id, solution_possible=NA ) {
 	rm(sel)
 #	fullPloidy <- which(tabulate(round(comb$tcnMean)) == max(tabulate(round(comb$tcnMean))) )
 #	if ( length(fullPloidy) > 1 ){
-#		tmp <- fullPloidy - Ploidy
+#		tmp <- fullPloidy - ploidy
 #		sel <- which( tmp == min(tmp) )
 #		fullPloidy <- fullPloidy[sel]
 #	}
@@ -503,26 +503,33 @@ completeSeg = function( comb, Ploidy, Purity, id, solution_possible=NA ) {
 	colnames(comb_out)[1] <- "#chromosome"
 
 
-	write.table(comb_out, qq("@{outDir}/@{id}_comb_pro_extra@{round(Ploidy, digits = 3)}_@{Purity}.txt"), sep = "\t", row.names = FALSE, quote = FALSE) 
+	write.table(comb_out, qq("@{outDir}/@{id}_comb_pro_extra@{round(ploidy, digits = 3)}_@{Purity}.txt"), sep = "\t", row.names = FALSE, quote = FALSE) 
 
 	important_cols <- c('#chromosome', 'start', 'end', 'length', 'tcnMeanRaw', 'tcnMean', 'crest', 'c1Mean', 'c2Mean', 'dhMean', 'dhMax', 'genotype', 'GNL', 'tcnNbrOfHets','minStart', 'maxStart', 'minStop', 'maxStop')
   	important_sub  <- comb_out[,important_cols]
   
-  	colnames(important_sub) <- c('#chromosome', 'start', 'end', 'length', 'covRatio', 'TCN', 'SV.Type', 'c1Mean', 'c2Mean', 'dhEst', 'dhSNPs',  'genotype', 'GNL', 'NbrOfHetSNPs','minStart', 'maxStart', 'minEnd', 'maxEnd' )
+	colnames(important_sub) <- sub("tcnMeanRaw", "covRatio", colnames(important_sub))
+	colnames(important_sub) <- sub("tcnMean", "TCN", colnames(important_sub))
+	colnames(important_sub) <- sub("crest", "SV.Type", colnames(important_sub))
+	colnames(important_sub) <- sub("dhMean", "dhEst", colnames(important_sub))
+	colnames(important_sub) <- sub("dhMax", "dhSNPs", colnames(important_sub))
+	colnames(important_sub) <- sub("tcnNbrOfHets", "NbrOfHetsSNPs", colnames(important_sub))
 	important_sub 	    <- format(important_sub, scientific = FALSE, trim = TRUE)
 
 	qual = sum( important_sub$GNL != 'sub', na.rm=TRUE) / sum(!is.na(important_sub$GNL))
-	importantFile = qq("@{outDir}/@{id}_most_important_info@{round(Ploidy, digits = 3)}_@{Purity}.txt")
+	importantFile = qq("@{outDir}/@{id}_most_important_info@{round(ploidy, digits = 3)}_@{Purity}.txt")
 
 	#change parameter names for json conversion output
 	normalContamination= 1-purity
 	goodnessOfFit=qual
+	ploidyFactor=ploidy
+	ploidy=fullPloidy
 	caller = "ACEseq"
 	gender = sex
-	tabFileForJson = qq("@{outDir}/@{id}_cnv_parameter_@{round(Ploidy, digits = 3)}_@{Purity}.txt")
-	write.table( data.frame( normalContamination, Ploidy, goodnessOfFit, gender, solution_possible ), tabFileForJson, row.names=FALSE, col.names=TRUE, quote=FALSE, sep='\t' )
+	tabFileForJson = qq("@{outDir}/@{id}_cnv_parameter_@{round(ploidy, digits = 3)}_@{Purity}.txt")
+	write.table( data.frame( normalContamination, ploidyFactor, ploidy, goodnessOfFit, gender, solutionPossible ), tabFileForJson, row.names=FALSE, col.names=TRUE, quote=FALSE, sep='\t' )
 
-	write.table(qq("#purity:@{Purity}\n#ploidy:@{Ploidy}\n#roundPloidy:@{fullPloidy}\n#fullPloidy:@{fullPloidy}\n#quality:@{qual}\n#assumed sex:@{sex}"), importantFile, col.names=FALSE, row.names=FALSE, quote=FALSE )
+	write.table(qq("#purity:@{Purity}\n#ploidy:@{ploidyFactor}\n#roundPloidy:@{fullPloidy}\n#fullPloidy:@{fullPloidy}\n#quality:@{qual}\n#assumed sex:@{sex}"), importantFile, col.names=FALSE, row.names=FALSE, quote=FALSE )
 	write.table( important_sub,
 		     importantFile,
 		     sep = "\t", row.names = FALSE, quote = FALSE, append=TRUE ) 
