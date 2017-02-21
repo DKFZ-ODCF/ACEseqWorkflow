@@ -449,30 +449,30 @@ generatePlots<- function(segments, selIdentical, mainCenter, covLeftHalf, covRig
             geom_point() + 
        	    ggtitle(qq("nbrOfHets< minNbrOfHets") ) + 
             scale_color_manual(values=c('red','blue'), name='nbrOfHets<5') +
-            geom_vline( x=c( log2(covLeftFull) ), col='red')+
-            geom_vline( x=c( log2(covRightFull) ), col='red' ) +
-            geom_vline( x=c( log2(covLeftHalf) ), col='blue')+
-            geom_vline( x=c( log2(covRightHalf) ), col='blue' ) +
+            geom_vline( xintercept=c( log2(covLeftFull) ), col='red')+
+            geom_vline( xintercept=c( log2(covRightFull) ), col='red' ) +
+            geom_vline( xintercept=c( log2(covLeftHalf) ), col='blue')+
+            geom_vline( xintercept=c( log2(covRightHalf) ), col='blue' ) +
             theme(legend.position="none")
 
   pSNPError <- ggplot(data=segments, aes(log2(tcnMean), dhMax) ) +
             geom_point() + 
 	    ggtitle(qq("errorSNP > distDH") ) + 
             scale_color_manual(values=c('red','blue'), name='errorSNP>distDH') +
-            geom_vline( x=c( log2(covLeftFull) ), col='red')+
-            geom_vline( x=c( log2(covRightFull) ), col='red' ) +
-            geom_vline( x=c( log2(covLeftHalf) ), col='blue')+
-            geom_vline( x=c( log2(covRightHalf) ), col='blue' ) +
+            geom_vline( xintercept=c( log2(covLeftFull) ), col='red')+
+            geom_vline( xintercept=c( log2(covRightFull) ), col='red' ) +
+            geom_vline( xintercept=c( log2(covLeftHalf) ), col='blue')+
+            geom_vline( xintercept=c( log2(covRightHalf) ), col='blue' ) +
             theme(legend.position="none")
 
   pError <- ggplot(data=segments, aes(log2(tcnMean), dhMax) ) +
             geom_point() + 
 	    ggtitle(qq("errorLength >distTcn & errorSNP > distDH") ) + 
             scale_color_manual(values=c('red','blue'), name='totalErr>totalDist' ) +
-            geom_vline( x=c( log2(covLeftFull) ), col='red')+
-            geom_vline( x=c( log2(covRightFull) ), col='red' ) +
-            geom_vline( x=c( log2(covLeftHalf) ), col='blue')+
-            geom_vline( x=c( log2(covRightHalf) ), col='blue' ) +
+            geom_vline( xintercept=c( log2(covLeftFull) ), col='red')+
+            geom_vline( xintercept=c( log2(covRightFull) ), col='red' ) +
+            geom_vline( xintercept=c( log2(covLeftHalf) ), col='blue')+
+            geom_vline( xintercept=c( log2(covRightHalf) ), col='blue' ) +
             theme(legend.position="none")
 
 
@@ -480,10 +480,10 @@ generatePlots<- function(segments, selIdentical, mainCenter, covLeftHalf, covRig
             geom_point() + 
 	    ggtitle( qq("errorLength>distTcn") ) + 
             scale_color_manual(values=c('red','blue'), name='neighbourMain' ) +
-            geom_vline( x=c( log2(covLeftFull) ), col='red')+
-            geom_vline( x=c( log2(covRightFull) ), col='red' ) +
-            geom_vline( x=c( log2(covLeftHalf) ), col='blue')+
-            geom_vline( x=c( log2(covRightHalf) ), col='blue' ) +
+            geom_vline( xintercept=c( log2(covLeftFull) ), col='red')+
+            geom_vline( xintercept=c( log2(covRightFull) ), col='red' ) +
+            geom_vline( xintercept=c( log2(covLeftHalf) ), col='blue')+
+            geom_vline( xintercept=c( log2(covRightHalf) ), col='blue' ) +
             theme(legend.position="none")
 
   if ( length(selIdentical) > 0 ){
