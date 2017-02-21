@@ -365,8 +365,8 @@ if (clustering_YN == "yes") {
 	clusterPlot <- ggplot( data.frame(cluster_matrix), aes(log2.tcnMean, dhMax, col=as.character(CM$cluster) ) )  +
 	  geom_point(size=1.7, alpha=0.8) +
 	  geom_point(data=data.frame(CM[['centers']]), aes(log2.tcnMean, dhMax), col='red', pch=3) +
-	  geom_vline(x=c(covRightNorm, covLeftNorm),size=0.4, col="black", alpha=0.8) +
-	  geom_vline(x=c(covRightFullNorm, covLeftFullNorm),size=0.4, col="red", alpha=0.8) +
+	  geom_vline(xintercept=c(covRightNorm, covLeftNorm),size=0.4, col="black", alpha=0.8) +
+	  geom_vline(xintercept=c(covRightFullNorm, covLeftFullNorm),size=0.4, col="red", alpha=0.8) +
 	  scale_color_manual(values=c(col[1:length(unique(CM$cluster))], "grey"), name="cluster" )
 	ggsave(qq("@{out}/@{pid}_cluster_cmeans.png"), clusterPlot, width = 10, height = 10, type='cairo')
 
@@ -431,8 +431,8 @@ if (clustering_YN == "yes") {
   
   clusterPlotRmOutlier  <- ggplot( data.frame(segAll.tmp), aes(log2(tcnMean), dhMax, col=as.factor(cluster) ) )  +
     geom_point(size=1.7, alpha=0.8) +
-    geom_vline(x=c(log2( covLeft) , log2(covRight) ), size=0.4, col="black", alpha=0.8) +
-    geom_vline(x=c(log2( covLeft -  covWidth), log2(covRight + covWidth) ),size=0.4, col="red", alpha=0.8) +
+    geom_vline(xintercept=c(log2( covLeft) , log2(covRight) ), size=0.4, col="black", alpha=0.8) +
+    geom_vline(xintercept=c(log2( covLeft -  covWidth), log2(covRight + covWidth) ),size=0.4, col="red", alpha=0.8) +
     scale_color_manual(values=c(col[1:(length(unique(segAll.tmp$cluster))-1)]),name="cluster" ) +
     geom_point(data=data.frame(segAll.tmp[is.na(segAll.tmp$cluster),]), aes(log2(tcnMean), dhMax), col='grey')
 	ggsave(qq("@{out}/@{pid}_cluster_cmeans_wo_outlier.png"), clusterPlotRmOutlier, width=10, height=10, type='cairo')
@@ -499,8 +499,8 @@ if (clustering_YN == "yes") {
   clusterPlotNewlog2 <- ggplot( data.frame(test_new), aes(log2(tcnMean), dhMax, col=as.factor(cluster) ) )  +
     geom_point(size=1.7, alpha=0.8) +
     geom_point(data=data.frame(test_new[is.na(test_new$cluster),]), aes(log2(tcnMean), dhMax), col='grey') +
-    geom_vline(x=c(log2( covLeft) , log2(covRight) ), size=0.4, col="black", alpha=0.8) +
-    geom_vline(x=c(log2( covLeft -  covWidth), log2(covRight + covWidth) ),size=0.4, col="red", alpha=0.8) +
+    geom_vline(xintercept=c(log2( covLeft) , log2(covRight) ), size=0.4, col="black", alpha=0.8) +
+    geom_vline(xintercept=c(log2( covLeft -  covWidth), log2(covRight + covWidth) ),size=0.4, col="red", alpha=0.8) +
     scale_color_manual(values=c(col[1:(length(unique(test_new$cluster))-1)]),name="cluster" )
   ggsave( qq("@{out}/@{pid}_cluster_cmeans_merged_log2.png"), clusterPlotNewlog2, width=10, height=10, type='cairo' )
 #	write.table(test, file = qq("@{out}/clustered_and_pruned_BIC.txt"), sep = "\t", row.names = FALSE, quote = FALSE )
