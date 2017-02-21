@@ -126,7 +126,7 @@ segments = getSegments(fit, simplify = TRUE)
 #round coordinates with .5 to closest integer (down for end, up dor start)
 if( any( segments$start == -Inf, na.rm=TRUE ) ){
 	selStart <- which( segments$start == -Inf )
-	segments$start[ selStart ] = 0
+	segments$start[ selStart ] = 1
 }
 
 if( any( segments$end == Inf, na.rm=TRUE ) ){
