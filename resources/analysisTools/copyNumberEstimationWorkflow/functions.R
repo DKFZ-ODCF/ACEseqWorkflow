@@ -2,37 +2,20 @@
 ################################################################################
 ## functions for purity_ploidy.R
 ################################################################################
-
-library(multicore)
 library(flux)
 
-
 # == title
-# parallel computing by chromosomes
+# computing by chromosomes
 #
 # == param
 # -chromosomes chromosome name
-# -threads     number of threads
 #
 # == value
 # character vector
-runTheStuff = function(segments, chromosomes, minLim, maxLim, threads = 1, averageCov, minCov) {
+runTheStuff = function(segments, chromosomes, minLim, maxLim, averageCov, minCov) {
 
   index = 1
-	k = list()
-	jobs = list()
-	jobsIndex = 0
-	
-	for (chr in chromosomes) {
-		cat("start chromosome:", chr, "\n")	
-		jobsIndex = jobsIndex+1
-		jobs[[jobsIndex]] = parallel(doItForOneChr(segments,chr, minLim, maxLim, averageCov, minCov), silent = FALSE)
-		if(jobsIndex == threads || chr == chromosomes[length(chromosomes)]) {
-			k[[index]] = collect(jobs, wait = TRUE)
-			index = index + 1
-			jobsIndex = 0
-		}
-	}
+	k = lapply(chromosomes, function(chr) doItForOneChr(segments,chr, minLim, maxLim, averageCov, minCov))
 
 	myPeaks2=c()
 	for(i in seq_along(k)) {
