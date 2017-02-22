@@ -37,7 +37,7 @@ fi
 mv ${tmpClusteredSeg} ${FILENAME_CLUSTERED_SEGMENTS}
 mv ${tmpSnpsOut} ${FILENAME_ALL_SNP_UPDATE2}
 
-$TABIX_BINARY -f -s 1 -b 3 -e 4 ${FILENAME_ALL_SNP_UPDATE2}
+$TABIX_BINARY -f -s 1 -b 2 -e 2 ${FILENAME_ALL_SNP_UPDATE2}
 
 if [[ "$?" != 0 ]]
 then
