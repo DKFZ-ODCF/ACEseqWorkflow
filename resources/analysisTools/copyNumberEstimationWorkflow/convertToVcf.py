@@ -80,12 +80,13 @@ def parse_header(infile):
 	sample = {}
 	for line in infile:
 		if line.startswith('#'):
-			line = line.lstrip('#').rstrip('\n')
-			line = line.split(':')
-			sample[line[0]]=line[1]
-		else:
-			colnames = line.rstrip('\n').split('\t')
-			break
+			if line.startswith('#chromosome'):
+				colnames = line.rstrip('\n').lstrip("#").split('\t')
+				break
+			else:
+				line = line.lstrip('#').rstrip('\n')
+				line = line.split(':')
+				sample[line[0]]=line[1]
 	return(sample, colnames)
 	
 
@@ -95,7 +96,7 @@ def vcf_line(file_vcf, line, alias, fullPloidy, sex, refField='N', qualField='.'
 	start = str(int( round(float(line['start']) ) ) ) #should be the higher number
 	end = int( round(float(line['end']) - 0.5 ) ) 	  #should be the lower number
 	TCN = str( int( round (float(line['TCN']) ) ) )
-	intervalls = [ getCoord(start, line['minStart']), getCoord(start, line['maxStart']), getCoord(end, line['minEnd']), getCoord(end, line['maxEnd']) ]
+	intervalls = [ getCoord(start, line['minStart']), getCoord(start, line['maxStart']), getCoord(end, line['minStop']), getCoord(end, line['maxStop']) ]
 	info = "END=%i;"% (end)
 	info = info + "STARTINT=[%s,%s];ENDINT=[%s,%s];"% (intervalls[0], intervalls[1], intervalls[2], intervalls[3])
 	info = info + "CNVLEN=%s;TCNexact=%.2f;"% ( int(round(float(line['length']))), float(line['TCN']) )

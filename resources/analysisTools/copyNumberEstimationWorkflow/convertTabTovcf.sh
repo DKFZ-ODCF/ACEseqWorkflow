@@ -6,22 +6,22 @@ source ${CONFIG_FILE}
 
 cd ${aceseqOutputDirectory}
 
-name=${FILE_MOST_IMPORTANT_INFO_SEG_PRE}
-find -name "$name*" | while read line
+cat ${FILENAME_PURITY_PLOIDY} | grep -v ploidy | while read line
 do 
-	purity_ploidy=`echo $line | sed "s/\/$name//" | sed 's/\.txt//' `
+	purity_ploidy=`echo $line | cut -d " " -f 2,3 | sed 's/ /_/' `
 	echo $purity_ploidy
-	tmp_file_segment_vcf=${FILE_SEGMENT_VCF_PRE}.tmp
+	tmp_file_segment_vcf=${FILE_SEGMENT_VCF_PRE}_${purity_ploidy}.tmp
+	infoFile=${FILE_MOST_IMPORTANT_INFO_SEG_PRE}${purity_ploidy}${FILE_MOST_IMPORTANT_INFO_SEG_POST}
 	targetFile=${FILE_SEGMENT_VCF_PRE}${purity_ploidy}${FILE_SEGMENT_VCF_POST}
 
 	$PYTHON_BINARY ${TOOL_CONVERT_TO_VCF} \
-		--file ${line} \
+		--file ${infoFile} \
 		--out  ${tmp_file_segment_vcf}
 #		--id   ${pid} \ #taken out for pancan
 
 	if [[ $? != 0 ]]
 	then
-		echo "Something went while creating the gc file for ${purity_ploidy}...\n\n"
+		echo "Something went while creating the vcf file for ${purity_ploidy}...\n\n"
 		exit 2
 	fi
 
@@ -30,6 +30,7 @@ do
 
 	${BGZIP_BINARY} -f ${targetFile}
 	$TABIX_BINARY -p vcf ${targetFile}.gz
+	rm $tmp_file_segment_vcf
 done
 
 if [[ $? != 0 ]]
