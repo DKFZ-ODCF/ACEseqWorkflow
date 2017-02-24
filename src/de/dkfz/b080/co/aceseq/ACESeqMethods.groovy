@@ -98,6 +98,10 @@ public final class ACESeqMethods {
         return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_ADD_HAPLOTYPES_TO_SNP_FILE, mergedAndFilteredSNPFile, phasedGenotypes, phasedGenotypeX);
     }
 
+    public static TextFile createControlBafPlot(TextFile haplotypedSNPFile , TextFile genderFile) {
+        return (TextFile) GenericMethod.callGenericTool( ACEseqConstants.TOOL_CREATE_CONTROL_BAF_PLOTS, haplotypedSNPFile, genderFile );
+    }
+
     public static TextFile replaceControl(TextFile genderFile) {
         return (TextFile) GenericMethod.callGenericTool("replaceBadControl", genderFile);
     }
@@ -174,13 +178,13 @@ public final class ACESeqMethods {
     }
 
     @ScriptCallingMethod
-    public static TextFile generatePlots(TextFile segments, TextFile snpsFile, TextFile svPoints, TextFile purityPloidyFile, TextFile genderFile) {
-        return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_GENERATE_RESULTS_AND_PLOTS, segments, snpsFile, svPoints, purityPloidyFile, genderFile);
+    public static Tuple2<TextFile, TextFile> generatePlots(TextFile segments, TextFile snpsFile, TextFile svPoints, TextFile purityPloidyFile, TextFile genderFile) {
+        return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_GENERATE_RESULTS_AND_PLOTS, segments, snpsFile, svPoints, purityPloidyFile, genderFile);
     }
 
     @ScriptCallingMethod
-    public static TextFile convertToVcf(TextFile checkpointFile) {
-        return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_GENERATE_VCF_FROM_TAB, checkpointFile);
+    public static TextFile convertToVcf(TextFile purityPloidyFile, TextFile checkpointFile) {
+        return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_GENERATE_VCF_FROM_TAB, purityPloidyFile, checkpointFile);
     }
 
 }
