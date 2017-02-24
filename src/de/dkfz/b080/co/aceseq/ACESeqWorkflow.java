@@ -65,7 +65,9 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
 	        imputedGenotypeByChromosome = ACESeqMethods.imputeGenotypes(bamControlMerged);
         	phasedGenotypeX = ACESeqMethods.imputeGenotypeX(annotationResult.getGenderFile(), bamControlMerged);
 	        haplotypedSNPFile = ACESeqMethods.addHaploTypes(mergedAndFilteredSNPFile, imputedGenotypeByChromosome.getPhasedSnpFiles(), phasedGenotypeX.value0);
+        	TextFile baffile = ACESeqMethods.createControlBafPlot(haplotypedSNPFile, annotationResult.getGenderFile() );
 	}
+
 
         Tuple2<TextFile, TextFile> breakpoints = ACESeqMethods.pscbsGaps(haplotypedSNPFile, correctedWindowFile.value0, annotationResult.getGenderFile());
         Tuple2<TextFile, TextFile> mergedSvs = null;
@@ -84,8 +86,8 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         TextFile clusteredSnps = ACESeqMethods.segsToSnpDataPruned(clusteredSegments.value0, clusteredSegments.value1);
         TextFile peakSegments = ACESeqMethods.estimatePeaks(clusteredSegments.value0, clusteredSnps, annotationResult.getGenderFile());
         TextFile purityPloidy = ACESeqMethods.estimatePurityPloidy(peakSegments, annotationResult.getGenderFile());
-        TextFile results = ACESeqMethods.generatePlots(peakSegments, clusteredSnps, mergedSvs.value1, purityPloidy, annotationResult.getGenderFile());
-        TextFile finalVcf = ACESeqMethods.convertToVcf(results);
+        Tuple2<TextFile, TextFile> results = ACESeqMethods.generatePlots(peakSegments, clusteredSnps, mergedSvs.value1, purityPloidy, annotationResult.getGenderFile());
+        TextFile finalVcf = ACESeqMethods.convertToVcf(purityPloidy,results.value0);
 
         return true;
     }
