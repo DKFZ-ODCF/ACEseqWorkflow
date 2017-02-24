@@ -45,17 +45,10 @@ public class CoverageWindowsFileGroupByChromosome extends FileGroup {
         filesToCheck.add(genderFile);
 
         ExecutionContext run = getExecutionContext();
-<<<<<<< HEAD
-        Map<String, Object> parameters = run.getDefaultJobParameters(COConstants.TOOL_ANNOTATE_COV_WIN);
-        parameters.put("FILENAME_SEX", genderFile.getAbsolutePath());
-
-        Job job = new Job(run, run.createJobName((BaseFile)getFilesInGroup().get(0), COConstants.TOOL_ANNOTATE_COV_WIN, true), COConstants.TOOL_ANNOTATE_COV_WIN, null, parameters, (List<BaseFile>)getFilesInGroup(), filesToCheck);
-=======
         Map<String, Object> parameters = run.getDefaultJobParameters(ACEseqConstants.TOOL_ANNOTATE_COV_WIN);
         parameters.put("FILENAME_SEX", genderFile.getAbsolutePath());
 
         Job job = new Job(run, run.createJobName((BaseFile)getFilesInGroup().get(0), ACEseqConstants.TOOL_ANNOTATE_COV_WIN, true), ACEseqConstants.TOOL_ANNOTATE_COV_WIN, null, parameters, (List<BaseFile>)getFilesInGroup(), filesToCheck);
->>>>>>> arcpatch-D340
         JobResult jobResult = job.run();
         for (BaseFile baseFile : filesToCheck) {
             baseFile.setCreatingJobsResult(jobResult);
