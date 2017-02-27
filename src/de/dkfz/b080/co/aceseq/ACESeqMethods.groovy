@@ -47,7 +47,7 @@ public final class ACESeqMethods {
 	Map<String, UnphasedGenotypeFile> mapOfFiles = [:]
 	mapOfFiles += unphasedGenotypeFiles.getFiles();
 	mapOfFiles.remove("X")
-	IndexedFileObjects indexedFileObjects = ParallelizationHelper.runParallel(ACEseqConstants.TOOL_IMPUTE_GENOTYPES_NOMPILEUP, new UnphasedGenotypeFileGroupByChromosome(mapOfFiles.keySet() as List<String>, mapOfFiles, unphasedGenotypeFiles.getExecutionContext()), null, "PARM_CHR_INDEX=");
+	IndexedFileObjects indexedFileObjects = runParallel(ACEseqConstants.TOOL_IMPUTE_GENOTYPES_NOMPILEUP, new UnphasedGenotypeFileGroupByChromosome(mapOfFiles.keySet() as List<String>, mapOfFiles, unphasedGenotypeFiles.getExecutionContext()), null, "PARM_CHR_INDEX=");
         return new ImputeGenotypeByChromosome(indexedFileObjects, unphasedGenotypeFiles.getExecutionContext());
     }
 
@@ -185,6 +185,17 @@ public final class ACESeqMethods {
     @ScriptCallingMethod
     public static TextFile convertToVcf(TextFile purityPloidyFile, TextFile checkpointFile) {
         return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_GENERATE_VCF_FROM_TAB, purityPloidyFile, checkpointFile);
+    }
+
+    public static IndexedFileObjects runParallel( String toolID, IndexedFileObjects fileGroup, BaseFile otherFile, String indexParameterName) {
+        List<String> indices = fileGroup.getIndices();
+        Map<String, FileObject> map = new LinkedHashMap<>();
+
+        //First one executes locally or via ssh but without a cluster system.
+        def stream = JobManager.getInstance().executesWithoutJobSystem() ? indices.parallelStream() : indices.stream();
+        stream.each{String index -> ParallelizationHelper.callWithIndex(toolID, index, indexParameterName, map, (BaseFile) fileGroup.getIndexedFileObjects().get(index), otherFile)};
+
+        return new IndexedFileObjects(indices, map, fileGroup.getExecutionContext());
     }
 
 }

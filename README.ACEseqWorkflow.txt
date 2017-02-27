@@ -13,6 +13,12 @@ runWithoutControl	    false Run analysis with matching control and estimate cont
 
 == Changelist
 
+* Version update to 1.2.6
+
+- runparallel for impute moved from COWorkflows to ACEseqMethods.groovy
+
+* Version update to 1.2.1
+
 - enable BAF plots as extra step, that is only run for paired workflow and only writes down checkpoint
 - enable json with quality parameters for closest to diploid solution, should be read out by otp, file noted down in config.xml
 - enable upgrade to R-3.3.1, R-2.15.0 is only working with exception (pscbs_all_R_2.15.R must be redefined as tool and path to pscbs lib should be given)
