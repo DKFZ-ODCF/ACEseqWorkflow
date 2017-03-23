@@ -1,6 +1,7 @@
 require(ggbio)
 require(ggplot2)
 require(gridExtra)
+require(grid)
 
 #plot TCNs
 #chr is the chromosome number
