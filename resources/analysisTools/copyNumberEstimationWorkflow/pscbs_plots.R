@@ -111,10 +111,11 @@ plotChromosomes = function (chrom, dat, comb,  pur, ploi , roundPloi, crestPoint
 	X = which( (ratio$betaN > 0.3) & (ratio$betaN < 0.7) )
 	p3 <- plotRawBAF( ratio[X,], seg=segs, chrL ) 
 
-	p <- arrangeGrob( p1, p2, p3 , main=qq("@{ID}_chr_@{chrom} Ploidy=@{roundPloi}, corr=@{round(ploi,digits=3)}, Tumor_cell_content=@{round(pur,digits=3)}") ) 
+        plotTitle <- textGrob( qq("@{ID}_chr_@{chrom} Ploidy=@{roundPloi}, corr=@{round(ploi,digits=3)}, Tumor_cell_content=@{round(pur,digits=3)}") )
+        p = arrangeGrob(plotTitle, p1, p2, p3, nrow=4, heights=c(1,7,7,7))
 
 	fileName=paste0(outfile,"_",round(ploi,digits=3),"extra_",round(pur,digits=3),"_",chrom,".png")
-	ggsave( fileName, p, width=15, height=9, type='cairo')
+        ggplot2::ggsave( fileName, p, width=15, height=9, type='cairo') 
 
 }  
 
@@ -181,10 +182,11 @@ plotAll <- function(dat, comb, ploi, pur, roundPloi, chrCount) {
 	p3 <- p3 + vlines + labs(x=NULL) + theme( axis.text.x=element_blank() )
 
 	#combine all plots into single object and save
-	p <- arrangeGrob( p1, p2, p3 , main=qq("@{ID}_Ploidy=@{roundPloi}, corr=@{round(ploi,digits=3)}, Tumor_cell_content=@{round(pur,digits=3)}, sex=@{sex}") ) 
-	fileName= paste0( outfile, "_", round(ploi,digits=3), "_", round(pur,digits=3), "_ALL", ".png" )
+        plotTitle <- textGrob( qq("@{ID}_Ploidy=@{roundPloi}, corr=@{round(ploi,digits=3)}, Tumor_cell_content=@{round(pur,digits=3)}, sex=@{sex}"))
+        p = arrangeGrob(plotTitle, p1, p2, p3, nrow=4, heights=c(1,7,7,7))
 
-	ggsave( fileName, width=20, height=12, p , type='cairo')
+	fileName= paste0( outfile, "_", round(ploi,digits=3), "_", round(pur,digits=3), "_ALL", ".png" )
+        ggplot2::ggsave( fileName, p, width=15, height=9, type='cairo') 
 
 }
 
