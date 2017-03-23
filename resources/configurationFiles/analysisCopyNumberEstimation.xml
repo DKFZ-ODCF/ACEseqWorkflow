@@ -125,15 +125,15 @@
         <cvalue name='min_cluster_number' value='1' type="integer"/>
         <cvalue name='min_num_SNPs' value='15' type="integer"/>
         <cvalue name='min_membership' value='0.8' type="float"/>
-        <cvalue name='min_distance' value='0.05' type="integer"/>
+        <cvalue name='min_distance' value='0.05' type="float"/>
         <cvalue name='haplogroupFilePrefix' value='haploblocks_chr' type="string"/>
         <cvalue name='haplogroupFileSuffix' value='txt' type="string"/>
         <cvalue name='haplogroupFilePath' value='${imputeOutputDirectory}/${haplogroupFilePrefix}' type="path"/>
         <cvalue name='GENETIC_MAP_FILE' value="${hg19DatabaseIMPUTEDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/genetic_map_chr${CHR_NAME}_combined_b37.txt" type="path"/>
 
         <!--estimatePurityPloidy Opts-->
-        <cvalue name='minLim' value='0.47' type="integer"/>
-        <cvalue name='maxLim' value='0.53' type="integer"/>
+        <cvalue name='minLim' value='0.47' type="float"/>
+        <cvalue name='maxLim' value='0.53' type="float"/>
 
         <!--estimatePurityPloidy Opts-->
         <cvalue name='min_length_purity' value='1000000' type="integer"/>
