@@ -275,8 +275,8 @@
                 <rset size="l" memory="0.2" cores="1" nodes="1" walltime="5"/>
             </resourcesets>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SNP_POSITIONS_WG_FAKE"/>
-            <output type="filegroup" typeof="de.dkfz.roddy.knowledge.files.GenericFileGroup" scriptparameter="FILENAME_UNPHASED_GENOTYPE" passas="array"/>
-        </tool>
+            <output type="filegroup" typeof="UnphasedGenotypeFileGroupByChromosome" fileclass="UnphasedGenotypeFile" scriptparameter="FILENAME_UNPHASED_GENOTYPE" passas="array"/>
+    </tool>
 
         <tool name="imputeGenotypesMeta" value="impute2_MetaScript.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
