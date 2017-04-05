@@ -75,7 +75,7 @@ for f in files:
 
 		if line['svtype'] == 'INV' or line['svtype'] == 'DUP' or line['svtype'] == 'DEL':
 
-			line["LENGTH"] = str(int(line["start2"])-int(line["start1"])+1)
+			line["LENGTH"] = str(abs(int(line["start2"])-int(line["start1"]))+1)
 
 			if( int(line["LENGTH"]) >= args.DDI_length and "chrom1" in line ):
 
