@@ -13,9 +13,16 @@ runWithoutControl	    false Run analysis with matching control and estimate cont
 
 == Changelist
 
+* Version update to 1.2.6-*
+
+- bugfix allowing coordinates for chrom2 in SV file to be smaller than chrom1 coordinates
+- bugfix allowing chrom1 being decoy chromosome in case chrom2 is autosome|X|Y
+- bugfix plots using print and ggplot2:ggsave to generate plots
+
 * Version update to 1.2.6
 
 - runparallel for impute moved from COWorkflows to ACEseqMethods.groovy
+- sort most_important_info and comb_pro_extra file
 
 * Version update to 1.2.1
 
