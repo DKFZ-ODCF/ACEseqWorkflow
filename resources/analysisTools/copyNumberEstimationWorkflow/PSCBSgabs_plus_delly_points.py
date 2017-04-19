@@ -94,7 +94,8 @@ for f in files:
 			line["chrom1"] = line["chrom1"].replace( "chr", "" ).replace( "X", "23" ).replace("Y", "24" )
 			line["chrom2"  ] = line["chrom2"  ].replace( "chr", "" ).replace( "X", "23" ).replace("Y", "24" )
 				
-			if( line["chrom1"] in [ str(i) for i in range( 1, 24+1 ) ] ): # and
+#			if( line["chrom1"] in [ str(i) for i in range( 1, 24+1 ) ] ): # and
+			if( line["chrom1"] in [ str(i) for i in range( 1, 24+1 ) ] or line["chrom2"] in [ str(i) for i in range( 1, 24+1 ) ] ): # decoy can be first or second chromosome
 #			    line["chrom2"  ] in [ str(i) for i in range( 1, 24+1 ) ] ):
 
 				if line["chrom1"] != line["chrom2"]:
@@ -106,7 +107,8 @@ for f in files:
 					sv_out.write( "%s\t%i\tNA\tNA\t%s\t%s\t%i\t%s\n"% (line["chrom2"], int(line["start2"])+1, line["SV_TYPE"], line["chrom1"], int(line["start1"])+1, line.get(selCol, "NA")) )
 
 
-					breakpoints += [ ( str(line["chrom1"]), int(line["start1"])+1 ) ]
+					if ( line["chrom1"] in [ str(i) for i in range( 1, 24+1 ) ] ):
+						breakpoints += [ ( str(line["chrom1"]), int(line["start1"])+1 ) ]
 
 					#don't add second breakpoint to breakpoint file if it maps to decoy
 					if ( line["chrom2"] in [ str(i) for i in range( 1, 24+1 ) ] ):
