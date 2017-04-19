@@ -150,7 +150,7 @@ p <- ggplot( data=completeTable, aes(x=betaT, y=..scaled..), colour='red') + geo
 p <- p + geom_density(aes(x=betaN, y=..scaled..), colour='blue')
 p <- p + scale_colour_manual( name=c("Tumor","Normal") , breaks=c('betaT', 'betaN'), values=c('red','blue') )
 p <- p + ggtitle("control plots of betaT and betaN") + ylab("scaled density")
-ggsave(file_beta, p, width=6, height=6, units='cm')
+ggplot2::ggsave(file_beta, p, width=6, height=6, units='cm')
 
 #PSCBS
 cat("PSCBS\n")

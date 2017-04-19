@@ -368,7 +368,7 @@ if (clustering_YN == "yes") {
 	  geom_vline(xintercept=c(covRightNorm, covLeftNorm),size=0.4, col="black", alpha=0.8) +
 	  geom_vline(xintercept=c(covRightFullNorm, covLeftFullNorm),size=0.4, col="red", alpha=0.8) +
 	  scale_color_manual(values=c(col[1:length(unique(CM$cluster))], "grey"), name="cluster" )
-	ggsave(qq("@{out}/@{pid}_cluster_cmeans.png"), clusterPlot, width = 10, height = 10, type='cairo')
+	ggplot2::ggsave(qq("@{out}/@{pid}_cluster_cmeans.png"), clusterPlot, width = 10, height = 10, type='cairo')
 
 	minTcnMean <- covLeftNorm
 	maxTCNmean <- covRightNorm
@@ -435,7 +435,7 @@ if (clustering_YN == "yes") {
     geom_vline(xintercept=c(log2( covLeft -  covWidth), log2(covRight + covWidth) ),size=0.4, col="red", alpha=0.8) +
     scale_color_manual(values=c(col[1:(length(unique(segAll.tmp$cluster))-1)]),name="cluster" ) +
     geom_point(data=data.frame(segAll.tmp[is.na(segAll.tmp$cluster),]), aes(log2(tcnMean), dhMax), col='grey')
-	ggsave(qq("@{out}/@{pid}_cluster_cmeans_wo_outlier.png"), clusterPlotRmOutlier, width=10, height=10, type='cairo')
+	ggplot2::ggsave(qq("@{out}/@{pid}_cluster_cmeans_wo_outlier.png"), clusterPlotRmOutlier, width=10, height=10, type='cairo')
   
   segAll.tmp[keep,]$cluster[is.na(segAll.tmp[keep,]$cluster)] <- "NA"
  
@@ -502,7 +502,7 @@ if (clustering_YN == "yes") {
     geom_vline(xintercept=c(log2( covLeft) , log2(covRight) ), size=0.4, col="black", alpha=0.8) +
     geom_vline(xintercept=c(log2( covLeft -  covWidth), log2(covRight + covWidth) ),size=0.4, col="red", alpha=0.8) +
     scale_color_manual(values=c(col[1:(length(unique(test_new$cluster))-1)]),name="cluster" )
-  ggsave( qq("@{out}/@{pid}_cluster_cmeans_merged_log2.png"), clusterPlotNewlog2, width=10, height=10, type='cairo' )
+  ggplot2::ggsave( qq("@{out}/@{pid}_cluster_cmeans_merged_log2.png"), clusterPlotNewlog2, width=10, height=10, type='cairo' )
 #	write.table(test, file = qq("@{out}/clustered_and_pruned_BIC.txt"), sep = "\t", row.names = FALSE, quote = FALSE )
 
   combi <- test_new
@@ -526,7 +526,7 @@ if (clustering_YN == "yes") {
       pChr2 <- pChr2 + hlinesDH
       pChr2 <- pChr2 + labs(x=NULL) + theme( axis.text.x=element_blank() )
       pC <- arrangeGrob(pChr1,pChr2)
-      ggsave( paste0(out, "/", pid,"_chr", chr,".pdf"), pC, width=28,height=14 )
+      ggplot2::ggsave( paste0(out, "/", pid,"_chr", chr,".pdf"), pC, width=28,height=14 )
     }  
   }
   
@@ -566,7 +566,7 @@ if (clustering_YN == "yes") {
   p2 <- p2 + hlinesDH
   p2 <- p2 + vlines + labs(x=NULL) + theme( axis.text.x=element_blank() )
   p <- arrangeGrob(p1,p2)
-  ggsave(paste0(out, "/", pid, "_colored_segments_cluster.pdf"), p,width=28,height=14,units='cm' ) 
+  ggplot2::ggsave(paste0(out, "/", pid, "_colored_segments_cluster.pdf"), p,width=28,height=14,units='cm' ) 
  # }
 
 
