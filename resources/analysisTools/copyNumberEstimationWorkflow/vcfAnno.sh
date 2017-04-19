@@ -36,6 +36,8 @@ fi
 
 mv $tmp_sex_file ${FILENAME_SEX}
 
+declare -a CHROMOSOME_INDICES="$CHROMOSOME_INDICES"
+
 for CHR_NR in "${CHROMOSOME_INDICES[@]}"
  do
 
