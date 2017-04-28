@@ -32,7 +32,7 @@ plotTCN = function (chromosome, ratio, seg, Ploidy, Purity, fullPloidy, chrLen, 
 		# SNPs as data points, colored according to gain, loss and neutral
 		p <- ggplot(environment=environment())
 		if(nrow(ratio)>1){
-		  p <- p + geom_point( data=ratio[ seq(1 ,nrow(ratio), 7), ], aes( x=SNP, y=copyT, col=GNL ), pch=16, cex=0.1 ) +
+		  p <- p + geom_point( data=ratio[ seq(1 ,nrow(ratio), 7), ], aes( x=SNP, y=copyT, col=GNL ), pch=16, cex=0.02 ) +
 					colScale + theme_bw()
 		}
 		# allele specific and total copy numbers: c1Mean, c2Mean and tcnMean
@@ -160,7 +160,7 @@ plotRawBAF <- function(ratio, seg=NULL, chrLen, plots='single', p=NULL){
 		# BAF values
 		p <-  ggplot(environment=environment())
 		if (nrow(ratio) >0){
-			p <- p + geom_point( data=ratio, aes( SNP, betaT, col=as.character(haplotype)), pch=16, cex=0.1) 
+			p <- p + geom_point( data=ratio, aes( SNP, betaT, col=as.character(haplotype)), pch=16, cex=0.02) 
 		}
 		# labs, scales etc.
 		p <- p + geom_hline(yintercept=c(0, 0.2, 0.4, 0.6, 0.8, 1), col="#C0C0C0", lty="dotted", lwd=0.5)
