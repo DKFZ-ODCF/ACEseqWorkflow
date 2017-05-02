@@ -1,7 +1,8 @@
 package de.dkfz.b080.co.aceseq;
 
-import de.dkfz.b080.co.common.WorkflowUsingMergedBams;
+import de.dkfz.b080.co.common.*;
 import de.dkfz.b080.co.files.*;
+import de.dkfz.roddy.config.*;
 import de.dkfz.roddy.core.ExecutionContext;
 import de.dkfz.roddy.knowledge.files.Tuple2;
 import de.dkfz.roddy.knowledge.files.Tuple3;
@@ -23,6 +24,9 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         boolean runMetaCNVGeneration = context.getConfiguration().getConfigurationValues().getBoolean("runMetaCNVGeneration", false);
         boolean runWithFakeControl = context.getConfiguration().getConfigurationValues().getBoolean("runWithFakeControl", false);
         boolean runWithoutControl = context.getConfiguration().getConfigurationValues().getBoolean("runWithoutControl", false);
+        
+        context.getConfiguration().getConfigurationValues().add(new ConfigurationValue("tumorSample", ((COFileStageSettings)_bamTumorMerged.getFileStage()).getSample().getName()));
+        context.getConfiguration().getConfigurationValues().add(new ConfigurationValue("controlSample", ((COFileStageSettings)_bamControlMerged.getFileStage()).getSample().getName()));
 
         CnvSnpGeneratorResultByType resultByType = null;
         if (runMetaCNVGeneration) {
