@@ -9,7 +9,7 @@
         <cvalue name="RSCRIPT_BINARY" value="Rscript-3.3.1"/>
         <cvalue name="test" value="" type="string" description="value to be set to 'test' in case this is run on a smaller not WGS bamfile to speed up testing, required for impute2"/>
 
-        <cvalue name='aceseqOutputDirectory' value='${outputAnalysisBaseDirectory}/ACEseq' type="path"/>
+        <cvalue name='aceseqOutputDirectory' value='${outputAnalysisBaseDirectory}/ACEseq_${tumorSample}' type="path"/>
         <cvalue name='dellyOutputDirectory' value='${outputAnalysisBaseDirectory}/delly' type="path"/>
         <cvalue name='crestOutputDirectory' value='${outputAnalysisBaseDirectory}/crest' type="path"/>
         <cvalue name='cnvSnpOutputDirectory' value='${aceseqOutputDirectory}/cnv_snp' type="path"/>
