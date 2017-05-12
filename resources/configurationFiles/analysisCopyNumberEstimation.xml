@@ -55,7 +55,7 @@
         <cvalue name='defaultMergedBamSuffix' value='${mergedBamSuffix}' type="string" description="The default suffix for merged bam files when they are created by Roddy." />
 
         <cvalue name='aceseqOutputDirectory' value='${outputAnalysisBaseDirectory}/ACEseq_${tumorSample}' type="path"/>
-        <cvalue name='svOutputDirectory' value='${outputAnalysisBaseDirectory}/SOPHIA' type="path"/>
+        <cvalue name='svOutputDirectory' value='${outputAnalysisBaseDirectory}/SOPHIA_${tumorSample}_${controlSample}' type="path"/>
         <cvalue name='crestOutputDirectory' value='${outputAnalysisBaseDirectory}/crest' type="path"/>
         <cvalue name='cnvSnpOutputDirectory' value='${aceseqOutputDirectory}/cnv_snp' type="path"/>
         <cvalue name='imputeOutputDirectory' value='${aceseqOutputDirectory}/phasing' type="path"/>
