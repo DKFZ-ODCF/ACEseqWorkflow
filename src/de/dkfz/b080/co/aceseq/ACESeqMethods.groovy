@@ -33,11 +33,6 @@ public final class ACESeqMethods {
         return new CnvSnpGeneratorResultByType(indexedFileObjects, controlBam.getExecutionContext());
     }
 
-    public static CnvSnpGeneratorResultByType generateCNVSNPsMeta(BamFile controlBam, BamFile tumorBam) {
-        return (CnvSnpGeneratorResultByType) GenericMethod.callGenericTool("cnvSnpGenerationMeta", tumorBam, controlBam);
-    }
-
-
     public static ImputeGenotypeByChromosome imputeGenotypes(BamFile controlBam) {
         IndexedFileObjects indexedFileObjects = ParallelizationHelper.runParallel(COConstants.CVALUE_AUTOSOME_INDICES, ACEseqConstants.TOOL_IMPUTE_GENOTYPES, controlBam, null, "PARM_CHR_INDEX=");
         return new ImputeGenotypeByChromosome(indexedFileObjects, controlBam.getExecutionContext());
