@@ -54,7 +54,6 @@ cat(qq("min_distance: @{min_distance}\n\n"))
 cat(qq("min_membership: @{min_membership}\n\n"))
 cat(qq("chrLengthFile: @{chrLengthFile}\n\n"))
 cat(qq("gcCovWidthFile: @{gcCovWidthFile}\n\n"))
-cat(qq("min_membership: @{min_membership}\n\n"))
 cat("\n")
 
 
