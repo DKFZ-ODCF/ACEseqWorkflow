@@ -36,7 +36,7 @@
         <cvalue name="MAPPABILITY_FILE" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/UCSC/wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz" type="path"/>
         <cvalue name="CHROMOSOME_LENGTH_FILE" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/stats/chrlengths.txt" type="path"/>
         <cvalue name="REPLICATION_TIME_FILE" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/ENCODE/ReplicationTime_10cellines_mean_10KB.Rda" type="path"/>
-        <cvalue name="GC_CONTENT_FILE" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/stats/hg19_GRch37_100genomes_gc_content_10kb.txt" type="path"/>
+        <cvalue name="GC_CONTENT_FILE" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/stats/hg19_GRch37_100genomes_gc_content_10kb.txt" type="path"/>
 
 	<!-- Impute -->
         <cvalue name='imputeBaseDirectory' value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/1000genomes/IMPUTE/" type="path"/>
@@ -594,8 +594,7 @@
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="crestTranslocFileTag" pattern='${crestOutputDirectory}/tumor_${pid}.${cvalue,name="crestTransSuffix",default="TX"}'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="svPoints" pattern='${aceseqOutputDirectory}/${pid}_sv_points.txt'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeDelly" selectiontag="dellyFileTag"
-                  pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv '/>
+        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeDelly" selectiontag="dellyFileTag" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeDelly" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeDelly" selectiontag="svPoints" pattern='${aceseqOutputDirectory}/${pid}_sv_points.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.getSegmentAndGetSnps" selectiontag="segments" pattern='${aceseqOutputDirectory}/${pid}_fit.txt'/>
