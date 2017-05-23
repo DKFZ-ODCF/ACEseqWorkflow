@@ -20,7 +20,7 @@ source ${CONFIG_FILE}
 
 ${PYTHON_BINARY} "${TOOL_MERGE_FILTER_CNV}" \
             --inputpath    "${SNP_VCF_CNV_PATH}" \
-            --inputsuffix  ".${VCF_SUFFIX}" \
+            --inputsuffix  ".${CNV_ANNO_SUFFIX}" \
             --output       "${FILENAME_COV_WINDOWS_WG}" \
 	        --coverage     ${cnv_min_coverage} \
             --mappability  ${mapping_quality} \
