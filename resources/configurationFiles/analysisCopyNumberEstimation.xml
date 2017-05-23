@@ -607,7 +607,7 @@
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.estimatePeaks" pattern='${aceseqOutputDirectory}/${pid}_combi_level.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.estimatePurityPloidy" pattern='${aceseqOutputDirectory}/${pid}_ploidy_purity_2D.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.generatePlots" selectiontag="checkpoint" pattern='${aceseqOutputDirectory}/checkpointPlots.txt'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.generatePlots" selectiontag="json" pattern='${aceseqOutputDirectory}/${pid}_cnv_parameter.json'/>
+        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.generatePlots" selectiontag="json" pattern='${aceseqOutputDirectory}/cnv_${pid}_parameter.json'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.convertToVcf" pattern='${aceseqOutputDirectory}/checkpointVcf.txt'/>
 
     </filenames>
