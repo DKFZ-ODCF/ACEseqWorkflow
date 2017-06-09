@@ -7,7 +7,7 @@ import de.dkfz.roddy.knowledge.methods.GenericMethod;
 import java.util.LinkedList;
 import java.util.List;
 
-import static de.dkfz.b080.co.files.COConstants.TOOL_MERGE_AND_FILTER_CNV_FILES;
+import static de.dkfz.b080.co.aceseq.ACEseqConstants.TOOL_MERGE_AND_FILTER_CNV_FILES;
 
 /**
  * Created by kleinhei on 6/16/14.

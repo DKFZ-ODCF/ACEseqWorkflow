@@ -1,4 +1,5 @@
 package de.dkfz.b080.co.files;
+import de.dkfz.b080.co.aceseq.*;
 
 import de.dkfz.roddy.execution.jobs.ScriptCallingMethod;
 import de.dkfz.roddy.knowledge.files.FileGroup;
@@ -25,7 +26,7 @@ public class SNPPositionFileGroupByChromosome extends FileGroup {
     @ScriptCallingMethod
     public TextFile mergeAndFilter() {
         BamFile bf = (BamFile)(files.get("1")).getParentFiles().get(0); //Should be merged tumor bam file
-        TextFile file = GenericMethod.callGenericTool(COConstants.TOOL_MERGE_AND_FILTER_SNP_FILES, bf, this);
+        TextFile file = GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_AND_FILTER_SNP_FILES, bf, this);
         return file;
     }
 }
