@@ -13,7 +13,9 @@ runWithoutControl	    false Run analysis with matching control and estimate cont
 
 == Changelist
 
-* Version update to 1.2.7-1/2
+
+
+* Version update to 1.2.8
 - comb_pro_extra and most_important_info contain X and Y
 - removed GNL column
 - new annotation of CNA.type (DEL/DUP/LOH/TCNNeutral/NA)
