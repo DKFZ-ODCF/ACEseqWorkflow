@@ -72,7 +72,7 @@ if (sex == "male" | sex == 'klinefelter') {
 	chrNames = c(1:22, 'X')
 }
                 
-pp = read.table(pp, sep = "\t", header = TRUE, as.is = TRUE, stringsAsFactors = TRUE) # pp stands for ploidy and purity
+pp = read.table(pp, sep = "\t", header = TRUE, as.is = TRUE, stringsAsFactors = TRUE) # pp stands for ploidy and tcc
 full_Ploidies = pp[, 1]		#rounded ploidy values
  
 maxChrCount <- max( as.numeric( system( paste( "tabix -l", SNPfile ) ,intern=TRUE ) ) ) 
@@ -83,7 +83,7 @@ if (chrCount > maxChrCount) {
 
 
 #function wrappers to get chromosome wise plots of TCN, dh and BAF
-plotChromosomes = function (chrom, dat, comb,  pur, ploi , roundPloi, crestPoints=NULL) {
+plotChromosomes = function (chrom, dat, comb,  TCC, ploi , roundPloi, crestPoints=NULL) {
 	#don't plot if data frame is empty
 	if (nrow(dat)<1)
 		return(NULL)
@@ -105,23 +105,23 @@ plotChromosomes = function (chrom, dat, comb,  pur, ploi , roundPloi, crestPoint
 #	maxCov = 2*ploi
 	maxCov = max(comb$tcnMean, na.rm= TRUE)
 
-	p1 <- plotTCN( chrom, ratio, segs, ploi, pur, roundPloi, chrL, ymaxcov=maxCov, crestSub=crestSub) + labs(x=NULL)
+	p1 <- plotTCN( chrom, ratio, segs, ploi, TCC, roundPloi, chrL, ymaxcov=maxCov, crestSub=crestSub) + labs(x=NULL)
 	p2 <- plotDHmeans( segs, chrL ) + theme( axis.text.x=element_blank() )
 
 	X = which( (ratio$betaN > 0.3) & (ratio$betaN < 0.7) )
 	p3 <- plotRawBAF( ratio[X,], seg=segs, chrL ) 
 
-        plotTitle <- textGrob( qq("@{ID}_chr_@{chrom} Ploidy=@{roundPloi}, corr=@{round(ploi,digits=3)}, Tumor_cell_content=@{round(pur,digits=3)}") )
+        plotTitle <- textGrob( qq("@{ID}_chr_@{chrom} Ploidy=@{roundPloi}, corr=@{round(ploi,digits=3)}, Tumor_cell_content=@{round(TCC,digits=3)}") )
         p = arrangeGrob(plotTitle, p1, p2, p3, nrow=4, heights=c(1,7,7,7))
 
-	fileName=paste0(outfile,"_",round(ploi,digits=3),"extra_",round(pur,digits=3),"_",chrom,".png")
+	fileName=paste0(outfile,"_",round(ploi,digits=3),"extra_",round(TCC,digits=3),"_",chrom,".png")
         ggplot2::ggsave( fileName, p, width=15, height=9, type='cairo') 
 
 }  
 
 
 #function wrapper to get genome wide plot of TCN, dh and BAF
-plotAll <- function(dat, comb, ploi, pur, roundPloi, chrCount) {
+plotAll <- function(dat, comb, ploi, TCC, roundPloi, chrCount) {
 				
 	chrL = sum( as.numeric(chrLength[1:chrCount,2]) )
 #	maxCov = 3*ploidy
@@ -154,7 +154,7 @@ plotAll <- function(dat, comb, ploi, pur, roundPloi, chrCount) {
 	X = which((dat$betaN > 0.3) & (dat$betaN < 0.7))
 
 	#plot
-       	p1 <- plotTCN( chr, dat, comb, ploi, pur, roundPloi, chrL, maxCov, plots='all' ) 
+       	p1 <- plotTCN( chr, dat, comb, ploi, TCC, roundPloi, chrL, maxCov, plots='all' ) 
 	p2 <- plotDHmeans( comb, chrL, plots='all' )
 	p3 <- plotRawBAF( dat[X,], comb, chrL, plots='all' )
 
@@ -182,10 +182,10 @@ plotAll <- function(dat, comb, ploi, pur, roundPloi, chrCount) {
 	p3 <- p3 + vlines + labs(x=NULL) + theme( axis.text.x=element_blank() )
 
 	#combine all plots into single object and save
-        plotTitle <- textGrob( qq("@{ID}_Ploidy=@{roundPloi}, corr=@{round(ploi,digits=3)}, Tumor_cell_content=@{round(pur,digits=3)}, sex=@{sex}"))
+        plotTitle <- textGrob( qq("@{ID}_Ploidy=@{roundPloi}, corr=@{round(ploi,digits=3)}, Tumor_cell_content=@{round(TCC,digits=3)}, sex=@{sex}"))
         p = arrangeGrob(plotTitle, p1, p2, p3, nrow=4, heights=c(1,7,7,7))
 
-	fileName= paste0( outfile, "_", round(ploi,digits=3), "_", round(pur,digits=3), "_ALL", ".png" )
+	fileName= paste0( outfile, "_", round(ploi,digits=3), "_", round(TCC,digits=3), "_ALL", ".png" )
         ggplot2::ggsave( fileName, p, width=15, height=9, type='cairo') 
 
 }
@@ -197,11 +197,11 @@ for( index in seq_len( nrow(pp) ) ) {
 	cat(qq("plotting @{index}/@{nrow(pp)}\n\n"))
 
 	ploidy      = pp[index, 2]
-	purity      = pp[index, 3]
+	tcc      = pp[index, 3]
 #	roundPloidy = full_Ploidies[index]
 
 	#Read and complete data; get chromsome wise and genome wide plot
-	tmp <- completeSeg( combi, ploidy, purity, ID, solutionPossible=nrow(pp) )
+	tmp <- completeSeg( combi, ploidy, tcc, ID, solutionPossible=nrow(pp), sex=sex )
 	combi.tmp <- tmp[[1]]
 	roundPloidy = tmp[[2]]
 
@@ -223,8 +223,8 @@ for( index in seq_len( nrow(pp) ) ) {
 	}
         dataList.tmp = lapply( 1:chrCount, function(chr){
 			cat("Plotting chromosome ",chr, "...\n")
-			dataList.chr <- completeSNP( chr, dataList[[chr]], ploidy, purity, roundPloidy)
-			plotChromosomes( chr, dataList.chr, combi.tmp, purity, ploidy, roundPloidy, crestPoints=crest)
+			dataList.chr <- completeSNP( chr, dataList[[chr]], ploidy, tcc, roundPloidy)
+			plotChromosomes( chr, dataList.chr, combi.tmp, tcc, ploidy, roundPloidy, crestPoints=crest)
 			dataList.chr
 		} )
 	
@@ -232,7 +232,7 @@ for( index in seq_len( nrow(pp) ) ) {
 	cat("plotting All chromosomes...\n")
 
 	#genome wide plot
-	plotAll(dataList.tmp, comb=combi.tmp, ploidy, purity, roundPloidy, chrCount)
+	plotAll(dataList.tmp, comb=combi.tmp, ploidy, tcc, roundPloidy, chrCount)
 	#remove tmp data.frame to free memory and use garbage collection
 	dataList.tmp <- NULL
 	tmp <- NULL
