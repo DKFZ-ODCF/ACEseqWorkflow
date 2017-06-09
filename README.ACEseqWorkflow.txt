@@ -13,6 +13,19 @@ runWithoutControl	    false Run analysis with matching control and estimate cont
 
 == Changelist
 
+* Version update to 1.2.7-1/2
+- comb_pro_extra and most_important_info contain X and Y
+- removed GNL column
+- new annotation of CNA.type (DEL/DUP/LOH/TCNNeutral/NA)
+- new estimation of quality (length of subclonal over total mapped)
+
+* Version update to 1.2.7-1/2
+- removed dependencies on coConfigurations
+- change of svOutputdirectory and set to default SOPHIA
+
+* Version update to 1.2.7
+- addition of tumorSample and controlSample variable as read out from bam file
+
 * Version update to 1.2.6-*
 
 - bugfix allowing coordinates for chrom2 in SV file to be smaller than chrom1 coordinates
