@@ -7,7 +7,7 @@ require(grid)
 #chr is the chromosome number
 #ratio: data.frame; subset (chromosome) of dataAll dataframe containing all SNPs
 #seg: data.frame; subset of combi which contains all segments for sample
-plotTCN = function (chromosome, ratio, seg, Ploidy, Purity, fullPloidy, chrLen, ymaxcov, plots='single', crestSub=NULL, p = NULL) {
+plotTCN = function (chromosome, ratio, seg, Ploidy, tcc, fullPloidy, chrLen, ymaxcov, plots='single', crestSub=NULL, p = NULL) {
 		
 		ymaxDH	= 1 
 		xtotal	= chrLen/ 10
@@ -180,7 +180,7 @@ plotRawBAF <- function(ratio, seg=NULL, chrLen, plots='single', p=NULL){
 
 # adjust values with obtained ploidies and puirities  
 
-completeSNP = function( chr, dat, Ploidy, Purity, fullPloidy ) {
+completeSNP = function( chr, dat, Ploidy, tcc, fullPloidy ) {
 	
 	if (nrow(dat) < 1 ){
 		GNL <- data.frame( matrix( vector(), 0,1, dimnames=list(c(), 'GNL' ) ), stringsAsFactors=F )
@@ -188,10 +188,10 @@ completeSNP = function( chr, dat, Ploidy, Purity, fullPloidy ) {
 		return(dat_new)
 	}
 
-	D = Purity * Ploidy + 2 * (1 - Purity) 		
+	D = tcc * Ploidy + 2 * (1 - tcc) 		
 
-	dat$copyT = (dat$copyT * D - 2 * (1-Purity) ) / (Purity)
-	dat$meanTCN = (dat$meanTCN * D - 2 * (1-Purity) ) / (Purity)
+	dat$copyT = (dat$copyT * D - 2 * (1-tcc) ) / (tcc)
+	dat$meanTCN = (dat$meanTCN * D - 2 * (1-tcc) ) / (tcc)
 	dat$roundTCN = round(dat$meanTCN)
 
 	dat$GNL = NA
@@ -226,13 +226,13 @@ completeSNP = function( chr, dat, Ploidy, Purity, fullPloidy ) {
 	return(dat)
 }
 
-completeSeg = function( comb, Ploidy, Purity, id, solutionPossible=NA ) {
+completeSeg = function( comb, Ploidy, tcc, id, solutionPossible=NA, sex=sex) {
 
 	comb$tcnMeanRaw <- comb$tcnMean
 
-	#calculate correct TCN with estimated ploidy and purity
-	D = Purity * Ploidy + 2 * ( 1 - Purity )
-	comb$tcnMean = (comb$tcnMean - ( 2 *( 1-Purity ))/D ) / (Purity/D)
+	#calculate correct TCN with estimated ploidy and tcc 
+	D = tcc * Ploidy + 2 * ( 1 - tcc )
+	comb$tcnMean = (comb$tcnMean - ( 2 *( 1-tcc ))/D ) / (tcc/D)
 
 	fullPloidyLength <- sapply(unique(round(comb$tcnMean)), function(i) sum( as.numeric( comb$length[round(comb$tcnMean)==i] ) ) )
 	fullPloidyTab <- data.frame( ploidy=unique(round(comb$tcnMean)), length=fullPloidyLength )
@@ -258,7 +258,6 @@ completeSeg = function( comb, Ploidy, Purity, id, solutionPossible=NA ) {
 	comb$B = NA
 	comb$genotype = NA
 	comb$TCN = NA
-	comb$GNL = NA
 
 	# for balanced alleles split cn equally
 	sel = which(comb$peaks == 1 & 
@@ -279,8 +278,8 @@ completeSeg = function( comb, Ploidy, Purity, id, solutionPossible=NA ) {
 	            comb$meanCovB != "NA" & 
 	            comb$meanCovB != "NaN")
 
-	comb$AF[sel] = (comb$meanCovT[sel]/10000) / ((Purity*comb$tcnMean[sel])+((1-Purity)*2))			#Initial segnments for covT where 10000 bases long
-	comb$BAF[sel] = ((comb$meanCovB[sel]/comb$AF[sel])-(1-Purity))/(Purity*comb$tcnMean[sel])
+	comb$AF[sel] = (comb$meanCovT[sel]/10000) / ((tcc*comb$tcnMean[sel])+((1-tcc)*2))			#Initial segnments for covT where 10000 bases long
+	comb$BAF[sel] = ((comb$meanCovB[sel]/comb$AF[sel])-(1-tcc))/(tcc*comb$tcnMean[sel])
 	comb$dhMean[sel] = 2*(abs(comb$BAF[sel] - 0.5))
 	sel_dh = which(comb$dhMean > 1)
 	comb$dhMean[sel_dh] = 1
@@ -330,85 +329,6 @@ completeSeg = function( comb, Ploidy, Purity, id, solutionPossible=NA ) {
 
 	# classify according to dh and copy numbers
 	# all segments with defined peak were heterozygous in the normal tissue
-	sel <- which( ! is.na(comb$tcnMean) & 
-		      ! is.na(comb$dhMean)  &
-		      comb$TCN != "sub" &
-		      comb$TCN == 2 &
-#		      comb$TCN == fullPloidy &
-		      comb$dhMean == 0 )
-	comb$GNL[sel] <- 'neutral'
-	rm(sel)
-
-	sel <- which( ! is.na(comb$tcnMean) & 
-	              ! is.na(comb$dhMean)  &
-	      	      comb$TCN != "sub" &
-#	      	      comb$TCN == fullPloidy &
-		      comb$TCN == 2 &
-		      (round(comb$c1Mean) == 0 |
-		      round(comb$c2Mean) == 0 ) )
-
-	comb$GNL[sel] <- 'cnLOH'
-	rm(sel)
-
-	sel <- which( ! is.na(comb$tcnMean) & 
-	              ! is.na(comb$dhMean)  &
-	      	      comb$TCN != "sub" &
-#	      	      comb$TCN == fullPloidy &
-	      	      comb$TCN == 2 &
-		    ( round(comb$c1Mean) != 0 &
-		      round(comb$c2Mean) != 0   ) & 
-		      comb$dhMean > 0 )
-
-	comb$GNL[sel] <- 'mixDH'
-	rm(sel)
-
-	sel <- which( ! is.na(comb$tcnMean) & 
-	              ! is.na(comb$dhMean)  &
-	      	      comb$TCN != "sub" &
-#	      	      comb$TCN > fullPloidy &
-	      	      comb$TCN > 2 &
-		      (round(comb$c1Mean) == 0 |
-		      round(comb$c2Mean) == 0 ) )
-
-	comb$GNL[sel] <- 'LOHgain'
-	rm(sel)
-
-	sel <- which( ! is.na(comb$tcnMean) & 
-	              ! is.na(comb$dhMean)  &
-	      	      comb$TCN != "sub" &
-#	      	      comb$TCN > fullPloidy &
-	      	      comb$TCN > 2 &
-		    ( round(comb$c1Mean) != 0 &
-		      round(comb$c2Mean) != 0 ) )
-
-	comb$GNL[sel] <- 'gain'
-	rm(sel)
-
-	sel <- which( ! is.na(comb$tcnMean) & 
-	              ! is.na(comb$dhMean)  &
-	      	      comb$TCN != "sub" &
-#	      	      comb$TCN < fullPloidy &
-	      	      comb$TCN < 2 &
-		    ( round(comb$c1Mean) != 0 &
-		      round(comb$c2Mean) != 0 ) )
-
-	comb$GNL[sel] <- 'loss'
-	rm(sel)
-
-	sel <- which( ! is.na(comb$tcnMean) & 
-	              ! is.na(comb$dhMean)  &
-	      	      comb$TCN != "sub" &
-#	      	      comb$TCN < fullPloidy &
-	      	      comb$TCN < 2 &
-		      (round(comb$c1Mean) == 0 |
-		      round(comb$c2Mean) == 0 ) )
-
-	comb$GNL[sel] <- 'LOH'
-	rm(sel)
-
-	sel <- which( comb$TCN == 'sub' )
-	comb$GNL[sel] <- 'sub'
-
 
 	# sex specific
 	if (sex == "male") {
@@ -425,18 +345,6 @@ completeSeg = function( comb, Ploidy, Purity, id, solutionPossible=NA ) {
 		comb$TCN[sel] = comb$A[sel]
 		rm(sel)
 
-#		sel = which((comb$chromosome == 23 | comb$chromosome == 24) & (comb$TCN == (fullPloidy/2)))
-		sel = which((comb$chromosome == 23 | comb$chromosome == 24) & (comb$TCN == 1))
-		comb$GNL[sel] = "neutral"
-		rm(sel)
-
-		sel = which((comb$chromosome == 23 | comb$chromosome == 24) & (comb$TCN > 1 ))
-		comb$GNL[sel] = "gain"
-		rm(sel)
-
-		sel = which((comb$chromosome == 23 | comb$chromosome == 24) & (comb$TCN < 1))
-		comb$GNL[sel] = "loss"
-		rm(sel)
 	}else if (sex == "klinefelter") {
 		sel = which(comb$chromosome == 24)
 		comb$tcnMean[sel] = comb$tcnMean[sel] / 2
@@ -449,18 +357,6 @@ completeSeg = function( comb, Ploidy, Purity, id, solutionPossible=NA ) {
 		comb$c2Mean[sel] = NA  
 		comb$genotype[sel] = comb$A[sel]
 		comb$TCN[sel] = comb$A[sel]
-		rm(sel)
-
-		sel = which((comb$chromosome == 24) & (comb$TCN == 1 ))
-		comb$GNL[sel] = "neutral"
-		rm(sel)
-
-		sel = which((comb$chromosome == 24) & (comb$TCN > 1 ))
-		comb$GNL[sel] = "gain"
-		rm(sel)
-
-		sel = which((comb$chromosome == 24) & (comb$TCN < 1 ))
-		comb$GNL[sel] = "loss"
 		rm(sel)
 
 	} else if (sex == "female") {
@@ -480,7 +376,6 @@ completeSeg = function( comb, Ploidy, Purity, id, solutionPossible=NA ) {
 		comb$dhMean[sel] = 0
 		comb$c1Mean[sel] = 0
 		comb$c2Mean[sel] = 0
-		comb$GNL[sel] = "homozygousDel"
 		comb$map[sel] = 'mappable'
 	}
 
@@ -493,8 +388,10 @@ completeSeg = function( comb, Ploidy, Purity, id, solutionPossible=NA ) {
 		comb$dhMean[sel] = NA
 		comb$c1Mean[sel] = NA
 		comb$c2Mean[sel] = NA
-		comb$GNL[sel] = NA
 	}
+
+	comb <- annotateCNA(seg.df = comb, ploidy=fullPloidy, cut.off = 0.7, TCN.colname = "tcnMean",
+                         c1Mean.colname = "c1Mean", c2Mean.colname = "c2Mean", sex=sex)
 
 	#format data so that no e-x is used and 0.5 is rounded to the next bigger value for start and next lower for end of a segment
 	comb$start	<- as.integer(ceiling(comb$start))
@@ -504,9 +401,9 @@ completeSeg = function( comb, Ploidy, Purity, id, solutionPossible=NA ) {
 	colnames(comb_out)[1] <- "#chromosome"
 
 
-	write.table(comb_out, qq("@{outDir}/@{id}_comb_pro_extra@{round(Ploidy, digits = 3)}_@{Purity}.txt"), sep = "\t", row.names = FALSE, quote = FALSE) 
+	write.table(comb_out, qq("@{outDir}/@{id}_comb_pro_extra@{round(Ploidy, digits = 3)}_@{tcc}.txt"), sep = "\t", row.names = FALSE, quote = FALSE) 
 
-	important_cols <- c('#chromosome', 'start', 'end', 'length', 'tcnMeanRaw', 'tcnMean', 'crest', 'c1Mean', 'c2Mean', 'dhMean', 'dhMax', 'genotype', 'GNL', 'tcnNbrOfHets','minStart', 'maxStart', 'minStop', 'maxStop')
+	important_cols <- c('#chromosome', 'start', 'end', 'length', 'tcnMeanRaw', 'tcnMean', 'crest', 'c1Mean', 'c2Mean', 'dhMean', 'dhMax', 'genotype', 'CNA.type', 'tcnNbrOfHets','minStart', 'maxStart', 'minStop', 'maxStop')
   	important_sub  <- comb_out[,important_cols]
   
 	colnames(important_sub) <- sub("tcnMeanRaw", "covRatio", colnames(important_sub))
@@ -517,24 +414,83 @@ completeSeg = function( comb, Ploidy, Purity, id, solutionPossible=NA ) {
 	colnames(important_sub) <- sub("tcnNbrOfHets", "NbrOfHetsSNPs", colnames(important_sub))
 
 	important_sub 	    <- format(important_sub, scientific = FALSE, trim = TRUE)
-
-	qual = sum( important_sub$GNL != 'sub', na.rm=TRUE) / sum(!is.na(important_sub$GNL))
-	importantFile = qq("@{outDir}/@{id}_most_important_info@{round(Ploidy, digits = 3)}_@{Purity}.txt")
+	qual = sum( as.numeric(comb$length[abs(comb$tcnMean - round(comb$tcnMean)) <= 0.3])  ) / sum(as.numeric(comb$length))
+	importantFile = qq("@{outDir}/@{id}_most_important_info@{round(Ploidy, digits = 3)}_@{tcc}.txt")
 
 	#change parameter names for json conversion output
-	normalContamination= 1-purity
+	tcc= tcc
 	goodnessOfFit=qual
 	ploidyFactor=Ploidy
 	ploidy=fullPloidy
 	caller = "ACEseq"
 	gender = sex
-	tabFileForJson = qq("@{outDir}/@{id}_cnv_parameter_@{round(Ploidy, digits = 3)}_@{Purity}.txt")
-	write.table( data.frame( normalContamination, ploidyFactor, ploidy, goodnessOfFit, gender, solutionPossible ), tabFileForJson, row.names=FALSE, col.names=TRUE, quote=FALSE, sep='\t' )
+	tabFileForJson = qq("@{outDir}/@{id}_cnv_parameter_@{round(Ploidy, digits = 3)}_@{tcc}.txt")
+	write.table( data.frame( tcc, ploidyFactor, ploidy, goodnessOfFit, gender, solutionPossible ), tabFileForJson, row.names=FALSE, col.names=TRUE, quote=FALSE, sep='\t' )
 
-	write.table(qq("#purity:@{Purity}\n#ploidy:@{ploidyFactor}\n#roundPloidy:@{fullPloidy}\n#fullPloidy:@{fullPloidy}\n#quality:@{qual}\n#assumed sex:@{sex}"), importantFile, col.names=FALSE, row.names=FALSE, quote=FALSE )
+	write.table(qq("#tcc:@{tcc}\n#ploidy:@{ploidyFactor}\n#roundPloidy:@{fullPloidy}\n#fullPloidy:@{fullPloidy}\n#quality:@{qual}\n#assumed sex:@{sex}"), importantFile, col.names=FALSE, row.names=FALSE, quote=FALSE )
 	write.table( important_sub,
 		     importantFile,
 		     sep = "\t", row.names = FALSE, quote = FALSE, append=TRUE ) 
 
+	comb$chromosome <- gsub("^X", "23", comb$chromosome)
+	comb$chromosome <- gsub("^Y", "24", comb$chromosome)
+	comb$chromosome <- as.integer(comb$chromosome)
+
 	return(list(comb,fullPloidy))
 }	
+
+annotateCNA <- function( seg.df, ploidy=fullPloidy, cut.off = 0.7, TCN.colname = "TCN",
+                         c1Mean.colname = "c1Mean", c2Mean.colname = "c2Mean", sex=sex ){
+
+        seg.df$CNA.type <- NA
+	seg.df$chromosome <- gsub("^23", "X", seg.df$chromosome)
+	seg.df$chromosome <- gsub("^24", "Y", seg.df$chromosome)
+
+        selNeutral <- which( ( seg.df[,TCN.colname] >= (ploidy -(1 - cut.off)) &
+				 seg.df[,TCN.colname] <= (ploidy + (1 - cut.off)) ) |
+                            ( sex=="male" &
+                                (seg.df$chromosome =="X" |
+                                   seg.df$chromosome== "Y" ) &
+                                (seg.df[,TCN.colname] >= (ploidy/2 - (1-cut.off)) &
+                                   seg.df[,TCN.colname] <= (ploidy/2 + (1-cut.off)) ) ) |
+                            ( sex=="klinefelter" &
+                                   seg.df$chromosome== "Y" &
+                                (seg.df[,TCN.colname] >= (ploidy/2 - (1-cut.off)) &
+                                   seg.df[,TCN.colname] <= (ploidy/2 + (1-cut.off)) ) ) )
+
+        selGain <- which( seg.df[,TCN.colname] >= ploidy + cut.off |
+                            ( sex=="male" &
+                                (seg.df$chromosome =="X" |
+                                   seg.df$chromosome== "Y" ) &
+                                seg.df[,TCN.colname] >= (ploidy/2 + cut.off) ) |
+			    ( sex=="klinefelter" &
+                                   seg.df$chromosome== "Y" &
+                                seg.df[,TCN.colname] >= ( ploidy/2 + cut.off) ) )
+
+        selLoss <- which( round(seg.df[,TCN.colname]) > 0 &
+                            ( ( seg.df[,TCN.colname] <= ploidy -cut.off &
+                                  seg.df$chromosome != "Y"  & 
+                                  ( seg.df$chromosome != "X" | sex != "male" ) ) | 
+                                ( sex=="male" &
+                                    ( seg.df$chromosome == "X" | seg.df$chromosome=="Y") &
+                                    seg.df[,TCN.colname] <= (ploidy/2 -cut.off) ) |
+                                ( sex=="klinefelter" & seg.df$chromosome=="Y" &
+                                    seg.df[,TCN.colname] <= (ploidy/2 -cut.off) ) ) )
+
+        selLOH  <- which( round(seg.df[, c1Mean.colname]) <= 0 & round(seg.df[, c2Mean.colname]) >0 &
+			    seg.df$chromosome != "Y" &
+                            ( sex =="female" |  sex=="klinefelter" |
+                               seg.df$chromosome!="X" ) )
+
+        selHomoDel  <- which( round(seg.df[,TCN.colname]) <= 0 )
+
+        seg.df$CNA.type[selNeutral] <- "TCNneutral"
+        seg.df$CNA.type[selGain]    <- paste0( seg.df$CNA.type[selGain], ";DUP")
+        seg.df$CNA.type[selLoss]    <- paste0( seg.df$CNA.type[selLoss], ";DEL")
+        seg.df$CNA.type[selLOH ]    <- paste0( seg.df$CNA.type[selLOH], ";LOH")
+        seg.df$CNA.type[selHomoDel] <- paste0( seg.df$CNA.type[selHomoDel], ";HomoDel")
+
+        seg.df$CNA.type <- gsub("NA;", "", seg.df$CNA.type)
+        return( seg.df )
+}
+
