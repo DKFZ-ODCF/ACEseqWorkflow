@@ -45,7 +45,7 @@ def vcf_header(file_hd, sample):
 	if (not args.additionalTag.endswith("\n")):
 		args.additionalTag = args.additionalTag + "\n"
 	file_hd.write(args.additionalTag)
-    file_hd.write("##Purity=" + sample['purity'] + "\n")
+    file_hd.write("##TCC=" + sample['tcc'] + "\n")
     file_hd.write("##Ploidy=" + sample['ploidy'] + "\n")
     file_hd.write("##Full ploidy (CN of most segments)=" + sample['fullPloidy'] + "\n")
     file_hd.write("##Quality =%.2f"% float(sample['quality']) + "\n")
