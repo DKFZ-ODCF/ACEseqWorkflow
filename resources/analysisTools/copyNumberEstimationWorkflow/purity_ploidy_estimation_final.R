@@ -680,7 +680,7 @@ for (i in seq_along(final_pur)) {
 }                            
 
 pp_table = as.table(pp_matrix)
-colnames(pp_table) = c("ploidy", "ploidy_factor", "purity", "distance")
+colnames(pp_table) = c("ploidy", "ploidy_factor", "tcc", "distance")
 write.table(pp_table, file = purity_ploidy, sep = "\t", row.names = FALSE, quote = FALSE)
 
 #create data frame with ploidies and purities found at final minima (for star in plot)
@@ -716,7 +716,7 @@ erupt = ggplot(testPlot, aes(purity, ploidy, fill = distance)) +
 print( erupt + scale_fill_gradient2(limits = c(0, mean(testPlot$distance[which(!is.na(testPlot$distance))])), midpoint = mean(testPlot$distance[which(!is.na(testPlot$distance))]) / 2, low = "darkred", high = "darkblue", na.value = "darkblue") + 
 	theme(axis.text.x = element_text(vjust = 0.5, size = 14, color = "black"), axis.text.y = element_text(vjust = 0.5, size = 14, color = "black"), axis.title.x = element_text(color = "black", size = 16, vjust = 2, face = "bold"), axis.title.y = element_text(color = "black", size = 16, face = "bold")) +
 	geom_point(x = df.lines$purity, y = df.lines$ploidy, size = 1.2, color = "darkred") +
-	geom_point(x = df.opt$purity, y = df.opt$ploidy, size = 6, color = "black", shape = 8) +
+	geom_point(x = df.opt$purity, y = df.opt$ploidy, size = 6, color = "black", shape = 8) + xlab("tumor cell content") +
 	theme(legend.text = element_text(colour = "black", size = 16), legend.title = element_text(colour = "black", size = 16, face = "bold"))
 )
 dev.off()
