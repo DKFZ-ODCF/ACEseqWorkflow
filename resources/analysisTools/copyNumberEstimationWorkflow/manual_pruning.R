@@ -359,15 +359,17 @@ if (clustering_YN == "yes") {
 	  maxCluster <- as.numeric(maxCluster)
 	  centerMain <- CM$centers[maxCluster,]
   }
-	col = c("#000000","#800000","#008000","#000080","#800080","#808080","#FF0000","#00FF00","#FFFF00","#0000FF","#FF00FF","#00FFFF","#DC143C","#FF8C00","#FF69B4","#FF4500", "#EE82EE", "#FFD700")
-    
+	col = c("#000000","#800000","#008000","#000080","#800080","#808080","#FF0000","#00FF00","#FFFF00","#0000FF","#FF00FF","#00FFFF","#DC143C","#FF8C00","#FF69B4","#FF4500", "#EE82EE", "#FFD700", "grey")
+   	names(col) <- c(1:(length(col)-1), "NA")
 	clusterPlot <- ggplot( data.frame(cluster_matrix), aes(log2.tcnMean, dhMax, col=as.character(CM$cluster) ) )  +
 	  geom_point(size=1.7, alpha=0.8) +
 	  geom_point(data=data.frame(CM[['centers']]), aes(log2.tcnMean, dhMax), col='red', pch=3) +
 	  geom_vline(xintercept=c(covRightNorm, covLeftNorm),size=0.4, col="black", alpha=0.8) +
 	  geom_vline(xintercept=c(covRightFullNorm, covLeftFullNorm),size=0.4, col="red", alpha=0.8) +
-	  scale_color_manual(values=c(col[1:length(unique(CM$cluster))], "grey"), name="cluster" )
-	ggplot2::ggsave(qq("@{out}/@{pid}_cluster_cmeans.png"), clusterPlot, width = 10, height = 10, type='cairo')
+	  scale_color_manual(values=col[sort(unique(as.character(CM$cluster)))],
+                               labels=names(col[sort(unique(as.character(CM$cluster)))]),
+                               name="cluster" )
+	ggplot2::ggsave(qq("@{out}/@{pid}_cluster_cmeans.png"), clusterPlot, width = 5, height = 5, type='cairo')
 
 	minTcnMean <- covLeftNorm
 	maxTCNmean <- covRightNorm
@@ -428,27 +430,30 @@ if (clustering_YN == "yes") {
   colnames(newCenters) <- c("tcnMean", "dhMax")
   segAll.tmp[keep,] <- removeOutlierPoints_cmean_alt( segAll.tmp[keep,],  newCenters, deviationFactor = 2)
   
-  clusterPlotRmOutlier  <- ggplot( data.frame(segAll.tmp), aes(log2(tcnMean), dhMax, col=as.factor(cluster) ) )  +
+  clusterPlotRmOutlier  <- ggplot( data.frame(segAll.tmp), aes(log2(tcnMean), dhMax, col=as.character(cluster)) )  +
     geom_point(size=1.7, alpha=0.8) +
     geom_vline(xintercept=c(log2( covLeft) , log2(covRight) ), size=0.4, col="black", alpha=0.8) +
-    geom_vline(xintercept=c(log2( covLeft -  covWidth), log2(covRight + covWidth) ),size=0.4, col="red", alpha=0.8) +
-    scale_color_manual(values=c(col[1:(length(unique(segAll.tmp$cluster))-1)]),name="cluster" ) +
+    geom_vline(xintercept=c(log2( covLeft -  covWidth), log2(covRight + covWidth) ),size=0.4, col="red", alpha=0.8) + 
+    scale_color_manual(values=col[sort(unique(as.character(segAll.tmp$cluster)))],
+                         labels=names(col[sort(unique(as.character(segAll.tmp$cluster)))]), name="cluster" ) +
+    #scale_color_manual(values=c(col[1:(length(unique(segAll.tmp$cluster))-1)]),name="cluster" ) +
     geom_point(data=data.frame(segAll.tmp[is.na(segAll.tmp$cluster),]), aes(log2(tcnMean), dhMax), col='grey')
-	ggplot2::ggsave(qq("@{out}/@{pid}_cluster_cmeans_wo_outlier.png"), clusterPlotRmOutlier, width=10, height=10, type='cairo')
+	ggplot2::ggsave(qq("@{out}/@{pid}_cluster_cmeans_wo_outlier.png"), clusterPlotRmOutlier, width=5, height=5, type='cairo')
   
-  segAll.tmp[keep,]$cluster[is.na(segAll.tmp[keep,]$cluster)] <- "NA"
+  segAll.tmp[keep,]$cluster[is.na(segAll.tmp[keep,]$cluster)] <- "NA"  #seem redundant and uneccesary
  
-	freqs <- sapply( as.numeric(rownames(newCenters)), function(i) sum(segAll.tmp$cluster==i, na.rm=T) )
+  freqs <- sapply( as.numeric(rownames(newCenters)), 
+               function(i) sum(segAll.tmp$cluster==i, na.rm=T) )
   names(freqs) <- rownames(newCenters)                     
-	minimalClusters <- names(which(freqs <5 ))
-	for(i in as.numeric(minimalClusters)){
+  minimalClusters <- names(which(freqs <5 ))
+  for(i in as.numeric(minimalClusters)){
 	  selMin <- which(segAll.tmp$cluster==i )
 	  segAll.tmp$cluster[selMin] <- NA
-    newCenters[as.character(i),] <- NA
-	}
-#	write.table(segAll, file = qq("@{out}/clustered.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
+          newCenters[as.character(i),] <- NA
+  }
+  # write.table(segAll, file = qq("@{out}/clustered.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
   
-	# pruning if neighbouring segments are assigned to identical cluster                
+  # pruning if neighbouring segments are assigned to identical cluster                
 	
   test <- combineNeighbours(segAll.tmp)
 
@@ -500,8 +505,11 @@ if (clustering_YN == "yes") {
     geom_point(data=data.frame(test_new[is.na(test_new$cluster),]), aes(log2(tcnMean), dhMax), col='grey') +
     geom_vline(xintercept=c(log2( covLeft) , log2(covRight) ), size=0.4, col="black", alpha=0.8) +
     geom_vline(xintercept=c(log2( covLeft -  covWidth), log2(covRight + covWidth) ),size=0.4, col="red", alpha=0.8) +
-    scale_color_manual(values=c(col[1:(length(unique(test_new$cluster))-1)]),name="cluster" )
-  ggplot2::ggsave( qq("@{out}/@{pid}_cluster_cmeans_merged_log2.png"), clusterPlotNewlog2, width=10, height=10, type='cairo' )
+    scale_color_manual(values=col[c( sort(unique(as.character(test_new$cluster))), "NA") ],
+                         labels=c( names(col[sort(unique(as.character(test_new$cluster)))]), "NA"),
+                         name="cluster" )
+    #scale_color_manual(values=c(col[1:(length(unique(test_new$cluster))-1)]),name="cluster" )
+  ggplot2::ggsave( qq("@{out}/@{pid}_cluster_cmeans_merged_log2.png"), clusterPlotNewlog2, width=5, height=5, type='cairo' )
 #	write.table(test, file = qq("@{out}/clustered_and_pruned_BIC.txt"), sep = "\t", row.names = FALSE, quote = FALSE )
 
   combi <- test_new
