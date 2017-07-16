@@ -13,7 +13,6 @@ from python_modules import Tabfile
 parser = argparse.ArgumentParser(description ="list all genes with their CNV status")
 
 parser.add_argument( '--file',	'-f', type=file, help="segment file with copy number information" )
-parser.add_argument( '--pid',	'-i', type=int,  help='patient identifier' )
 parser.add_argument( '--out',	'-o', default=sys.stdout, type=str,  help='outputfile' )
 parser.add_argument( '--length','-l', default=900, type=str,  help='outputfile' )
 
@@ -115,7 +114,7 @@ def find_closer_match_CN(prior_line, newline, next_line):
 				elif len(crest_defined) > 0: 
 				if crest_defined[0]==0:
 					priorTrue, nextTrue = [ False, True ]
-				elif crest_defined[0] == 2:
+				elif crest_defined[0] == 1:
 					priorTrue, nextTrue = [ True, False ]
 				else:				
 					priorTrue, nextTrue = [ True, False ]
