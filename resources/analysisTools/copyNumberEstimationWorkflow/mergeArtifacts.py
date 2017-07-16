@@ -87,44 +87,42 @@ def find_closer_match_CN(prior_line, newline, next_line):
 		      and ( abs( float(next_line[ "tcnMean" ] ) - float(newline[ "tcnMean" ])) <= 0.5
 		      or float(newline["tcnMean"]) == 0
 		      or  float(newline["length"]) < 101)  ) 
-	priorTrue = int(newline["start"])-int(prior_line["end"]) < 2 and prior_line["chromosome"] == newline["chromosome"] and ( abs( float(prior_line[ "tcnMean" ]) - float(newline[ "tcnMean" ])) <= 0.5 or float(newline["tcnMean"]) == 0 )
+	priorTrue = int(newline["start"])-int(prior_line["end"]) < 2 
+			and prior_line["chromosome"] == newline["chromosome"] 
+			and ( abs( float(prior_line[ "tcnMean" ]) - float(newline[ "tcnMean" ])) <= 0.5
+			or float(newline["tcnMean"]) == 0 )
 
 	#additional criterium for small segment with homozygous deletion between two segments of identical TCN
-	if not nextTrue and not priorTrue and prior_line["tcnMean"] == next_line["tcnMean"]:
-		nextTrue = int(next_line["start"])-int(newline["end"]) < 2 and next_line["chromosome"] == newline["chromosome"] and float(newline["length"]) < float(next_line["length"])  
-		priorTrue = int(newline["start"])-int(prior_line["end"]) < 2 and prior_line["chromosome"] == newline["chromosome"] and  float(newline["length"]) < float(prior_line["length"])   
+	#this shouldn't apply anymore as homozygous deletions are detected
+#	if not nextTrue and not priorTrue and prior_line["tcnMean"] == next_line["tcnMean"]:
+#		nextTrue = int(next_line["start"])-int(newline["end"]) < 2 
+#				and next_line["chromosome"] == newline["chromosome"] 
+#				and float(newline["length"]) < float(next_line["length"])  
+#		priorTrue = int(newline["start"])-int(prior_line["end"]) < 2
+#				 and prior_line["chromosome"] == newline["chromosome"] 
+#				 and  float(newline["length"]) < float(prior_line["length"])
 	if nextTrue and priorTrue:
-		
-		same_tcn = [ i for i, j in enumerate( neighbours ) if j[ "tcnMean" ] == newline["tcnMean"] ]
-		same_crest = [ i for i, j in enumerate( neighbours ) if j[ "crest" ]   == newline["crest"] ]
+		tcn_dists = [ for i, j in enumerate( neighbours ) abs(j[ "tcnMean" ] - newline["tcnMean"]) ]
+		same_crest = [ i for i, j in enumerate( neighbours ) if j[ "crest" ] == newline["crest"] and newline["crest"] != "NA" ]
 		crest_defined = [ i for i, j in enumerate( neighbours ) if j[ "crest" ]   != "NA" ]
 			
-		if len( same_tcn ) == 2:
-			if not float( newline["tcnMean"] ) == 0:
-				if abs( float(prior_line[ "tcnMean" ]) - float(newline[ "tcnMean" ]) ) > abs( float(next_line[ "tcnMean" ] )  - float(newline[ "tcnMean" ]) ): 
-					priorTrue, nextTrue = [ False, True ] 
-				else:
-					 priorTrue, nextTrue = [ True, False ]
-			elif len(same_crest) == 2 or len(same_crest) < 1 or same_crest[0] == 0:
-				priorTrue, nextTrue = [ False, True ]
-			elif same_crest[0] == 1:
-				priorTrue, nextTrue = [ True, False ]
-		elif len(same_tcn) > 0:
-			if same_tcn[0]==1:
-					priorTrue, nextTrue = [ True, False ]
-			elif same_tcn[0]==0:
+		if tcn_dists[0] == tcn_dists[1] or newline["tcnMean"] == 0:
+			if len(same_crest) == 1 :
+				if same_crest[0]==0:
 					priorTrue, nextTrue = [ False, True ]
-		elif len(same_crest) > 0:
-			if same_crest[0]==0:
-				priorTrue, nextTrue = [ False, True ]
-			elif same_crest[0] == 1:
-				priorTrue, nextTrue = [ True, False ]
-		elif len(crest_defined) > 0:
-			if crest_defined[0]==0:
-				priorTrue, nextTrue = [ False, True ]
-			elif crest_defined[0] == 1:
-				priorTrue, nextTrue = [ True, False ]
-
+				elif same_crest[0] == 1:
+					priorTrue, nextTrue = [ True, False ]
+				elif len(crest_defined) > 0: 
+				if crest_defined[0]==0:
+					priorTrue, nextTrue = [ False, True ]
+				elif crest_defined[0] == 2:
+					priorTrue, nextTrue = [ True, False ]
+				else:				
+					priorTrue, nextTrue = [ True, False ]
+		elif tcn_dist[0] > tcn_dist[1]:
+			priorTrue, nextTrue = [False, True]
+		elif tcn_dist[0] < tcn_dist[1]:
+			priorTrue, nextTrue = [True, False]
 	return( [nextTrue, priorTrue ])
 
 if __name__ == "__main__":
