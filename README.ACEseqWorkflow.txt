@@ -14,6 +14,10 @@ runWithoutControl	    false Run analysis with matching control and estimate cont
 == Changelist
 
 
+- add 0.00001 to lengths when getting log2 for weights to consider segments with length=1, which will be merged in a future release
+- adjust colors for clustering so they are consistent across all three cluster plots
+* Version update to 1.2.8-1
+- remove vcf creation in final job (obsolete)
 
 * Version update to 1.2.8
 - comb_pro_extra and most_important_info contain X and Y
