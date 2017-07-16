@@ -14,13 +14,13 @@ parser = argparse.ArgumentParser(description ="list all genes with their CNV sta
 
 parser.add_argument( '--file',	'-f', type=file, help="segment file with copy number information" )
 parser.add_argument( '--out',	'-o', default=sys.stdout, type=str,  help='outputfile' )
-parser.add_argument( '--maxDistToNext',	'-m', default=100, type=int,  help='maximum allowed distance between segments to be merged' )
+parser.add_argument( '--maxDistToNext',	'-m', default=1000, type=int,  help='maximum allowed distance between segments to be merged' )
 
 args = parser.parse_args()
 maxDistToNext=args.maxDistToNext
 out = args.out
-cutoff =0.5
-maxLen=3000000
+cutoff = 0.5
+maxLen = 3000000
 
 try:
 	infile= Tabfile.Input( args.file )
@@ -42,7 +42,7 @@ def compare_TCN(TCN1,TCN2,cutoff):
 	else:
 		return(False)
 
-def compare_ACN(a1,a2,cutoff,length1, length2, maxLen=500000):
+def compare_ACN(a1,a2,cutoff,length1, length2, maxLen=3000000):
 	isna1= a1=="NA"
 	isna2= a2=="NA"
 	#one or both undefined
