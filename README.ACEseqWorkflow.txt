@@ -13,7 +13,8 @@ runWithoutControl	    false Run analysis with matching control and estimate cont
 
 == Changelist
 
-
+-  
+- add HRD score estimation, smooth segments and filter for blacklist segments
 - add 0.00001 to lengths when getting log2 for weights to consider segments with length=1, which will be merged in a future release
 - adjust colors for clustering so they are consistent across all three cluster plots
 * Version update to 1.2.8-1
