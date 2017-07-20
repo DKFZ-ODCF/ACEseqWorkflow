@@ -12,8 +12,8 @@ runMetaCNVGeneration        false   Run a meta step for the cnv generation. This
 runWithoutControl	    false Run analysis with matching control and estimate control genotypes based on tumor BAF
 
 == Changelist
-
--  
+- remove generateVCF job, add estiate HRD score
+- remove dependency of haploblock files in cluster_and_prune_segments  
 - add HRD score estimation, smooth segments and filter for blacklist segments
 - add 0.00001 to lengths when getting log2 for weights to consider segments with length=1, which will be merged in a future release
 - adjust colors for clustering so they are consistent across all three cluster plots
