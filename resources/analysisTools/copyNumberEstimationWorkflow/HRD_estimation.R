@@ -14,16 +14,13 @@ getopt2(matrix(c('segmentfile',      'f', 1, "character", "comb_pro_extra_file",
                  'patientsex', 	     's', 1, "character", "patient sex (male/female)",
 		 'ploidy',	     'p', 1, "integer", "full ploidy",
 		 'tcc',	             't', 1, "numeric", "tumor cell content",
-                 'pid',               'i', 1, "character", "patient identifier", 
+                 'pid',              'i', 1, "character", "patient identifier", 
                  'outfile',          'o', 1, "character", "outfile for parameters", 
-                 'functions',        'u', 1, "character", "path to pscbs_plot_functions.R to load annotateCNV function", 
+                 'pipelineDir',      'u', 1, "character", "path to pscbs_plot_functions.R to load annotateCNV function", 
 		 'cutoff',	     'c', 2, "numeric", "required deviation from full ploidy to be counted as aberrant"
                 ), ncol = 5, byrow = TRUE));
-
-source(functions)
-
-genelist.gr <- import(genelist)
-genelist.gr$thick   <- NULL
+print(outfile)
+source( file.path(pipelineDir, "pscbs_plots_functions.R") )
 
 segments.df <- read.table(segmentfile, header=TRUE)
 
@@ -54,7 +51,7 @@ merged.df$roundTCN <- round(merged.df$tcnMean)
 
 tcnStatePerChrom <- sapply(unique(merged.df$chromosome), function(i){
 		sel <- which(merged.df$chromosome==i)
-		length(unique( merged.df[sel, c("type", "roundTCN")]))
+		length(unique( merged.df[sel, c("CNA.type", "roundTCN")]))
 		})
 names(tcnStatePerChrom) <- unique(merged.df$chromosome)
 selNoChangeChr <- names(tcnStatePerChrom)[which(tcnStatePerChrom==1)]
@@ -98,4 +95,4 @@ if(length(selNoChangeChr) != length(unique(merged.df$chromosome)) ){
 out.data <- data.frame( pid, fractionAberrant, fractionGain, fractionLoss, 
                         fractionLossLOH, fractionLOH, numberHRDSmooth, numberHRD,
                         numberHomoDel, LST, numberHRDLoss )
-write.table(out.data, outfile, sep="\t", row.names=FALSE)
+write.table( out.data, outfile, sep="\t", row.names=FALSE )
