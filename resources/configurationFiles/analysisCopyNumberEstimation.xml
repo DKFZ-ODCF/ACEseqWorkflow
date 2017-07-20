@@ -233,6 +233,11 @@
         <tool name="estimatePeaks" value="purity_ploidy.R" basepath="copyNumberEstimationWorkflow"/>
         <tool name="parseVcf" value="parseVcf.pl" basepath="copyNumberEstimationWorkflow"/>
         <tool name="estimatePurityPloidy" value="purity_ploidy_estimation_final.R" basepath="copyNumberEstimationWorkflow">
+        <tool name="removeBreakpoints" value="removeBreakpoints.py" basepath="copyNumberEstimationWorkflow">
+        <tool name="mergeArtifacts" value="mergeArtifacts.py" basepath="copyNumberEstimationWorkflow">
+        <tool name="smoothData" value="smoothData.py" basepath="copyNumberEstimationWorkflow">
+        <tool name="hrdEstimation" value="HRD_estimation.R" basepath="copyNumberEstimationWorkflow">
+
             <resourcesets>
                 <rset size="l" memory="2" cores="2" nodes="1" walltime="5"/>
             </resourcesets>
@@ -474,8 +479,6 @@
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE1"/>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEX"/>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_GC_CORRECTED_QUALITY"/>
-            <input type="filegroup" typeof="de.dkfz.b080.co.files.HaploblockGroupFile" scriptparameter="FILENAME_HAPLOBLOCK_GROUPS" passas="array"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.HaploblockGroupFile" scriptparameter="FILENAME_HAPLOBLOCK_GROUPS_X"/>
             <output type="tuple">
                 <output type="file" fnpatternselectiontag="segments" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CLUSTERED_SEGMENTS"/>
                 <output type="file" fnpatternselectiontag="snps" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE2"/>
@@ -525,13 +528,13 @@
             </output>
         </tool>
 
-        <tool name="generateVcfFromTab" value="convertTabTovcf.sh" basepath="copyNumberEstimationWorkflow">
+        <tool name="estimateHrdScore" value="estimateHRDScore.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="1" cores="1" nodes="1" walltime="2"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_PURITY_PLOIDY"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_PLOTS"/>
-            <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_VCF"/>
+            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEX"/>
+            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_PARAMETER_JSON"/>
+            <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_HRD"/>
         </tool>
 
     </processingTools>
@@ -607,7 +610,7 @@
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.estimatePurityPloidy" pattern='${aceseqOutputDirectory}/${pid}_ploidy_purity_2D.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.generatePlots" selectiontag="checkpoint" pattern='${aceseqOutputDirectory}/checkpointPlots.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.generatePlots" selectiontag="json" pattern='${aceseqOutputDirectory}/cnv_${pid}_parameter.json'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.convertToVcf" pattern='${aceseqOutputDirectory}/checkpointVcf.txt'/>
+        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.estimateHRD" pattern='${aceseqOutputDirectory}/checkpointHRD.txt'/>
 
     </filenames>
 
