@@ -86,10 +86,10 @@ def find_closer_match_CN(prior_line, newline, next_line):
 		      and ( abs( float(next_line[ "tcnMean" ] ) - float(newline[ "tcnMean" ])) <= 0.5
 		      or float(newline["tcnMean"]) == 0
 		      or  float(newline["length"]) < 101)  ) 
-	priorTrue = int(newline["start"])-int(prior_line["end"]) < 2 
+	priorTrue = ( int(newline["start"])-int(prior_line["end"]) < 2 
 			and prior_line["chromosome"] == newline["chromosome"] 
 			and ( abs( float(prior_line[ "tcnMean" ]) - float(newline[ "tcnMean" ])) <= 0.5
-			or float(newline["tcnMean"]) == 0 )
+			or float(newline["tcnMean"]) == 0 ) )
 
 	#additional criterium for small segment with homozygous deletion between two segments of identical TCN
 	#this shouldn't apply anymore as homozygous deletions are detected
@@ -101,7 +101,7 @@ def find_closer_match_CN(prior_line, newline, next_line):
 #				 and prior_line["chromosome"] == newline["chromosome"] 
 #				 and  float(newline["length"]) < float(prior_line["length"])
 	if nextTrue and priorTrue:
-		tcn_dists = [ for i, j in enumerate( neighbours ) abs(j[ "tcnMean" ] - newline["tcnMean"]) ]
+		tcn_dists = [ abs(float(j[ "tcnMean" ]) - float(newline["tcnMean"] ) ) for i, j in enumerate( neighbours ) ]
 		same_crest = [ i for i, j in enumerate( neighbours ) if j[ "crest" ] == newline["crest"] and newline["crest"] != "NA" ]
 		crest_defined = [ i for i, j in enumerate( neighbours ) if j[ "crest" ]   != "NA" ]
 			
@@ -112,15 +112,15 @@ def find_closer_match_CN(prior_line, newline, next_line):
 				elif same_crest[0] == 1:
 					priorTrue, nextTrue = [ True, False ]
 				elif len(crest_defined) > 0: 
-				if crest_defined[0]==0:
-					priorTrue, nextTrue = [ False, True ]
-				elif crest_defined[0] == 1:
-					priorTrue, nextTrue = [ True, False ]
+					if crest_defined[0]==0:
+						priorTrue, nextTrue = [ False, True ]
+					elif crest_defined[0] == 1:
+						priorTrue, nextTrue = [ True, False ]
 				else:				
 					priorTrue, nextTrue = [ True, False ]
-		elif tcn_dist[0] > tcn_dist[1]:
+		elif tcn_dists[0] > tcn_dists[1]:
 			priorTrue, nextTrue = [False, True]
-		elif tcn_dist[0] < tcn_dist[1]:
+		elif tcn_dists[0] < tcn_dists[1]:
 			priorTrue, nextTrue = [True, False]
 	return( [nextTrue, priorTrue ])
 
