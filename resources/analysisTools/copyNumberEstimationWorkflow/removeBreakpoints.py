@@ -30,10 +30,10 @@ line = infile.readline()
 out.write(("\t").join(infile.header)+ "\n")
 
 for newline in infile:
-	if int(newline["start"])-int(line["end"]) <= 2 
-	   and line["chromosome"] == newline["chromosome"] 
-	   and line[ "cluster" ] == newline[ "cluster" ] 
-	   and line["cluster"] != "NA": 
+	if (int(newline["start"])-int(line["end"]) <= 2
+	    and line["chromosome"] == newline["chromosome"] 
+	    and line[ "cluster" ] == newline[ "cluster" ] 
+	    and line["cluster"] != "NA" ): 
 
 		line["end"] = newline["end"]
 		line[ "length" ] = int( line ["end"] ) - int( line["start"] )
