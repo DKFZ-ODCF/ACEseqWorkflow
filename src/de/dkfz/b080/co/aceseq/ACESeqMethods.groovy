@@ -153,8 +153,8 @@ public final class ACESeqMethods {
     }
 
     @ScriptCallingMethod
-    public static Tuple2<TextFile, TextFile> clusterPruneSegments(TextFile segmentsFile, TextFile snpsFile, TextFile genderFile, TextFile correctParams, HaploblockFileGroupByChromosome haplogroups, HaploblockGroupFile haplogroupsX) {
-        return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_CLUSTER_AND_PRUNE_SEGMENTS, segmentsFile, snpsFile, genderFile, correctParams, haplogroups, haplogroupsX);
+    public static Tuple2<TextFile, TextFile> clusterPruneSegments(TextFile segmentsFile, TextFile snpsFile, TextFile genderFile, TextFile correctParams) {
+        return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_CLUSTER_AND_PRUNE_SEGMENTS, segmentsFile, snpsFile, genderFile, correctParams);
     }
 
     @ScriptCallingMethod
@@ -178,8 +178,8 @@ public final class ACESeqMethods {
     }
 
     @ScriptCallingMethod
-    public static TextFile convertToVcf(TextFile purityPloidyFile, TextFile checkpointFile) {
-        return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_GENERATE_VCF_FROM_TAB, purityPloidyFile, checkpointFile);
+    public static TextFile estimateHRD(TextFile genderFile, TextFile cnvParameterFile) {
+        return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_ESTIMATE_HRD_SCORE, genderFile, cnvParameterFile);
     }
 
     public static IndexedFileObjects runParallel( String toolID, IndexedFileObjects fileGroup, BaseFile otherFile, String indexParameterName) {
