@@ -7,17 +7,36 @@
     <configurationvalues>
 
 	<!--BINARIES-->
-	<cvalue name="JAVA_BINARY" value="java" type="filename"/>
-        <cvalue name="BGZIP_BINARY" value="bgzip" type="filename"/>
-        <cvalue name="TABIX_BINARY" value="tabix" type="filename"/>
-        <cvalue name="PERL_BINARY" value="perl" type="string"/>
-        <cvalue name="PYTHON_BINARY" value="python" type="path"/>
-        <cvalue name="RSCRIPT_BINARY" value="Rscript-3.3.1" type="string"/>
-        <cvalue name='INTERSECTBED_BINARY' value='intersectBed-2.16.2' type='filename'/>
 
-        <cvalue name="BCFTOOLS_BINARY" value="bcftools-0.1.19" type="filename"/>
-        <cvalue name="VCFTOOLS_SORT_BINARY" value="vcf-sort-0.1.10" type="filename"/>
-        <cvalue name="SAMTOOLS_BINARY" value="samtools-0.1.19" type="filename"/>
+
+	<!--<cvalue name="MODULESCRIPT_WORKFLOW" value="$USERHOME/RoddyWorkflowsGit/Plugins/ACEseq/resources/analysisTools/copyNumberEstimation/moduleScript.sh" type="path" />-->
+
+        <cvalue name="BGZIP_VERSION" value="1.2.1" type="filename"/>
+        <cvalue name="BGZIP_BINARY" value="bgzip-${BGZIP_VERSION}" type="filename"/>
+
+        <cvalue name="TABIX_VERSION" value="1.2.1" type="filename"/>
+        <cvalue name="TABIX_BINARY" value="tabix-${TABIX_VERSION}" type="filename"/>
+
+        <cvalue name="PERL_VERSION" value="5.20.2" type="string"/>
+        <cvalue name="PERL_BINARY" value="perl-${PERL_VERSION}" type="string"/>
+
+        <cvalue name="PYTHON_VERSION" value="2.7.9" type="path"/>
+        <cvalue name="PYTHON_BINARY" value="python-${PYTHON_VERSION}" type="path"/>
+	
+        <cvalue name="RSCRIPT_VERSION" value="3.3.1" type="string"/>
+        <cvalue name="RSCRIPT_BINARY" value="Rscript-${RSCRIPT_VERSION}" type="string"/>
+
+        <cvalue name='INTERSECTBED_VERSION' value='2.16.2' type='filename'/>
+        <cvalue name='INTERSECTBED_BINARY' value='intersectBed-${INTERSECTBED_VERSION}' type='filename'/>
+
+        <cvalue name="BCFTOOLS_VERSION" value="0.1.19" type="filename"/>
+        <cvalue name="BCFTOOLS_BINARY" value="bcftools-${BCFTOOLS_VERSION}" type="filename"/>
+
+        <cvalue name="VCFTOOLS_SORT_VERSION" value="0.1.10" type="filename"/>
+        <cvalue name="VCFTOOLS_SORT_BINARY" value="vcf-sort-${VCFTOOLS_SORT_VERSION}" type="filename"/>
+
+        <cvalue name="SAMTOOLS_VERSION" value="0.1.19" type="filename"/>
+        <cvalue name="SAMTOOLS_BINARY" value="samtools-${SAMTOOLS_VERSION}" type="filename"/>
 
 	<!--outputMask-->
         <cvalue name='outputUMask' value='007' type='string'/>
@@ -73,7 +92,7 @@
 
         <cvalue name='CREST' value='yes' type='string' description='include SV breakpoints in analysis (yes|no)'/>
 
-        <cvalue name='runOnPancan' value='' type='boolean'/>
+        <cvalue name='runOnPancan' value='false' type='boolean'/>
 
         <cvalue name='libloc_PSCBS' value='' type='string' description="path to PSCBS library in R"/>
         <cvalue name='libloc_flexclust' value='' type='string' description="path to felxclust library in R"/>
@@ -196,10 +215,9 @@
         <cvalue name='PLOT_PRE' value="${aceseqOutputDirectory}/${pid}_plot" type="path"/>
 
         <!--generateVCF opts-->
+	<cvalue name="blacklistFileName" value='artifact.homoDels.potentialArtifacts.txt' type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_PRE' value="${pid}_most_important_info" type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_POST' value=".txt" type="string"/>
-        <cvalue name='FILE_SEGMENT_VCF_PRE' value="${aceseqOutputDirectory}/${pid}" type="path"/>
-        <cvalue name='FILE_SEGMENT_VCF_POST' value=".cnv.vcf" type="string"/>
 
     </configurationvalues>
     <processingTools>
@@ -232,16 +250,18 @@
         <tool name="adjustAlleleAssignment" value="adjustAlleleFreqs.R" basepath="copyNumberEstimationWorkflow"/>
         <tool name="estimatePeaks" value="purity_ploidy.R" basepath="copyNumberEstimationWorkflow"/>
         <tool name="parseVcf" value="parseVcf.pl" basepath="copyNumberEstimationWorkflow"/>
-        <tool name="estimatePurityPloidy" value="purity_ploidy_estimation_final.R" basepath="copyNumberEstimationWorkflow">
-        <tool name="removeBreakpoints" value="removeBreakpoints.py" basepath="copyNumberEstimationWorkflow">
-        <tool name="mergeArtifacts" value="mergeArtifacts.py" basepath="copyNumberEstimationWorkflow">
-        <tool name="smoothData" value="smoothData.py" basepath="copyNumberEstimationWorkflow">
-        <tool name="hrdEstimation" value="HRD_estimation.R" basepath="copyNumberEstimationWorkflow">
+        <tool name="parseJson" value="parseJson.py" basepath="copyNumberEstimationWorkflow"/>
+        <tool name="removeBreakpoints" value="removeBreakpoints.py" basepath="copyNumberEstimationWorkflow"/>
+        <tool name="mergeArtifacts" value="mergeArtifacts.py" basepath="copyNumberEstimationWorkflow"/>
+        <tool name="smoothData" value="smoothData.py" basepath="copyNumberEstimationWorkflow"/>
+        <tool name="hrdEstimation" value="HRD_estimation.R" basepath="copyNumberEstimationWorkflow"/>
 
+        <tool name="estimatePurityPloidy" value="purity_ploidy_estimation_final.R" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="2" cores="2" nodes="1" walltime="5"/>
             </resourcesets>
         </tool>
+
         <tool name="convertToVcf" value="convertToVcf.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="generatePlots" value="pscbs_plots.R" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
