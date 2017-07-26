@@ -33,7 +33,7 @@ public final class ACEseqConstants {
     public static final String TOOL_ESTIMATE_PEAKS_FOR_PURITY = "estimatePeaksForPurity";
     public static final String TOOL_ESTIMATE_PURITY_AND_PLOIDY = "estimatePurityAndPloidy";
     public static final String TOOL_GENERATE_RESULTS_AND_PLOTS = "generateResultsAndPlots";
-    public static final String TOOL_ESTIMATE_HRD_SCORE = "estimateHrdSore";
+    public static final String TOOL_ESTIMATE_HRD_SCORE = "estimateHrdScore";
     
     private ACEseqConstants() {
     }
