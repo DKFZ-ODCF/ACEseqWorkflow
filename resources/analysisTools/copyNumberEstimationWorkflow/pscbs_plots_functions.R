@@ -79,11 +79,11 @@ plotTCN = function (chromosome, ratio, seg, Ploidy, tcc, fullPloidy, chrLen, yma
 				crestList = split(crestSub, crestSub$type) 
 
 				if (length(crestList$DUP) > 0){
-					p <- p + geom_arch( data=crestList$DUP, aes(x=start, xend=end, height=1.2, y=ymaxcov), col='blue', lwd = 0.3)
+					p <- p + geom_arch( data=crestList$DUP, aes(x=start, xend=end, height=1.2, y=ymaxcov), col='red', lwd = 0.3)
 				}
 	          
 				if (length(crestList$DEL) > 0){
-					p <- p + geom_arch( data=crestList$DEL, aes(x=start, xend=end, height=1.2, y=ymaxcov), col='red', lwd = 0.3)
+					p <- p + geom_arch( data=crestList$DEL, aes(x=start, xend=end, height=1.2, y=ymaxcov), col='blue', lwd = 0.3)
 				}
 						 
 				if (length(crestList$INV) > 0){
