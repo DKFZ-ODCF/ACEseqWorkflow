@@ -96,13 +96,7 @@ plotTCN = function (chromosome, ratio, seg, Ploidy, tcc, fullPloidy, chrLen, yma
 			  
 				if (length(crestList$CTX) > 0){
 					p <- p + geom_linerange( data = crestList$CTX, aes(x=start,  y=ymaxcov, ymin=ymaxcov, ymax=ymaxcov+1 ), col="#006400", lty=1, lwd=0.3) 
-					for ( i in seq_len( nrow(crestList$CTX) ) ){
-						if (crestList$CTX$chromosome[i]==crestList$CTX$chr2[i]){
-							p <- p + geom_text(data=crestList$CTX[i,], aes(x=start+0.001, y=ymaxcov+1, label = chr2 ), cex = 2, col = "#006400")
-						} else {
-							p <- p + geom_text(data=crestList$CTX[i,], aes(x=start+0.001, y=ymaxcov+1, label = chr2), cex = 2, col = "#006400")
-						}
-					}
+					p <- p + geom_text(data=crestList$CTX, aes(x=start+0.001, y=ymaxcov+1, label = chr2), cex = 2, col = "#006400")
 				}
 			}
 		}
