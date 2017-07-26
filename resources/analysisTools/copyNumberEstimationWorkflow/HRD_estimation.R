@@ -95,4 +95,4 @@ if(length(selNoChangeChr) != length(unique(merged.df$chromosome)) ){
 out.data <- data.frame( pid, fractionAberrant, fractionGain, fractionLoss, 
                         fractionLossLOH, fractionLOH, numberHRDSmooth, numberHRD,
                         numberHomoDel, LST, numberHRDLoss )
-write.table( out.data, outfile, sep="\t", row.names=FALSE )
+write.table( out.data, outfile, sep="\t", row.names=FALSE, quote=FALSE )
