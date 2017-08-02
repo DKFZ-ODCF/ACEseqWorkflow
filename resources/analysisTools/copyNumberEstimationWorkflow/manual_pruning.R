@@ -318,7 +318,7 @@ if (clustering_YN == "yes") {
           covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
           
   }else{
-      	   weights = log2(segAll$length + 0.00001))
+      	   weights = log2(segAll$length + 0.00001)
       	   cluster_matrix_norm = cluster_matrix_norm
       	   #convert limits to scaled coordinates
       	   covLeftNorm  <- (log2(covLeft)-mean(log2(tcnMean)) )/sd(log2(tcnMean))

@@ -3,6 +3,12 @@
 source ${CONFIG_FILE}
 
 PIPELINE_DIR=`dirname ${TOOL_HRD_ESTIMATION}`
+	if [[ "$?" != 0 ]]
+	then
+		echo "TOOL_HRD_ESTIMATION not found!" 
+		exit 2
+	fi
+
 $PYTHON_BINARY ${TOOL_PARSE_JSON} -f ${FILENAME_PARAMETER_JSON} | while read line
 do
 	solutions=$(line)
@@ -65,7 +71,8 @@ do
 		--segmentfile $combProFileNoArtifacts \
 		--mergedfile $combProFile.tmp \
 		--outfile $HRDFile.tmp \
-		--pipelineDir $PIPELINE_DIR
+		--pipelineDir $PIPELINE_DIR \
+		--centromerFile $PIPELINE_DIR/${centromerFilename}
 
 	if [[ "$?" != 0 ]]
 	then
@@ -84,5 +91,10 @@ do
 
 	mv $HRDFile.tmp $HRDFile
 done
+if [[ "$?" != 0 ]]
+then
+	echo "There was a non-zero exit code while processing solutions" 
+	exit 2
+fi
 
 touch $FILENAME_CHECKPOINT_HRD 
