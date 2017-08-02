@@ -12,7 +12,7 @@
 	<!--<cvalue name="MODULESCRIPT_WORKFLOW" value="$USERHOME/RoddyWorkflowsGit/Plugins/ACEseq/resources/analysisTools/copyNumberEstimation/moduleScript.sh" type="path" />-->
 
         <cvalue name="BGZIP_VERSION" value="0.2.5" type="filename"/>
-        <cvalue name="BGZIP_BINARY" value="bgzip-${BGZIP_VERSION}" type="filename"/>
+        <cvalue name="BGZIP_BINARY" value="bgzip" type="filename"/>
 
         <cvalue name="TABIX_VERSION" value="0.2.5" type="filename"/>
         <cvalue name="TABIX_BINARY" value="tabix-${TABIX_VERSION}" type="filename"/>
@@ -216,6 +216,7 @@
 
         <!--generateVCF opts-->
 	<cvalue name="blacklistFileName" value='artifact.homoDels.potentialArtifacts.txt' type="string"/>
+	<cvalue name="centromerFilename" value='centromers.hg19.txt' type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_PRE' value="${pid}_most_important_info" type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_POST' value=".txt" type="string"/>
 
