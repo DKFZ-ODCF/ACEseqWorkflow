@@ -1,10 +1,6 @@
 #!/bin/bash
 
 
-source ${CONFIG_FILE}
-
-
-
 sex=`cat ${FILENAME_SEX}`
 
 

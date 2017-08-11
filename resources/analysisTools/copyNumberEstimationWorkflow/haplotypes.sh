@@ -1,10 +1,6 @@
 #!/bin/bash
 
 
-source ${CONFIG_FILE}
-
-
-
 HAPLO_PATH=`dirname ${PHASED_GENOTYPE_X_FILE}`/${phasedGenotypesFilePrefix}
 
 tmpSnpsHaplo="${FILENAME_SNP_POSITIONS_HAPLO_WG}_tmp"

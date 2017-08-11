@@ -1,9 +1,6 @@
 #!/bin/bash
 
 
-source ${CONFIG_FILE}
-
-
 #CHR_NAME=${CHR_NR}
 #CHR_NR=${CHR_PREFIX}${CHR_NR}${CHR_SUFFIX}
 #

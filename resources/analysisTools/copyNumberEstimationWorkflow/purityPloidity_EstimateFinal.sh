@@ -1,9 +1,6 @@
 #!/bin/bash
 
 
-source ${CONFIG_FILE}
-
-
 tmpPurityPloidy=${FILENAME_PURITY_PLOIDY}_tmp
 
 ${RSCRIPT_BINARY} --vanilla "${TOOL_ESTIMATE_PURITY_PLOIDY}" \

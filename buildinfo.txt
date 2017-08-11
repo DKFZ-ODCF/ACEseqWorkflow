@@ -1,5 +1,5 @@
-dependson=PluginBase:1.0.28
-dependson=COWorkflows:1.1.76
-RoddyAPIVersion=2.3
+dependson=PluginBase:1.0.28-1
+dependson=COWorkflows:1.1.76-1
+RoddyAPIVersion=2.4
 GroovyVersion=2.4
 JDKVersion=1.8

@@ -1,10 +1,6 @@
 #!/bin/bash
 
 
-
-source ${CONFIG_FILE}
-
-
 tmpSnpsUpdate=${FILENAME_ALL_SNP_UPDATE1}_tmp
 
 ${PYTHON_BINARY} "${TOOL_ADD_SEGMENTS_TO_SNP_DATA}" \

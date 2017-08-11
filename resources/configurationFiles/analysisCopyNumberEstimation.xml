@@ -5,19 +5,12 @@
                listOfUsedTools="mergeAndFilterSnpFiles,cnvSnpGeneration,annotateCnvFiles,imputeGenotypes,imputeGenotypes_X,addHaplotypesToSnpFile,getBreakpoints,mergeBreakpointsAndSv,getSegmentsAndSnps,markHomozygousDeletions"
                usedToolFolders="copyNumberEstimationWorkflow,tools">
     <configurationvalues>
-
-	<!--BINARIES-->
-	<cvalue name="JAVA_BINARY" value="java" type="filename"/>
-        <cvalue name="BGZIP_BINARY" value="bgzip" type="filename"/>
-        <cvalue name="TABIX_BINARY" value="tabix" type="filename"/>
-        <cvalue name="PERL_BINARY" value="perl" type="string"/>
-        <cvalue name="PYTHON_BINARY" value="python" type="path"/>
-        <cvalue name="RSCRIPT_BINARY" value="Rscript-3.3.1" type="string"/>
-        <cvalue name='INTERSECTBED_BINARY' value='intersectBed-2.16.2' type='filename'/>
-
-        <cvalue name="BCFTOOLS_BINARY" value="bcftools-0.1.19" type="filename"/>
-        <cvalue name="VCFTOOLS_SORT_BINARY" value="vcf-sort-0.1.10" type="filename"/>
-        <cvalue name="SAMTOOLS_BINARY" value="samtools-0.1.19" type="filename"/>
+        <cvalue name="workflowEnvironmentScript" value="${TOOL_WORKFLOW_ENVIRONMENT_CONDA_TBI_TEST}" type="string"
+                description="Use ${TOOL_WORKFLOW_ENVIRONMENT_CONDA} for a generic Conda environment."/>
+        <cvalue name="condaEnvironmentName" value="ACEseqWorkflow" type="string"
+                description="Name of the Conda environment on the execution hosts. Used by the environment setup script conda.sh defined as tool below."/>
+<!--        <cvalue name="correctGcBiasEnvironmentScript" value="${TOOL_CORRECT_GC_BIAS_ENVIRONMENT_CONDA}" type="string"/>-->
+        <!--<cvalue name="workflowEnvironmentScript" value="${TOOL_WORKFLOW_ENVIRONMENT_TBI_PBS}" type="string"/>-->
 
 	<!--outputMask-->
         <cvalue name='outputUMask' value='007' type='string'/>
@@ -203,6 +196,20 @@
 
     </configurationvalues>
     <processingTools>
+        <!-- Environment Setup Scripts -->
+        <!-- Workflow environment. The tool name for the complete workflow environment is "workflowEnvironment_${environmentTool}" or
+             "workflow_environment_${environmentTool}". -->
+        <tool name="workflowEnvironment_condaTbiTest" value="conda_tbi-pbs-cluster.sh" basepath="copyNumberEstimationWorkflow/environments"/>
+        <tool name="workflowEnvironment_conda" value="conda.sh" basepath="copyNumberEstimationWorkflow/environments"/>
+        <tool name="workflowEnvironment_modules" value="tbi-lsf-cluster.sh" basepath="copyNumberEstimationWorkflow/environments"/>
+        <tool name="workflowEnvironment_tbiPbs" value="tbi-pbs-cluster.sh" basepath="copyNumberEstimationWorkflow/environments"/>
+
+        <!-- Cluster-job specific environments.
+             Tool-specific environments override the global workflows environment. You can reference the tool name
+             (1) prefixed with TOOL_, (2) with all capitals prefixed by an underscore '-', (3) in all capitals.
+             The 'correctGcBiasEnvironment_conda' therefore becomes TOOL_CORRECT_GC_BIAS_ENVIRONMENT_CONDA. -->
+        <!--<tool name="correctGcBiasEnvironment_conda" value="correctGCBias_conda.sh" basepath="copyNumberEstimationWorkflow/environments"/>-->
+
         <!-- cnvSnpGeneration = TOOL_SNP_CNV_GENERATION -->
         <tool name="snpPosCnvWinGenerator" value="snp_cnv.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="mergeFilterSnp" value="merge_and_filter_snp.py" basepath="copyNumberEstimationWorkflow"/>
@@ -316,17 +323,17 @@
             <output type="filegroup" typeof="UnphasedGenotypeFileGroupByChromosome" fileclass="UnphasedGenotypeFile" scriptparameter="FILENAME_UNPHASED_GENOTYPE" passas="array"/>
     </tool>
 
-        <tool name="imputeGenotypesMeta" value="impute2_MetaScript.sh" basepath="copyNumberEstimationWorkflow">
-            <resourcesets>
-                <rset size="l" memory="48" cores="12" nodes="1" walltime="16"/>
-            </resourcesets>
-        </tool>
+        <!--<tool name="imputeGenotypesMeta" value="impute2_MetaScript.sh" basepath="copyNumberEstimationWorkflow">-->
+            <!--<resourcesets>-->
+                <!--<rset size="l" memory="48" cores="12" nodes="1" walltime="16"/>-->
+            <!--</resourcesets>-->
+        <!--</tool>-->
 
         <tool name="imputeGenotypes_noMpileup" value="impute2.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="10" cores="1" nodes="1" walltime="10"/>
             </resourcesets>
-            <input type="indexedfileobjects" typeof="de.dkfz.b080.co.files.UnphasedGenotypeFileGroupByChromosome" scriptparameter="FILENAME_UNPHASED_GENOTYPE" passas="array"/>
+            <input type="filegroup" typeof="UnphasedGenotypeFileGroupByChromosome" scriptparameter="FILENAME_UNPHASED_GENOTYPE" passas="array"/>
             <output type="tuple">
                 <output type="file" fnpatternselectiontag="withChromosomeIndex" typeof="de.dkfz.b080.co.files.PhasedGenotypeFile" scriptparameter="FILENAME_PHASED_GENOTYPES"/>
                 <output type="file" fnpatternselectiontag="withChromosomeIndex" typeof="de.dkfz.b080.co.files.HaploblockGroupFile" scriptparameter="FILENAME_HAPLOBLOCK_GROUPS"/>
@@ -337,7 +344,7 @@
             <resourcesets>
                 <rset size="l" memory="10" cores="1" nodes="1" walltime="10"/>
             </resourcesets>
-            <input type="indexedfileobjects" typeof="de.dkfz.roddy.knowledge.files.UnphasedGenotypeFileGroupByChromosome" scriptparameter="FILENAME_UNPHASED_GENOTYPE" passas="array"/>
+            <input type="filegroup" typeof="UnphasedGenotypeFileGroupByChromosome" scriptparameter="FILENAME_UNPHASED_GENOTYPE" passas="array"/>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEX"/>
             <output type="tuple">
                 <output type="file" fnpatternselectiontag="forChromosomeX" typeof="de.dkfz.b080.co.files.PhasedGenotypeFile" scriptparameter="FILENAME_PHASED_GENOTYPES"/>

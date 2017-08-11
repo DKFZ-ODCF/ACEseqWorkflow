@@ -1,9 +1,6 @@
 #!/bin/bash
 
 
-source ${CONFIG_FILE}
-
-
 #estimate sex of patient from X and Y coverage
 Y_FILE="${SNP_VCF_CNV_PATH}Y.${CNV_SUFFIX}"
 X_FILE="${SNP_VCF_CNV_PATH}X.${CNV_SUFFIX}"

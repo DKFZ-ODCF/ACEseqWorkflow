@@ -1,9 +1,6 @@
 #!/usr/bin/sh
 
 
-source ${CONFIG_FILE}
-
-
 tmp_corrected_windowfile=${FILENAME_GC_CORRECTED_WINDOWS}.tmp
 
 ${RSCRIPT_BINARY} ${TOOL_CORRECT_GC_BIAS_R} \

@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-source ${CONFIG_FILE}
-#
 #PID=$PID
 #
 #testing=CNV_ARRAY
