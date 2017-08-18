@@ -13,15 +13,14 @@
         <!--<cvalue name="workflowEnvironmentScript" value="${TOOL_WORKFLOW_ENVIRONMENT_TBI_PBS}" type="string"/>-->
 
 	<!--BINARIES-->
-        <cvalue name="BGZIP_VERSION" value="0.2.5" type="string"/>
-        <cvalue name="TABIX_VERSION" value="0.2.5" type="string"/>
-        <cvalue name="PERL_VERSION" value="5.20.2" type="string"/>
-        <cvalue name="PYTHON_VERSION" value="2.7.9" type="string"/>
-        <cvalue name="RSCRIPT_VERSION" value="3.3.1" type="string"/>
-        <cvalue name='INTERSECTBED_VERSION' value='2.16.2' type='string'/>
-        <cvalue name="BCFTOOLS_VERSION" value="0.1.19" type="string"/>
-        <cvalue name="VCFTOOLS_SORT_VERSION" value="0.1.10" type="string"/>
-        <cvalue name="SAMTOOLS_VERSION" value="0.1.19" type="string"/>
+         <cvalue name="HTSLIB_VERSION" value="0.2.5" type="string"/>
+         <cvalue name="PERL_VERSION" value="5.20.2" type="string"/>
+         <cvalue name="PYTHON_VERSION" value="2.7.9" type="string"/>
+         <cvalue name="RSCRIPT_VERSION" value="3.3.1" type="string"/>
+         <cvalue name='BEDTOOLS_VERSION' value='2.16.2' type='string'/>
+         <cvalue name="VCFTOOLS_VERSION" value="0.1.10" type="string"/>
+         <cvalue name="SAMTOOLS_VERSION" value="0.1.19" type="string"/>
+
 
 	<!--outputMask-->
         <cvalue name='outputUMask' value='007' type='string'/>

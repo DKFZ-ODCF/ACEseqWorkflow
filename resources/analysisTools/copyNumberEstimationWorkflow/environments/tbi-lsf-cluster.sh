@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-modules load htslib/0.2.5
-modules load perl/5.20.2
-modules load python/2.7.9
-modules load R/3.3.1
-modules load bedtools/2.16.2
-modules load samtools/0.1.19
-modules load vcftools/0.1.10
+modules load "htslib/$HTSLIB_VERSION"
+modules load "perl/$PERL_VERSION"
+modules load "python/$PYTHON_VERSION"
+modules load "R/$RSCRIPT_VERSION"
+modules load "bedtools/$BEDTOOLS_VERSION"
+modules load "samtools/$SAMTOOLS_VERSION"
+modules load "vcftools/$VCFTOOLS_VERSION"
 
 export BGZIP_BINARY=bgzip
 export TABIX_BINARY=tabix
