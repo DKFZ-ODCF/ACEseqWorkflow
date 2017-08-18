@@ -5,22 +5,23 @@
                listOfUsedTools="mergeAndFilterSnpFiles,cnvSnpGeneration,annotateCnvFiles,imputeGenotypes,imputeGenotypes_X,addHaplotypesToSnpFile,getBreakpoints,mergeBreakpointsAndSv,getSegmentsAndSnps,markHomozygousDeletions"
                usedToolFolders="copyNumberEstimationWorkflow,tools">
     <configurationvalues>
+
+    <!--BINARIES-->
+        <cvalue name="HTSLIB_VERSION" value="0.2.5" type="string"/>
+        <cvalue name="PERL_VERSION" value="5.20.2" type="string"/>
+        <cvalue name="PYTHON_VERSION" value="2.7.9" type="string"/>
+        <cvalue name="RSCRIPT_VERSION" value="3.3.1" type="string"/>
+        <cvalue name='BEDTOOLS_VERSION' value='2.16.2' type='string'/>
+        <cvalue name="VCFTOOLS_VERSION" value="0.1.10" type="string"/>
+        <cvalue name="SAMTOOLS_VERSION" value="0.1.19" type="string"/>
+
+    <!--ENVIRONMENT (see tools section below for possible values) -->
         <cvalue name="workflowEnvironmentScript" value="${TOOL_WORKFLOW_ENVIRONMENT_CONDA_TBI_TEST}" type="string"
                 description="Use ${TOOL_WORKFLOW_ENVIRONMENT_CONDA} for a generic Conda environment."/>
+        <!--<cvalue name="workflowEnvironmentScript" value="${TOOL_WORKFLOW_ENVIRONMENT_TBI_PBS}" type="string"/>-->
+        <!--<cvalue name="correctGcBiasEnvironmentScript" value="${TOOL_CORRECT_GC_BIAS_ENVIRONMENT_CONDA}" type="string"/>-->
         <cvalue name="condaEnvironmentName" value="ACEseqWorkflow" type="string"
                 description="Name of the Conda environment on the execution hosts. Used by the environment setup script conda.sh defined as tool below."/>
-<!--        <cvalue name="correctGcBiasEnvironmentScript" value="${TOOL_CORRECT_GC_BIAS_ENVIRONMENT_CONDA}" type="string"/>-->
-        <!--<cvalue name="workflowEnvironmentScript" value="${TOOL_WORKFLOW_ENVIRONMENT_TBI_PBS}" type="string"/>-->
-
-	<!--BINARIES-->
-         <cvalue name="HTSLIB_VERSION" value="0.2.5" type="string"/>
-         <cvalue name="PERL_VERSION" value="5.20.2" type="string"/>
-         <cvalue name="PYTHON_VERSION" value="2.7.9" type="string"/>
-         <cvalue name="RSCRIPT_VERSION" value="3.3.1" type="string"/>
-         <cvalue name='BEDTOOLS_VERSION' value='2.16.2' type='string'/>
-         <cvalue name="VCFTOOLS_VERSION" value="0.1.10" type="string"/>
-         <cvalue name="SAMTOOLS_VERSION" value="0.1.19" type="string"/>
-
 
 	<!--outputMask-->
         <cvalue name='outputUMask' value='007' type='string'/>
