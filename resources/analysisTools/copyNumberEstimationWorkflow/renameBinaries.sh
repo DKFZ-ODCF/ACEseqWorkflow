@@ -1,0 +1,13 @@
+#!/usr/bin/bash
+
+JAVA_BINARY=java
+BGZIP_BINARY=bgzip
+TABIX_BINARY=tabix
+PERL_BINARY=perl
+PYTHON_BINARY=python
+RSCRIPT_BINARY=Rscript
+INTERSECTBED_BINARY=intersectBed
+BCFTOOLS_BINARY=bcftools
+VCFTOOLS_SORT_BINARY=vcf-sort
+SAMTOOLS_BINARY=samtools
+

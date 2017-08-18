@@ -59,7 +59,8 @@ if __name__=='__main__':
 	count=2
 	for i,j  in enumerate(entries):
 		if i==index: continue
-		solutions[count]="%s_%s"% ( entries[index[0]][1], entries[index[0]][2] )
+		solutions[count]="%s_%s"% ( entries[i][1], entries[i][2] )
+		count+=1
 	
 	jsonMain={}
 	for key in solutions.keys():	

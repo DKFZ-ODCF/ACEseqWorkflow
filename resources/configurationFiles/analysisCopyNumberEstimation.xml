@@ -12,6 +12,17 @@
 <!--        <cvalue name="correctGcBiasEnvironmentScript" value="${TOOL_CORRECT_GC_BIAS_ENVIRONMENT_CONDA}" type="string"/>-->
         <!--<cvalue name="workflowEnvironmentScript" value="${TOOL_WORKFLOW_ENVIRONMENT_TBI_PBS}" type="string"/>-->
 
+	<!--BINARIES-->
+        <cvalue name="BGZIP_VERSION" value="0.2.5" type="string"/>
+        <cvalue name="TABIX_VERSION" value="0.2.5" type="string"/>
+        <cvalue name="PERL_VERSION" value="5.20.2" type="string"/>
+        <cvalue name="PYTHON_VERSION" value="2.7.9" type="string"/>
+        <cvalue name="RSCRIPT_VERSION" value="3.3.1" type="string"/>
+        <cvalue name='INTERSECTBED_VERSION' value='2.16.2' type='string'/>
+        <cvalue name="BCFTOOLS_VERSION" value="0.1.19" type="string"/>
+        <cvalue name="VCFTOOLS_SORT_VERSION" value="0.1.10" type="string"/>
+        <cvalue name="SAMTOOLS_VERSION" value="0.1.19" type="string"/>
+
 	<!--outputMask-->
         <cvalue name='outputUMask' value='007' type='string'/>
         <cvalue name='outputFileGroup' value='B080'/>
@@ -66,7 +77,7 @@
 
         <cvalue name='CREST' value='yes' type='string' description='include SV breakpoints in analysis (yes|no)'/>
 
-        <cvalue name='runOnPancan' value='' type='boolean'/>
+        <cvalue name='runOnPancan' value='false' type='boolean'/>
 
         <cvalue name='libloc_PSCBS' value='' type='string' description="path to PSCBS library in R"/>
         <cvalue name='libloc_flexclust' value='' type='string' description="path to felxclust library in R"/>
@@ -189,10 +200,10 @@
         <cvalue name='PLOT_PRE' value="${aceseqOutputDirectory}/${pid}_plot" type="path"/>
 
         <!--generateVCF opts-->
+	<cvalue name="blacklistFileName" value='artifact.homoDels.potentialArtifacts.txt' type="string"/>
+	<cvalue name="centromerFilename" value='centromers.hg19.txt' type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_PRE' value="${pid}_most_important_info" type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_POST' value=".txt" type="string"/>
-        <cvalue name='FILE_SEGMENT_VCF_PRE' value="${aceseqOutputDirectory}/${pid}" type="path"/>
-        <cvalue name='FILE_SEGMENT_VCF_POST' value=".cnv.vcf" type="string"/>
 
     </configurationvalues>
     <processingTools>
@@ -239,11 +250,18 @@
         <tool name="adjustAlleleAssignment" value="adjustAlleleFreqs.R" basepath="copyNumberEstimationWorkflow"/>
         <tool name="estimatePeaks" value="purity_ploidy.R" basepath="copyNumberEstimationWorkflow"/>
         <tool name="parseVcf" value="parseVcf.pl" basepath="copyNumberEstimationWorkflow"/>
+        <tool name="parseJson" value="parseJson.py" basepath="copyNumberEstimationWorkflow"/>
+        <tool name="removeBreakpoints" value="removeBreakpoints.py" basepath="copyNumberEstimationWorkflow"/>
+        <tool name="mergeArtifacts" value="mergeArtifacts.py" basepath="copyNumberEstimationWorkflow"/>
+        <tool name="smoothData" value="smoothData.py" basepath="copyNumberEstimationWorkflow"/>
+        <tool name="hrdEstimation" value="HRD_estimation.R" basepath="copyNumberEstimationWorkflow"/>
+
         <tool name="estimatePurityPloidy" value="purity_ploidy_estimation_final.R" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="2" cores="2" nodes="1" walltime="5"/>
             </resourcesets>
         </tool>
+
         <tool name="convertToVcf" value="convertToVcf.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="generatePlots" value="pscbs_plots.R" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
@@ -481,8 +499,6 @@
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE1"/>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEX"/>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_GC_CORRECTED_QUALITY"/>
-            <input type="filegroup" typeof="de.dkfz.b080.co.files.HaploblockGroupFile" scriptparameter="FILENAME_HAPLOBLOCK_GROUPS" passas="array"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.HaploblockGroupFile" scriptparameter="FILENAME_HAPLOBLOCK_GROUPS_X"/>
             <output type="tuple">
                 <output type="file" fnpatternselectiontag="segments" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CLUSTERED_SEGMENTS"/>
                 <output type="file" fnpatternselectiontag="snps" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE2"/>
@@ -532,13 +548,13 @@
             </output>
         </tool>
 
-        <tool name="generateVcfFromTab" value="convertTabTovcf.sh" basepath="copyNumberEstimationWorkflow">
+        <tool name="estimateHrdScore" value="estimateHRDScore.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="1" cores="1" nodes="1" walltime="2"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_PURITY_PLOIDY"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_PLOTS"/>
-            <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_VCF"/>
+            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEX"/>
+            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_PARAMETER_JSON"/>
+            <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_HRD"/>
         </tool>
 
     </processingTools>
@@ -614,7 +630,7 @@
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.estimatePurityPloidy" pattern='${aceseqOutputDirectory}/${pid}_ploidy_purity_2D.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.generatePlots" selectiontag="checkpoint" pattern='${aceseqOutputDirectory}/checkpointPlots.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.generatePlots" selectiontag="json" pattern='${aceseqOutputDirectory}/cnv_${pid}_parameter.json'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.convertToVcf" pattern='${aceseqOutputDirectory}/checkpointVcf.txt'/>
+        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.estimateHRD" pattern='${aceseqOutputDirectory}/checkpointHRD.txt'/>
 
     </filenames>
 
