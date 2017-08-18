@@ -6,6 +6,7 @@
     </facet>
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <perl5 />
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
@@ -17,13 +18,12 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="Roddy" />
     <orderEntry type="module" module-name="PluginBase" />
     <orderEntry type="library" name="roddyBundledLibraries" level="project" />
     <orderEntry type="library" name="R User Library" level="project" />
     <orderEntry type="library" name="R Skeletons" level="application" />
-    <orderEntry type="module" module-name="AlignmentAndQCWorkflows" />
-    <orderEntry type="module" module-name="COWorkflows" />
     <orderEntry type="module" module-name="BatchEuphoria_main" />
+    <orderEntry type="module" module-name="COWorkflows_1.2.76" />
+    <orderEntry type="module" module-name="RoddyCore" />
   </component>
 </module>

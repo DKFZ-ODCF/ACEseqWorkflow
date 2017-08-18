@@ -559,9 +559,9 @@
 
     </processingTools>
     <filenames package='de.dkfz.b080.co.files' filestagesbase='de.dkfz.b080.co.files.COFileStage'>
-        <filename class='SNPPositionFile' derivedFrom="BamFile" pattern='${cnvSnpOutputDirectory}/${pid}.chr${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="SNP_SUFFIX"}'/>
-        <!--<filename class='SNPPositionFile' derivedFrom="BamFile" pattern='${outputAnalysisBaseDirectory}/${aceseqOutputDirectory}/${cnvSnpOutputDirectory}/${pid}.chr${jobParameter,name="PARM_CHR_INDEX"}.snp.tab.gz' />-->
-        <filename class='CoverageWindowsFile' derivedFrom="BamFile" pattern='${cnvSnpOutputDirectory}/${pid}.chr${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="CNV_SUFFIX"}'/>
+        <filename class='SNPPositionFile' derivedFrom="de.dkfz.b080.co.files.BamFile" pattern='${cnvSnpOutputDirectory}/${pid}.chr${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="SNP_SUFFIX"}'/>
+        <!--<filename class='SNPPositionFile' derivedFrom="de.dkfz.b080.co.files.BamFile" pattern='${outputAnalysisBaseDirectory}/${aceseqOutputDirectory}/${cnvSnpOutputDirectory}/${pid}.chr${jobParameter,name="PARM_CHR_INDEX"}.snp.tab.gz' />-->
+        <filename class='CoverageWindowsFile' derivedFrom="de.dkfz.b080.co.files.BamFile" pattern='${cnvSnpOutputDirectory}/${pid}.chr${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="CNV_SUFFIX"}'/>
 <!--      <filename class="PhasedGenotypeFile" onScriptParameter="FILENAME_PHASED_GENOTYPES" selectiontag="withChromosomeIndex"
                   pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
         <filename class="HaploblockGroupFile" onScriptParameter="FILENAME_HAPLOBLOCK_GROUPS" selectiontag="withChromosomeIndex"
@@ -571,7 +571,7 @@
         <filename class="HaploblockGroupFile" onScriptParameter="FILENAME_HAPLOBLOCK_GROUPS" selectiontag="forChromosomeX"
                   pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}23.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
 -->
-        <filename class="TextFile" onMethod="SNPPositionFileGroupByChromosome.mergeAndFilter" pattern='${aceseqOutputDirectory}/${pid}_all.snp.tab.gz'/>
+        <filename class="TextFile" onMethod="de.dkfz.b080.co.files.SNPPositionFileGroupByChromosome.mergeAndFilter" pattern='${aceseqOutputDirectory}/${pid}_all.snp.tab.gz'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.getGenotypes" pattern='${aceseqOutputDirectory}/${pid}_all.snp.fakeBAF.tab.gz'/>
 
 	<filename class="PhasedGenotypeFile" onTool="imputeGenotypes_noMpileup" selectiontag="withChromosomeIndex"
