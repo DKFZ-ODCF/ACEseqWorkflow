@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 # This script replaces segments_to_data.pl and segments_to_data_2.pl.
 #
 # usage: segments_to_data.py --pscbs [FILE] --input [FILE] --output [FILE]

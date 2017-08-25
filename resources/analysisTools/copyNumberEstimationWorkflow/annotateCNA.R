@@ -1,5 +1,10 @@
 #!/usr/bin/Rscript
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at
+# https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
+
 annotateCNA <- function( seg.df, ploidy=fullPloidy, cut.off = 0.7, TCN.colname = "TCN",
                          c1Mean.colname = "c1Mean", c2Mean.colname = "c2Mean", sex=sex ){
 

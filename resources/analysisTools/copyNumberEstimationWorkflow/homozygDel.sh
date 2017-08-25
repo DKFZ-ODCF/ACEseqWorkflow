@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 
 #annotate_vcf & addMappability: add mappability values to fit.txt segments
 #homozygous_del: add sv information (DEL,CTX...) and mappability classification (mappable, unmappable or homozygDel (if no tcn defined) )

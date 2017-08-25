@@ -1,5 +1,9 @@
 #!/usr/bin/R
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at
+# https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 ################################################################################
 ## Annotate segments with DUP/DEL/LOH/TCNneutral/NA based on full ploidy and CN 
 ## segment 

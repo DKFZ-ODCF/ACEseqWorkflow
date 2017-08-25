@@ -1,4 +1,8 @@
 ##################
+
+# Copyright (c) 2017 The ACEseq workflow developers.
+# This script is licenced under (license terms are at
+# https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 ## start Daniel ##
 ##################
 

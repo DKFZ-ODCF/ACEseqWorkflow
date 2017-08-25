@@ -1,5 +1,9 @@
 #!/usr/bin/R
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# This script is licenced under (license terms are at
+# https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 ### Kortine Kleinheinz
 ### 28/02/2014 k.kleinheinz@dkfz.de
 ### Determine the gender of the patient with simple ratio of per base coverage Y chromosome over All chromosomes

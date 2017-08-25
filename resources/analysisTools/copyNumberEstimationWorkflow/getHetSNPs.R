@@ -1,4 +1,8 @@
 #!/usr/bin
+
+# Copyright (c) 2017 The ACEseq workflow developers.
+# This script is licenced under (license terms are at
+# https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 #kortine Kleinheinz k.kleinheinz@dkfz.de
 #first draft to estimate control allele frequencies based on the tumor BAF
 
