@@ -19,9 +19,8 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         BamFile bamControlMerged = new BamFile(_bamControlMerged);
         BamFile bamTumorMerged = new BamFile(_bamTumorMerged);
 
-        boolean runWithDelly = context.getConfiguration().getConfigurationValues().getBoolean("runWithDelly", true);
+        boolean runWithSv = context.getConfiguration().getConfigurationValues().getBoolean("runWithSv", true);
         boolean runQualityCheckOnly = context.getConfiguration().getConfigurationValues().getBoolean("runQualityCheckOnly", false);
-        boolean runMetaCNVGeneration = context.getConfiguration().getConfigurationValues().getBoolean("runMetaCNVGeneration", false);
         boolean runWithFakeControl = context.getConfiguration().getConfigurationValues().getBoolean("runWithFakeControl", false);
         boolean runWithoutControl = context.getConfiguration().getConfigurationValues().getBoolean("runWithoutControl", false);
         
@@ -71,8 +70,8 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         Tuple2<TextFile, TextFile> breakpoints = ACESeqMethods.pscbsGaps(haplotypedSNPFile, correctedWindowFile.value0, annotationResult.getGenderFile());
         Tuple2<TextFile, TextFile> mergedSvs = null;
 
-        if (runWithDelly)
-            mergedSvs = ACESeqMethods.mergeDelly(breakpoints.value0);
+        if (runWithSv)
+            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0);
         else
             mergedSvs = ACESeqMethods.mergeCrest(breakpoints.value0);
         if (mergedSvs == null)

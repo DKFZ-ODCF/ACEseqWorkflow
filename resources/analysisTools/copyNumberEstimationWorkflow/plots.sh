@@ -6,14 +6,14 @@ FILENAME_PARAMETER_JSON_tmp=${FILENAME_PARAMETER_JSON}.tmp
 
 ${RSCRIPT_BINARY} 	--vanilla "${TOOL_GENERATE_PLOTS}" \
 		--SNPfile "${FILENAME_ALL_SNP_UPDATE3}" \
-		--crestFile "${FILENAME_SV_POINTS}" \
+		--svFile "${FILENAME_SV_POINTS}" \
 		--segments "${FILENAME_SEGMENTS_W_PEAKS}" \
 		--outfile "${PLOT_PRE}" \
 		--chrLengthFile "${CHROMOSOME_LENGTH_FILE}" \
 		--outDir "${aceseqOutputDirectory}" \
 		--pp "${FILENAME_PURITY_PLOIDY}" \
 		--file_sex "${FILENAME_SEX}" \
-		--crest_YN $CREST \
+		--sv_YN $SV \
 		--ID ${PID} \
 		--pipelineDir `dirname ${TOOL_GENERATE_PLOTS}`
 

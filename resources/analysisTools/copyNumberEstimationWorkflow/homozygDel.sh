@@ -5,7 +5,7 @@ source ${CONFIG_FILE}
 
 
 #annotate_vcf & addMappability: add mappability values to fit.txt segments
-#homozygous_del: add crest information (DEL,CTX...) and mappability classification (mappable, unmappable or homozygDel (if no tcn defined) )
+#homozygous_del: add sv information (DEL,CTX...) and mappability classification (mappable, unmappable or homozygDel (if no tcn defined) )
 
 #add "#" to header of fit.txt
 sed -i '1s/^chr/#chr/' ${FILENAME_SEGMENTS}

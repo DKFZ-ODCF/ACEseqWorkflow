@@ -1,30 +1,30 @@
 #!/usr/bin/R
-suppressMessages(library(getopt))
 
-script_dir = dirname(get_Rscript_filename())
-source(file.path( script_dir, "qq.R") )
-source(file.path( script_dir, "getopt.R") )
-
-cutoff <- 0.7
 ################################################################################
-## description field should be filled here
+## Annotate segments with DUP/DEL/LOH/TCNneutral/NA based on full ploidy and CN 
+## segment 
 ################################################################################
-getopt2(matrix(c('segmentfile',      'f', 1, "character", "comb_pro_extra_file",
-		 'mergedfile',       'm', 1, "character", "smoothed comb pro extra file",
-                 'patientsex', 	     's', 1, "character", "patient sex (male/female)",
-		 'ploidy',	     'p', 1, "integer", "full ploidy",
-		 'tcc',	             't', 1, "numeric", "tumor cell content",
-                 'pid',              'i', 1, "character", "patient identifier", 
-                 'outfile',          'o', 1, "character", "outfile for parameters", 
-                 'centromerFile',    'x', 1, "character", "centromer coordinates", 
-                 'pipelineDir',      'u', 1, "character", "path to pscbs_plot_functions.R to load annotateCNV function", 
-		 'cutoff',	     'c', 2, "numeric", "required deviation from full ploidy to be counted as aberrant"
-                ), ncol = 5, byrow = TRUE));
-print(outfile)
-source( file.path(pipelineDir, "pscbs_plots_functions.R") )
 
-segments.df <- read.table(segmentfile, header=TRUE)
-centromers <- read.table(centromerFile, header=FALSE, sep="\t")
+args <- commandArgs(trailingOnly = TRUE)
+segmentfile <- args[1]
+mergedfile <- args[2]
+patientsex <- args[3]
+ploidy <- as.integer(args[4])
+tcc <- as.numeric(args[5])
+pid <- args[6]
+outfile <- args[7]
+centromerFile <- args[8]
+pipelineDir <- args[9]
+if( length(args[10])>9 ){
+	cutoff <- as.numeric(args[10])
+}else{
+	cutoff <- 0.7
+}
+
+source( file.path(pipelineDir, "annotateCNA.R") )
+
+segments.df <- read.table(segmentfile, header=TRUE, stringsAsFactor=FALSE)
+centromers <- read.table(centromerFile, header=FALSE, sep="\t", stringsAsFactor=FALSE)
 colnames(centromers) <- c("chromosome", "start","end", "arm", "cytoband")
 
 #calculate aberrant fractions
@@ -41,11 +41,8 @@ fractionLoss <- totalLost/totallength
 fractionLossLOH <- totalLostLOH/totallength
 fractionLOH <- totalLOH/totallength
 
-#TODO
-#- also merge over gaps
-
 merged.df <- read.table( mergedfile, header=TRUE, sep="\t" )
-merged.df <- annotateCNA( seg.df = merged.df, ploidy=ploidy, cut.off = 0.7,
+merged.df <- annotateCNA( seg.df = merged.df, ploidy=ploidy, cut.off = cutoff,
                             TCN.colname = "tcnMean", c1Mean.colname = "c1Mean",
                             c2Mean.colname = "c2Mean", sex=patientsex )
 

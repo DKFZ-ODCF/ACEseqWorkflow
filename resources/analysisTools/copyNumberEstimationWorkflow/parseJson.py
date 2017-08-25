@@ -15,6 +15,9 @@ json_data=args.file.read()
 solutions =  json.loads(json_data)
 
 for index in solutions.keys():
+	outstring = ""
 	for detail in solutions[index].keys():
-		sys.stdout.write( " " + detail + "=" + solutions[index][detail] +" ")
-	sys.stdout.write("\n")
+		outstring = outstring + detail + "=" + solutions[index][detail] + " "
+#		sys.stdout.write( " " + detail + "=" + solutions[index][detail] +" ")
+#	sys.stdout.write("\n")
+	print(outstring)

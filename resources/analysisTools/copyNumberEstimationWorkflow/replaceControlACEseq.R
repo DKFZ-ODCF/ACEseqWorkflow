@@ -2,14 +2,19 @@
 
 library(getopt)
 script_dir = dirname(get_Rscript_filename())
-source(paste0(script_dir,"/qq.R"))
-source(paste0(script_dir, "/getopt.R"))
+#source(paste0(script_dir,"/qq.R"))
+#source(paste0(script_dir, "/getopt.R"))
 
-getopt2( matrix(c(
-  "fileGoodControl", "f", "1", "character", "file with good control values",
-  "fileBadControl",  "b", "1", "character", "file with bad control values",
-  "out",             "o", "1", "character", "combined file with path"
-  ), byrow=TRUE, ncol=5  ))
+spec <- matrix(c(
+  "fileGoodControl", "f", "1", "character", #"file with good control values",
+  "fileBadControl",  "b", "1", "character", #"file with bad control values",
+  "out",             "o", "1", "character"  #"combined file with path"
+  ), byrow=TRUE, ncol=4  )
+
+opt = getopt(spec);
+for(item in names(opt)){
+       assign( item, opt[[item]])
+}
 
 tabGoodControl <- read.table(fileGoodControl)
 tabBadControl <- read.table(fileBadControl)

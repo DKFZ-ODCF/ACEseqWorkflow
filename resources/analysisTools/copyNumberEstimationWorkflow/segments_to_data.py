@@ -63,7 +63,7 @@ if options:
 				outfile.stdin.write(
 				    pscbs_line["chromosome"]+'\t'+pscbs_line["x"      ]+'\t'+
 				    in_line   ["start"     ]+'\t'+in_line   ["end"    ]+'\t'+
-				    in_line   ["crest"     ]+'\t'+pscbs_line["CT"     ]+'\t'+
+				    in_line   ["SV.Type"     ]+'\t'+pscbs_line["CT"     ]+'\t'+
 				    pscbs_line["covT"      ]+'\t'+in_line   ["tcnMean"]+'\t'+
 				    pscbs_line["betaT"     ]+'\t'+pscbs_line["betaN"  ]+'\t'+
 				    pscbs_line["Atumor"    ]+'\t'+pscbs_line["Btumor" ]+'\t'+

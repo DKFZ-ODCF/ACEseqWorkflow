@@ -2,13 +2,13 @@
 library(getopt)
 
 script_dir = dirname(get_Rscript_filename())
-source(paste0(script_dir,"/qq.R"))
-source(paste0(script_dir, "/getopt.R"))
+#source(paste0(script_dir,"/qq.R"))
+#source(paste0(script_dir, "/getopt.R"))
 
 wd = getwd()
 libloc=NULL
 # set default values 
-file_fit  = qq("@{wd}/fit.txt")
+file_fit  = paste0(wd, "/fit.txt")
 nperm     = 200
 min.width = 2000
 undo.SD   = 8
@@ -16,39 +16,45 @@ trim      = 1e-6
 alphaTCN  = 1e-6
 alphaDH   = 1e-6
 h         = 0
-crest     = "yes"
+sv        = "yes"
 nocontrol = FALSE 
 ################################################################################
 ## description field should be filled here
 ################################################################################
-getopt2(matrix(c('file_data',        'd', 1, "character", "", # input  /ibios/co02/bludau/ACEseq/medullo_pediatric/MBBL8/pscbs_data.txt
-                 'file_breakpoints', 'b', 1, "character", "", # input  /ibios/co02/bludau/ACEseq/medullo_pediatric/MBBL8/breakpoints.txt
-		 'chrLengthFile',    'x', 1, "character", "chromosome length file",
-                 'file_fit',         'f', 2, "character", "", # output
-                 'nperm',            'p', 2, "numeric",   "",
-                 'minwidth',         'w', 2, "integer",   "",
-                 'undo.SD',          's', 2, "integer",   "",
-                 'trim',             't', 2, "numeric",   "",
-                 'alphaTCN',         'T', 2, "numeric",   "",
-                 'alphaDH',          'D', 2, "numeric",   "",
-                 'h',                'h', 2, "numeric",   "",
-                 'crest',            'c', 0, "character", "whether crest is used, should be specified",
-                 'libloc',           'l', 2, "character", "location of package",
-		 'nocontrol',	     'n', 2, "logical", "is the sample run without control"
-                ), ncol = 5, byrow = TRUE));
-     
-cat(qq("file_data: @{file_data}\n\n"))
-cat(qq("file_breakpoints: @{file_breakpoints}\n\n"))
-cat(qq("chrLengthFile: @{chrLengthFile}\n\n"))
-cat(qq("file_fit: @{file_fit}\n\n"))
-cat(qq("nperm: @{nperm}\n\n"))
-cat(qq("minwidth: @{minwidth}\n\n"))
-cat(qq("undo.SD: @{undo.SD}\n\n"))
-cat(qq("trim: @{trim}\n\n"))
-cat(qq("alphaTCN: @{alphaTCN}\n\n"))
-cat(qq("alphaDH: @{alphaDH}\n\n"))
-cat(qq("h: @{h}\n\n"))
-cat(qq("crest: @{crest}\n\n"))
+spec <- matrix(c('file_data',        'd', 1, "character", #"", # input
+                 'file_breakpoints', 'b', 1, "character", #"", # input
+		 'chrLengthFile',    'x', 1, "character", #"chromosome length file",
+                 'file_fit',         'f', 2, "character", #"", # output
+                 'nperm',            'p', 2, "numeric"  , #  "",
+                 'minwidth',         'w', 2, "integer"  , #  "",
+                 'undo.SD',          's', 2, "integer"  , #  "",
+                 'trim',             't', 2, "numeric"  , #  "",
+                 'alphaTCN',         'T', 2, "numeric"  , #  "",
+                 'alphaDH',          'D', 2, "numeric"  , #  "",
+                 'h',                'h', 2, "numeric"  , #  "",
+                 'sv',             'c', 0, "character", #"whether svs are used, should be specified",
+                 'libloc',           'l', 2, "character", #"location of package",
+		 'nocontrol',	     'n', 2, "logical"    #"is the sample run without control"
+                ), ncol = 4, byrow = TRUE)
+ 
+opt = getopt(spec);
+for(item in names(opt)){
+       assign( item, opt[[item]])
+}
+    
+    
+cat(paste0("file_data: ", file_data, "\n\n"))
+cat(paste0("file_breakpoints: ", file_breakpoints, "\n\n"))
+cat(paste0("chrLengthFile: ", chrLengthFile, "\n\n"))
+cat(paste0("file_fit: ", file_fit, "\n\n"))
+cat(paste0("nperm: ", nperm, "\n\n"))
+cat(paste0("minwidth: ", minwidth, "\n\n"))
+cat(paste0("undo.SD: ", undo.SD, "\n\n"))
+cat(paste0("trim: ", trim, "\n\n"))
+cat(paste0("alphaTCN: ", alphaTCN, "\n\n"))
+cat(paste0("alphaDH: ", alphaDH, "\n\n"))
+cat(paste0("h: ", h, "\n\n"))
+cat(paste0("sv: ", sv, "\n\n"))
 cat("\n")
 
 if( libloc == ""  | libloc == TRUE )
@@ -64,7 +70,7 @@ R.utils::reassignInPackage("segment", "DNAcopy", modifiedSegmentFunction, keepOl
 
 library(PSCBS, lib.loc=libloc)
 # read datatable                        
-cat(qq("reading @{file_data}...\n\n"))
+cat(paste0("reading ",file_data, "...\n\n"))
 colNamesData <- c( "a", "chromosome", "betaT", "betaN", "x", "Atumor", "Btumor", "Anormal", "Bnormal", "haplotype", "CT", "covT", "covN" )
 chromosomes = 1:24
 
@@ -95,20 +101,16 @@ chrLength$V1[sel] = 24
 
 # read knownSegments
 ################################################################################
-## I think `crest` should be a logical variable.
-## What is the difference between using crest and not using crest?
-## according to following code, it seems same for using crest or not
+## I think `sv` should be a logical variable.
 ################################################################################
-cat(qq("reading @{file_breakpoints}...\n\n"))
+cat(paste0("reading ", file_breakpoints, "...\n\n"))
 knownSegments = read.table(file_breakpoints, sep = "\t", as.is = TRUE, header=FALSE ) 
 colnames(knownSegments) = c("chromosome", "start", "end", "length")
 
     
 # start pscbs
 cat("start pscbs\n")
-#library(PSCBS, lib.loc="/home/bludau/R/x86_64-unknown-linux-gnu-library/2.13")
-# lib.loc needs to be specified since source code has been modified
-# remove a line in `DNAcopy::segment`
+#remove a line in `DNAcopy::segment`
 #body(segment)[[4]] = substitute(print("hack")) # minimum width 
 
 

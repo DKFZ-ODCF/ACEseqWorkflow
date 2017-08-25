@@ -7,7 +7,7 @@ require(grid)
 #chr is the chromosome number
 #ratio: data.frame; subset (chromosome) of dataAll dataframe containing all SNPs
 #seg: data.frame; subset of combi which contains all segments for sample
-plotTCN = function (chromosome, ratio, seg, Ploidy, tcc, fullPloidy, chrLen, ymaxcov, plots='single', crestSub=NULL, p = NULL) {
+plotTCN = function (chromosome, ratio, seg, Ploidy, tcc, fullPloidy, chrLen, ymaxcov, plots='single', svSub=NULL, p = NULL) {
 		
 		ymaxDH	= 1 
 		xtotal	= chrLen/ 10
@@ -69,34 +69,34 @@ plotTCN = function (chromosome, ratio, seg, Ploidy, tcc, fullPloidy, chrLen, yma
 			# add axis
 			p <- p + scale_x_continuous( breaks=pretty(1:len, n=10)/len, labels=pretty(1:len, n=10) ) 
 
-			# crest segments
-			if ( is.data.frame(crestSub) ) {
+			# sv segments
+			if ( is.data.frame(svSub) ) {
 
-				crestSub$start  <- crestSub$start/10/xtotal
-				crestSub$end    <- crestSub$end/10/xtotal
+				svSub$start  <- svSub$start/10/xtotal
+				svSub$end    <- svSub$end/10/xtotal
 			
-				crestSub$ymaxcov <- replicate( nrow(crestSub), ymaxcov )
-				crestList = split(crestSub, crestSub$type) 
+				svSub$ymaxcov <- replicate( nrow(svSub), ymaxcov )
+				svList = split(svSub, svSub$type) 
 
-				if (length(crestList$DUP) > 0){
-					p <- p + geom_arch( data=crestList$DUP, aes(x=start, xend=end, height=1.2, y=ymaxcov), col='red', lwd = 0.3)
+				if (length(svList$DUP) > 0){
+					p <- p + geom_arch( data=svList$DUP, aes(x=start, xend=end, height=1.2, y=ymaxcov), col='red', lwd = 0.3)
 				}
 	          
-				if (length(crestList$DEL) > 0){
-					p <- p + geom_arch( data=crestList$DEL, aes(x=start, xend=end, height=1.2, y=ymaxcov), col='blue', lwd = 0.3)
+				if (length(svList$DEL) > 0){
+					p <- p + geom_arch( data=svList$DEL, aes(x=start, xend=end, height=1.2, y=ymaxcov), col='blue', lwd = 0.3)
 				}
 						 
-				if (length(crestList$INV) > 0){
-					p <- p + geom_arch( data=crestList$INV, aes(x=start, xend=end, height=1.2, y=ymaxcov), col='purple', lwd = 0.3)
+				if (length(svList$INV) > 0){
+					p <- p + geom_arch( data=svList$INV, aes(x=start, xend=end, height=1.2, y=ymaxcov), col='purple', lwd = 0.3)
 				}
 
-				if (length(crestList$ITX) > 0){ 
-					p <- p + geom_arch( data=crestList$ITX, aes( x=start, xend=end, height=1.2, y=ymaxcov ), col="#7CFC00", lwd=0.3 ) 
+				if (length(svList$ITX) > 0){ 
+					p <- p + geom_arch( data=svList$ITX, aes( x=start, xend=end, height=1.2, y=ymaxcov ), col="#7CFC00", lwd=0.3 ) 
 				}
 			  
-				if (length(crestList$CTX) > 0){
-					p <- p + geom_linerange( data = crestList$CTX, aes(x=start,  y=ymaxcov, ymin=ymaxcov, ymax=ymaxcov+1 ), col="#006400", lty=1, lwd=0.3) 
-					p <- p + geom_text(data=crestList$CTX, aes(x=start+0.001, y=ymaxcov+1, label = chr2), cex = 2, col = "#006400")
+				if (length(svList$CTX) > 0){
+					p <- p + geom_linerange( data = svList$CTX, aes(x=start,  y=ymaxcov, ymin=ymaxcov, ymax=ymaxcov+1 ), col="#006400", lty=1, lwd=0.3) 
+					p <- p + geom_text(data=svList$CTX, aes(x=start+0.001, y=ymaxcov+1, label = chr2), cex = 2, col = "#006400")
 				}
 			}
 		}
@@ -395,21 +395,21 @@ completeSeg = function( comb, Ploidy, tcc, id, solutionPossible=NA, sex=sex) {
 	colnames(comb_out)[1] <- "#chromosome"
 
 
-	write.table(comb_out, qq("@{outDir}/@{id}_comb_pro_extra@{round(Ploidy, digits = 3)}_@{tcc}.txt"), sep = "\t", row.names = FALSE, quote = FALSE) 
+	write.table(comb_out, paste0("",outDir, "/",id, "_comb_pro_extra",round(Ploidy, digits = 3), "_",tcc, ".txt"), sep = "\t", row.names = FALSE, quote = FALSE) 
 
-	important_cols <- c('#chromosome', 'start', 'end', 'length', 'tcnMeanRaw', 'tcnMean', 'crest', 'c1Mean', 'c2Mean', 'dhMean', 'dhMax', 'genotype', 'CNA.type', 'tcnNbrOfHets','minStart', 'maxStart', 'minStop', 'maxStop')
+	important_cols <- c('#chromosome', 'start', 'end', 'length', 'tcnMeanRaw', 'tcnMean', 'SV.Type', 'c1Mean', 'c2Mean', 'dhMean', 'dhMax', 'genotype', 'CNA.type', 'tcnNbrOfHets','minStart', 'maxStart', 'minStop', 'maxStop')
   	important_sub  <- comb_out[,important_cols]
   
 	colnames(important_sub) <- sub("tcnMeanRaw", "covRatio", colnames(important_sub))
 	colnames(important_sub) <- sub("tcnMean", "TCN", colnames(important_sub))
-	colnames(important_sub) <- sub("crest", "SV.Type", colnames(important_sub))
+	colnames(important_sub) <- sub("SV.Type", "SV.Type", colnames(important_sub))
 	colnames(important_sub) <- sub("dhMean", "dhEst", colnames(important_sub))
 	colnames(important_sub) <- sub("dhMax", "dhSNPs", colnames(important_sub))
 	colnames(important_sub) <- sub("tcnNbrOfHets", "NbrOfHetsSNPs", colnames(important_sub))
 
 	important_sub 	    <- format(important_sub, scientific = FALSE, trim = TRUE)
 	qual = sum( as.numeric(comb$length[abs(comb$tcnMean - round(comb$tcnMean)) <= 0.3])  ) / sum(as.numeric(comb$length))
-	importantFile = qq("@{outDir}/@{id}_most_important_info@{round(Ploidy, digits = 3)}_@{tcc}.txt")
+	importantFile = paste0("",outDir, "/",id, "_most_important_info",round(Ploidy, digits = 3), "_",tcc, ".txt")
 
 	#change parameter names for json conversion output
 	tcc= tcc
@@ -418,10 +418,10 @@ completeSeg = function( comb, Ploidy, tcc, id, solutionPossible=NA, sex=sex) {
 	ploidy=fullPloidy
 	caller = "ACEseq"
 	gender = sex
-	tabFileForJson = qq("@{outDir}/@{id}_cnv_parameter_@{round(Ploidy, digits = 3)}_@{tcc}.txt")
+	tabFileForJson = paste0("",outDir, "/",id, "_cnv_parameter_",round(Ploidy, digits = 3), "_",tcc, ".txt")
 	write.table( data.frame( tcc, ploidyFactor, ploidy, goodnessOfFit, gender, solutionPossible ), tabFileForJson, row.names=FALSE, col.names=TRUE, quote=FALSE, sep='\t' )
 
-	write.table(qq("#tcc:@{tcc}\n#ploidy:@{ploidyFactor}\n#roundPloidy:@{fullPloidy}\n#fullPloidy:@{fullPloidy}\n#quality:@{qual}\n#assumed sex:@{sex}"), importantFile, col.names=FALSE, row.names=FALSE, quote=FALSE )
+	write.table(paste0("#tcc:",tcc, "\n#ploidy:",ploidyFactor, "\n#roundPloidy:",fullPloidy, "\n#fullPloidy:",fullPloidy, "\n#quality:",qual, "\n#assumed sex:",sex, ""), importantFile, col.names=FALSE, row.names=FALSE, quote=FALSE )
 	write.table( important_sub,
 		     importantFile,
 		     sep = "\t", row.names = FALSE, quote = FALSE, append=TRUE ) 
@@ -433,58 +433,4 @@ completeSeg = function( comb, Ploidy, tcc, id, solutionPossible=NA, sex=sex) {
 	return(list(comb,fullPloidy))
 }	
 
-annotateCNA <- function( seg.df, ploidy=fullPloidy, cut.off = 0.7, TCN.colname = "TCN",
-                         c1Mean.colname = "c1Mean", c2Mean.colname = "c2Mean", sex=sex ){
-
-        seg.df$CNA.type <- NA
-	seg.df$chromosome <- gsub("^23", "X", seg.df$chromosome)
-	seg.df$chromosome <- gsub("^24", "Y", seg.df$chromosome)
-
-        selNeutral <- which( ( seg.df[,TCN.colname] >= (ploidy -(1 - cut.off)) &
-				 seg.df[,TCN.colname] <= (ploidy + (1 - cut.off)) ) |
-                            ( sex=="male" &
-                                (seg.df$chromosome =="X" |
-                                   seg.df$chromosome== "Y" ) &
-                                (seg.df[,TCN.colname] >= (ploidy/2 - (1-cut.off)) &
-                                   seg.df[,TCN.colname] <= (ploidy/2 + (1-cut.off)) ) ) |
-                            ( sex=="klinefelter" &
-                                   seg.df$chromosome== "Y" &
-                                (seg.df[,TCN.colname] >= (ploidy/2 - (1-cut.off)) &
-                                   seg.df[,TCN.colname] <= (ploidy/2 + (1-cut.off)) ) ) )
-
-        selGain <- which( seg.df[,TCN.colname] >= ploidy + cut.off |
-                            ( sex=="male" &
-                                (seg.df$chromosome =="X" |
-                                   seg.df$chromosome== "Y" ) &
-                                seg.df[,TCN.colname] >= (ploidy/2 + cut.off) ) |
-			    ( sex=="klinefelter" &
-                                   seg.df$chromosome== "Y" &
-                                seg.df[,TCN.colname] >= ( ploidy/2 + cut.off) ) )
-
-        selLoss <- which( round(seg.df[,TCN.colname]) > 0 &
-                            ( ( seg.df[,TCN.colname] <= ploidy -cut.off &
-                                  seg.df$chromosome != "Y"  & 
-                                  ( seg.df$chromosome != "X" | sex != "male" ) ) | 
-                                ( sex=="male" &
-                                    ( seg.df$chromosome == "X" | seg.df$chromosome=="Y") &
-                                    seg.df[,TCN.colname] <= (ploidy/2 -cut.off) ) |
-                                ( sex=="klinefelter" & seg.df$chromosome=="Y" &
-                                    seg.df[,TCN.colname] <= (ploidy/2 -cut.off) ) ) )
-
-        selLOH  <- which( round(seg.df[, c1Mean.colname]) <= 0 & round(seg.df[, c2Mean.colname]) >0 &
-			    seg.df$chromosome != "Y" &
-                            ( sex =="female" |  sex=="klinefelter" |
-                               seg.df$chromosome!="X" ) )
-
-        selHomoDel  <- which( round(seg.df[,TCN.colname]) <= 0 )
-
-        seg.df$CNA.type[selNeutral] <- "TCNneutral"
-        seg.df$CNA.type[selGain]    <- paste0( seg.df$CNA.type[selGain], ";DUP")
-        seg.df$CNA.type[selLoss]    <- paste0( seg.df$CNA.type[selLoss], ";DEL")
-        seg.df$CNA.type[selLOH ]    <- paste0( seg.df$CNA.type[selLOH], ";LOH")
-        seg.df$CNA.type[selHomoDel] <- paste0( seg.df$CNA.type[selHomoDel], ";HomoDel")
-
-        seg.df$CNA.type <- gsub("NA;", "", seg.df$CNA.type)
-        return( seg.df )
-}
 

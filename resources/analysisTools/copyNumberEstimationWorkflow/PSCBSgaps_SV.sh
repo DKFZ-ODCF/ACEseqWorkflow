@@ -4,16 +4,16 @@
 source ${CONFIG_FILE}
 
 
-echo "starting to merge PSCBS breakpoints and crest points"
+echo "starting to merge PSCBS breakpoints and sv points"
 
 tmp_breakpoints=${FILENAME_BREAKPOINTS}_tmp
 tmp_svPoints=${FILENAME_SV_POINTS}_tmp
 
-if [[ "${CREST}" == 'yes' ]]
+if [[ "${SV}" == 'yes' ]]
 then
 
-	${PYTHON_BINARY} "${TOOL_ADD_DELLY_TO_PSCBS_GAPS}" \
-		    --variants       "${FILENAME_DELLY_SV}" \
+	${PYTHON_BINARY} "${TOOL_ADD_SV_TO_PSCBS_GAPS}" \
+		    --variants       "${FILENAME_SV}" \
 		    --known_segments "${FILENAME_KNOWNSEGMENTS}" \
 		    --output         "${tmp_breakpoints}" \
 		    --sv_out         "${tmp_svPoints}" \
@@ -23,7 +23,7 @@ then
 else
 	cp ${FILENAME_KNOWNSEGMENTS} ${tmp_breakpoints}
 	sed -i '1s/^chr/#chr/' ${tmp_breakpoints}
-	echo "" > "${svPoints_tmp}"
+	echo "" > "${tmp_svPoints}"
 
 fi
 

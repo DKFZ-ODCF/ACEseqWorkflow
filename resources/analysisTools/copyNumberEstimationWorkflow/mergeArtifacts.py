@@ -2,7 +2,7 @@
 
 
 
-### idea if segment too small check for crest of prior and following segment if both neighbouring merge with that that has identical crest type
+### idea if segment too small check for sv of prior and following segment if both neighbouring merge with that that has identical sv type
 ### if copy number closer to one of the segments merge with that one
 
 import numpy
@@ -77,7 +77,7 @@ def merge_lines_CN(prior_line, newline, next_line):
 	return ( [prior_line, newline] )
 
 def find_closer_match_CN(prior_line, newline, next_line):
-	"Find closest match according to tcn and crest definition"
+	"Find closest match according to tcn and sv definition"
 	neighbours =  [ next_line, prior_line ]
 	#considered for merging if segments are directly neighboured and central segment is either homozygous Deletion or less than 0.3 different from neighbour TCN
 	#additional criteria: segment is exceptionally short (<51)
@@ -102,19 +102,19 @@ def find_closer_match_CN(prior_line, newline, next_line):
 #				 and  float(newline["length"]) < float(prior_line["length"])
 	if nextTrue and priorTrue:
 		tcn_dists = [ abs(float(j[ "tcnMean" ]) - float(newline["tcnMean"] ) ) for i, j in enumerate( neighbours ) ]
-		same_crest = [ i for i, j in enumerate( neighbours ) if j[ "crest" ] == newline["crest"] and newline["crest"] != "NA" ]
-		crest_defined = [ i for i, j in enumerate( neighbours ) if j[ "crest" ]   != "NA" ]
+		same_sv = [ i for i, j in enumerate( neighbours ) if j[ 'SV.Type' ] == newline['SV.Type'] and newline['SV.Type'] != "NA" ]
+		sv_defined = [ i for i, j in enumerate( neighbours ) if j[ 'SV.Type' ]   != "NA" ]
 			
 		if tcn_dists[0] == tcn_dists[1] or newline["tcnMean"] == 0:
-			if len(same_crest) == 1 :
-				if same_crest[0]==0:
+			if len(same_sv) == 1 :
+				if same_sv[0]==0:
 					priorTrue, nextTrue = [ False, True ]
-				elif same_crest[0] == 1:
+				elif same_sv[0] == 1:
 					priorTrue, nextTrue = [ True, False ]
-				elif len(crest_defined) > 0: 
-					if crest_defined[0]==0:
+				elif len(sv_defined) > 0: 
+					if sv_defined[0]==0:
 						priorTrue, nextTrue = [ False, True ]
-					elif crest_defined[0] == 1:
+					elif sv_defined[0] == 1:
 						priorTrue, nextTrue = [ True, False ]
 				else:				
 					priorTrue, nextTrue = [ True, False ]

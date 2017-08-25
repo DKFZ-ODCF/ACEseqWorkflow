@@ -7,7 +7,7 @@ source ${CONFIG_FILE}
 tmp_breakpoints=${FILENAME_BREAKPOINTS}.tmp
 svPoints_tmp=${FILENAME_SV_POINTS}.tmp
 
-if [[ "${CREST}" == 'yes' ]]
+if [[ "${SV}" == 'yes' ]]
 then
 	${PYTHON_BINARY} "${TOOL_ADD_CREST_TO_PSCBS_GAPS}" \
             --crest_deldupinv "${FILENAME_CREST_DELDUPINV}" \

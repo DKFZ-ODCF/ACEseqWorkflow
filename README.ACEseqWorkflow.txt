@@ -12,6 +12,8 @@ runMetaCNVGeneration        false   Run a meta step for the cnv generation. This
 runWithoutControl	    false Run analysis with matching control and estimate control genotypes based on tumor BAF
 
 == Changelist
+- replace all occurences of qq.R and getopt2 by getopt
+- replace all occurenced of name delly and crest, also in final output 
 - change color for deletions(red ==>blue) and duplications (red ==> blue)
 - enable modularization of workflow
 - remove generateVCF job, add estiate HRD score

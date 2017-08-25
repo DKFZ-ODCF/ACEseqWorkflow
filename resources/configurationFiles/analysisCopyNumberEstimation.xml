@@ -90,7 +90,7 @@
         <cvalue name='CHROMOSOME_INDICES_OPTIMIZED_CNV_SNV_MPILEUP' value='( 2 1 3 5 4 6 8 12 7 11 10 9 X 16 13 15 14 18 17 19 20 22 21 Y )' type='bashArray'/>
         <cvalue name='AUTOSOME_INDICES' value='( {1..22} )' type='bashArray'/>
 
-        <cvalue name='CREST' value='yes' type='string' description='include SV breakpoints in analysis (yes|no)'/>
+        <cvalue name='SV' value='yes' type='string' description='include SV breakpoints in analysis (yes|no)'/>
 
         <cvalue name='runOnPancan' value='false' type='boolean'/>
 
@@ -241,7 +241,7 @@
         <tool name="correctGcBiasR" value="correctGCBias.R" basepath="copyNumberEstimationWorkflow"/>
         <tool name="convertToJson" value="convertTabToJson.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="defineBreakpoints" value="datatable_and_PSCBSgaps.R" basepath="copyNumberEstimationWorkflow"/>
-        <tool name="addDellyToPscbsGaps" value="PSCBSgabs_plus_delly_points.py" basepath="copyNumberEstimationWorkflow"/>
+        <tool name="addSvToPscbsGaps" value="PSCBSgabs_plus_sv_points.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="addCrestToPscbsGaps" value="PSCBSgabs_plus_CRESTpoints.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="pscbsSegmentation" value="pscbs_all.R" basepath="copyNumberEstimationWorkflow"/>
         <tool name="addHomozygousDeletion" value="homozygous_deletion.pl" basepath="copyNumberEstimationWorkflow"/>
@@ -440,12 +440,12 @@
             </output>
         </tool>
 
-        <tool name="mergeBreakpointsAndSvDelly" value="PSCBSgaps_Delly.sh" basepath="copyNumberEstimationWorkflow">
+        <tool name="mergeBreakpointsAndSv" value="PSCBSgaps_SV.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="1"/>
             </resourcesets>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_DELLY_SV"/>
+            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SV"/>
             <output type="tuple">
                 <output type="file" fnpatternselectiontag="breakpointsSvs" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_BREAKPOINTS"/>
                 <output type="file" fnpatternselectiontag="svPoints" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SV_POINTS"/>
@@ -607,9 +607,8 @@
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.replaceControl" pattern='${aceseqOutputDirectory}/checkpointFakeControl.txt'/>
         <filename class="TextFile" onMethod="CoverageWindowsFileAnnotationResult.mergeAndFilterCoverageWindowFiles" pattern='${aceseqOutputDirectory}/${pid}_all.cnv.tab.gz'/>
         <filename class="TextFile" derivedFrom='TextFile' selectiontag='covWinFileWithBadControl' pattern='${aceseqOutputDirectory}/${pid}_all.cnv.tab.gz'/>
-        <!--<filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.pscbsGapsAndMergeDelly" selectiontag="crestFileTag" pattern='${aceseqOutputDirectory}/crestFile.txt' />-->
+
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.correctGC" selectiontag="correctedWindows" pattern='${aceseqOutputDirectory}/${pid}_all.cnv.corrected.tab.gz'/>
-        <!--<filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.correctGC" selectiontag="plot" pattern='${plotOutputDirectory}/${pid}_gc_corrected.png' />-->
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.correctGC" selectiontag="tabSlim" pattern='${plotOutputDirectory}/${pid}_qc_gc_corrected.json'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.correctGC" selectiontag="tab" pattern='${plotOutputDirectory}/${pid}_qc_gc_corrected.tsv'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.pscbsGaps" selectiontag="knownsegments" pattern='${aceseqOutputDirectory}/${pid}_knownsegments.txt'/>
@@ -618,9 +617,9 @@
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="crestTranslocFileTag" pattern='${crestOutputDirectory}/tumor_${pid}.${cvalue,name="crestTransSuffix",default="TX"}'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="svPoints" pattern='${aceseqOutputDirectory}/${pid}_sv_points.txt'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeDelly" selectiontag="dellyFileTag" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeDelly" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeDelly" selectiontag="svPoints" pattern='${aceseqOutputDirectory}/${pid}_sv_points.txt'/>
+        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeSv" selectiontag="svFileTag" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>
+        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
+        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeSv" selectiontag="svPoints" pattern='${aceseqOutputDirectory}/${pid}_sv_points.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.getSegmentAndGetSnps" selectiontag="segments" pattern='${aceseqOutputDirectory}/${pid}_fit.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.markSegsWithHomozygDel" pattern='${aceseqOutputDirectory}/${pid}_homozygous_deletion.txt.gz'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.segsToSnpDataHomodel" pattern='${aceseqOutputDirectory}/${pid}_all_seg.txt.gz'/>

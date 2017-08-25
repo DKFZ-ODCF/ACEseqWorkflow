@@ -168,7 +168,7 @@ checkControl <- function(coverage, covIndex){
         diffPeaks <- c(diffPeaks, NA)
     }
     
-    plot(dens, col="blue", main = qq("chr: @{chr}"), xlab="normalized coverage control")
+    plot(dens, col="blue", main = paste0("chr: ",chr), xlab="normalized coverage control")
   }
   
   return(diffPeaks)

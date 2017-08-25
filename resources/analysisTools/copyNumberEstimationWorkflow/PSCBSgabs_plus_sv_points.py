@@ -1,21 +1,15 @@
 #!/usr/bin/python
 
-# This script replaces PSCBSgabs_plus_CRESTpoints.pl.
-#
 # This script merges all segmentation approaches into a final segmentation.
 
 from python_modules import Tabfile
 import argparse
 import sys
 
-parser=argparse.ArgumentParser(description = "Add SVs detected by DELLY")
-parser.add_argument('--variants',  '-v', type = str, help = "DELLY structural variations, combination file of del, dup, inv, tra... used if single files are not provided")
-parser.add_argument('--dele',	   '-d', type = str, help = "DELLY deletions")
-parser.add_argument('--dup',	   '-p', type = str, help = "DELLY duplications")
-parser.add_argument('--inv',	   '-i', type = str, help = "DELLY inversions")
-parser.add_argument('--tx',	   '-t', type = str, help = 'DELLY translocations')
+parser=argparse.ArgumentParser(description = "Add SVs detected by other algorithm")
+parser.add_argument('--variants',  '-v', type = str, help = "structural variations, combination file of del, dup, inv, tra.")
 parser.add_argument('--known_segments','-k', type=str, help = "File containing breakpoints")
-parser.add_argument('--sv_out',	   '-s', type = str, help = 'Outfile for delly SVs')
+parser.add_argument('--sv_out',	   '-s', type = str, help = 'Outfile for SVs')
 parser.add_argument('--output',	   '-o', type = str, help = 'Outfile for new breakpoints')
 parser.add_argument('--selectCol', '-c', default = "eventscore", type = str, help = 'column name of column to annotate in sv_points.txt')
 parser.add_argument('--DDI_length','-l', type = int, help= 'minimum length of del,dup,inv to be considered')
@@ -23,13 +17,6 @@ parser.add_argument('--DDI_length','-l', type = int, help= 'minimum length of de
 args = parser.parse_args()
 
 selCol = args.selectCol
-filenumber = 4		#svs split up into 4 bedpe files
-if not args.dele  or not args.dup or not args.inv or not args.tx:
-	if not args.variants:
-	        sys.stderr.write("Please specify all DELLY file(s). For more information use -h\n")
-        	sys.exit(2)
-	else:
-		filenumber = 1	#svs combined in one bedpe file
 
 if not args.known_segments:
         sys.stderr.write("Please specify all known_segments file. For more information use -h\n")
@@ -43,29 +30,15 @@ if not args.DDI_length:
 	sys.stderr.write("Please specify all minimum duplication deletion and inversion (DDI) lengths. For more information use -h\n")
         sys.exit(2)
 
-if filenumber==4:
-	try:
-		delly_del_file = Tabfile.Input( open( args.dele, "r" ) )
-		delly_dup_file  = Tabfile.Input( open( args.dup, "r" ) )
-		delly_inv_file = Tabfile.Input( open( args.inv, "r" ) )
-		delly_tx_file = Tabfile.Input( open( args.tx, "r" ) )
-		knownseg_file = Tabfile.Input( open( args.known_segments, "r" ) )
-		sv_out      = open( args.sv_out, "w" )
-		file_out       = open( args.output, "w" )
-		files = [ delly_del_file, delly_dup_file, delly_inv_file, delly_tx_file ]
-	except IOError as (errno, strerr):
-		sys.stderr.write( "IOError %i: %s\n"% (errno, strerr) )
-		sys.exit(errno)
-else:
-	try:
-		delly_file = Tabfile.Input( open( args.variants, "r" ) )
-		sv_out     = open( args.sv_out, "w" )
-		knownseg_file = Tabfile.Input( open( args.known_segments, "r" ) )
-		file_out   = open( args.output, "w" )
-		files = [delly_file]
-	except IOError as (errno, strerr):
-		sys.stderr.write( "IOError %i: %s\n"% (errno, strerr) )
-		sys.exit(errno)
+try:
+	sv_file = Tabfile.Input( open( args.variants, "r" ) )
+	sv_out     = open( args.sv_out, "w" )
+	knownseg_file = Tabfile.Input( open( args.known_segments, "r" ) )
+	file_out   = open( args.output, "w" )
+	files = [sv_file]
+except IOError as (errno, strerr):
+	sys.stderr.write( "IOError %i: %s\n"% (errno, strerr) )
+	sys.exit(errno)
 
 breakpoints = []
 chromosomes = [ str(a) for a in range(1,24+1) ]

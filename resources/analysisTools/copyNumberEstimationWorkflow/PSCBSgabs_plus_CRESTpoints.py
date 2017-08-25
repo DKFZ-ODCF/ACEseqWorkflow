@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-# This script replaces PSCBSgabs_plus_CRESTpoints.pl.
-#
 # This script merges all segmentation approaches into a final segmentation.
 
 from python_modules import Tabfile

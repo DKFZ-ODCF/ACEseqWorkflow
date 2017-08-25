@@ -15,7 +15,7 @@ ${RSCRIPT_BINARY} --vanilla "${TOOL_PSCBS_SEGMENTATION}" \
 	--minwidth          $min_seg_width \
 	--undo.SD           $undo_SD \
 	-h                  $pscbs_prune_height \
-	--crest             $CREST \
+	--sv                $SV \
 	--libloc            "${libloc_PSCBS}" \
 	--nocontrol	    ${nocontrol}
 

@@ -2,50 +2,57 @@
 
 library(getopt)
 script_dir = dirname(get_Rscript_filename())
-source(paste0(script_dir,"/qq.R"))
-source(paste0(script_dir, "/getopt.R"))
+#source(paste0(script_dir,"/qq.R"))
+#source(paste0(script_dir, "/getopt.R"))
 
-getopt2(matrix(c('SNPfile',       'f', 1, "character", '',
-                 'crestFile',     'c', 1, "character", '',
-                 'segments',      's', 1, "character", '',
-                 'outfile',       'o', 1, "character", '',
-                 'chrLengthFile', 'l', 1, "character", '',
-                 'pp',            'p', 1, "character", '',
-                 'outDir',        'x', 1, "character", '',
-                 'file_sex',      'g', 1, "character", '',
-                 'crest_YN',      'y', 1, "character", '',
-                 'ID',            'i', 1, "character", '',
-		 'pipelineDir',	  'd', 1, "character", ''
-                ), ncol = 5, byrow = TRUE))
+spec <- matrix(c('SNPfile',       'f', 1, "character", 
+                 'svFile',     'c', 1, "character", 
+                 'segments',      's', 1, "character", 
+                 'outfile',       'o', 1, "character", 
+                 'chrLengthFile', 'l', 1, "character", 
+                 'pp',            'p', 1, "character", 
+                 'outDir',        'x', 1, "character", 
+                 'file_sex',      'g', 1, "character", 
+                 'sv_YN',         'y', 1, "character", 
+                 'ID',            'i', 1, "character", 
+		 'pipelineDir',	  'd', 1, "character" 
+                ), ncol = 4, byrow = TRUE)
                
-cat(qq("SNPfile: @{SNPfile}\n\n"))
-cat(qq("crest: @{crestFile}\n\n"))
-cat(qq("segments: @{segments}\n\n"))
-cat(qq("outfile: @{outfile}\n\n"))
-cat(qq("chrLengthFile: @{chrLengthFile}\n\n"))
-cat(qq("pp: @{pp}\n\n"))
-cat(qq("outDir: @{outDir}\n\n"))
-cat(qq("file_sex: @{file_sex}\n\n"))
-cat(qq("crest_YN: @{crest_YN}\n\n"))
-cat(qq("ID: @{ID}\n\n"))
+ 
+opt = getopt(spec);
+for(item in names(opt)){
+       assign( item, opt[[item]])
+}
+ 
+cat(paste0("SNPfile: ", SNPfile, "\n\n"))
+cat(paste0("sv: ", svFile, "\n\n"))
+cat(paste0("segments: ", segments, "\n\n"))
+cat(paste0("outfile: ", outfile, "\n\n"))
+cat(paste0("chrLengthFile: ", chrLengthFile, "\n\n"))
+cat(paste0("pp: ", pp, "\n\n"))
+cat(paste0("outDir: ", outDir, "\n\n"))
+cat(paste0("file_sex: ", file_sex, "\n\n"))
+cat(paste0("sv_YN: ", sv_YN, "\n\n"))
+cat(paste0("ID: ", ID, "\n\n"))
 cat("\n")
 
 source( file.path(pipelineDir, "pscbs_plots_functions.R") )
+source( file.path(pipelineDir, "annotateCNA.R") )
 		                 
-cat(qq("reading \n\n"))
+cat("reading \n\n")
 
 #read data and set variables
-if (crest_YN == "yes") {
-	crest <- try( read.table(crestFile, sep = "\t", header = FALSE, as.is = TRUE, stringsAsFactors = TRUE)[1:6], silent=TRUE )
-	if ( is.data.frame(crest) ){
-		colnames(crest) = c("chromosome", "start", "end", "length", "type", "chr2")
-		crestAll = data.frame(crest)
+if (sv_YN == "yes") {
+	sv <- try( read.table(svFile, sep = "\t", header = FALSE, as.is = TRUE, stringsAsFactors = TRUE)[1:6], silent=TRUE )
+	if ( is.data.frame(sv) ){
+		colnames(sv) = c("chromosome", "start", "end", "length", "type", "chr2")
+		svAll = data.frame(sv)
 	}else{
-		crest=NULL
+		sv=NULL
 	}
 	
 }else{
-	crest = NULL
+	sv = NULL
 }
 
 segments = read.table(segments, sep = "\t", header = TRUE, as.is = TRUE, stringsAsFactors = TRUE)
@@ -83,7 +90,7 @@ if (chrCount > maxChrCount) {
 
 
 #function wrappers to get chromosome wise plots of TCN, dh and BAF
-plotChromosomes = function (chrom, dat, comb,  TCC, ploi , roundPloi, crestPoints=NULL) {
+plotChromosomes = function (chrom, dat, comb,  TCC, ploi , roundPloi, svPoints=NULL) {
 	#don't plot if data frame is empty
 	if (nrow(dat)<1)
 		return(NULL)
@@ -93,11 +100,11 @@ plotChromosomes = function (chrom, dat, comb,  TCC, ploi , roundPloi, crestPoint
 	sel  = which( comb$chromosome == chrom )
 	segs = comb[sel,]
 
-	if ( is.data.frame(crestPoints) ){	
-		sel 	 = which(crestPoints$chromosome==chrom)
-		crestSub = crestPoints[sel,]
+	if ( is.data.frame(svPoints) ){	
+		sel 	 = which(svPoints$chromosome==chrom)
+		svSub = svPoints[sel,]
 	}else{
-		crestSub = NULL
+		svSub = NULL
 	}
 	sel = which(chrLength$V1==chrom)
 	chrL <- chrLength$V2[sel]
@@ -105,13 +112,13 @@ plotChromosomes = function (chrom, dat, comb,  TCC, ploi , roundPloi, crestPoint
 #	maxCov = 2*ploi
 	maxCov = max(comb$tcnMean, na.rm= TRUE)
 
-	p1 <- plotTCN( chrom, ratio, segs, ploi, TCC, roundPloi, chrL, ymaxcov=maxCov, crestSub=crestSub) + labs(x=NULL)
+	p1 <- plotTCN( chrom, ratio, segs, ploi, TCC, roundPloi, chrL, ymaxcov=maxCov, svSub=svSub) + labs(x=NULL)
 	p2 <- plotDHmeans( segs, chrL ) + theme( axis.text.x=element_blank() )
 
 	X = which( (ratio$betaN > 0.3) & (ratio$betaN < 0.7) )
 	p3 <- plotRawBAF( ratio[X,], seg=segs, chrL ) 
 
-        plotTitle <- textGrob( qq("@{ID}_chr_@{chrom} Ploidy=@{roundPloi}, corr=@{round(ploi,digits=3)}, Tumor_cell_content=@{round(TCC,digits=3)}") )
+        plotTitle <- textGrob( paste0("",ID, "_chr_",chrom, " Ploidy=",roundPloi, ", corr=",round(ploi,digits=3), ", Tumor_cell_content=",round(TCC,digits=3), "") )
         p = arrangeGrob(plotTitle, p1, p2, p3, nrow=4, heights=c(1,7,7,7))
 
 	fileName=paste0(outfile,"_",round(ploi,digits=3),"extra_",round(TCC,digits=3),"_",chrom,".png")
@@ -182,7 +189,7 @@ plotAll <- function(dat, comb, ploi, TCC, roundPloi, chrCount) {
 	p3 <- p3 + vlines + labs(x=NULL) + theme( axis.text.x=element_blank() )
 
 	#combine all plots into single object and save
-        plotTitle <- textGrob( qq("@{ID}_Ploidy=@{roundPloi}, corr=@{round(ploi,digits=3)}, Tumor_cell_content=@{round(TCC,digits=3)}, sex=@{sex}"))
+        plotTitle <- textGrob( paste0("",ID, "_Ploidy=",roundPloi, ", corr=",round(ploi,digits=3), ", Tumor_cell_content=",round(TCC,digits=3), ", sex=",sex, ""))
         p = arrangeGrob(plotTitle, p1, p2, p3, nrow=4, heights=c(1,7,7,7))
 
 	fileName= paste0( outfile, "_", round(ploi,digits=3), "_", round(TCC,digits=3), "_ALL", ".png" )
@@ -191,10 +198,10 @@ plotAll <- function(dat, comb, ploi, TCC, roundPloi, chrCount) {
 }
 
 #read and complete SNP data and segments and create plots
-colNamesData <- c( "chromosome", "SNP", "start", "end", "crest", "copyT", "covT", "meanTCN", "betaT","betaN", "Atumor", "Btumor", "Anormal", "Bnormal", "haplotype", "map" )
+colNamesData <- c( "chromosome", "SNP", "start", "end", "SV.Type", "copyT", "covT", "meanTCN", "betaT","betaN", "Atumor", "Btumor", "Anormal", "Bnormal", "haplotype", "map" )
 
 for( index in seq_len( nrow(pp) ) ) {
-	cat(qq("plotting @{index}/@{nrow(pp)}\n\n"))
+	cat(paste0("plotting ",index, "/",nrow(pp), "\n\n"))
 
 	ploidy      = pp[index, 2]
 	tcc      = pp[index, 3]
@@ -224,7 +231,7 @@ for( index in seq_len( nrow(pp) ) ) {
         dataList.tmp = lapply( 1:chrCount, function(chr){
 			cat("Plotting chromosome ",chr, "...\n")
 			dataList.chr <- completeSNP( chr, dataList[[chr]], ploidy, tcc, roundPloidy)
-			plotChromosomes( chr, dataList.chr, combi.tmp, tcc, ploidy, roundPloidy, crestPoints=crest)
+			plotChromosomes( chr, dataList.chr, combi.tmp, tcc, ploidy, roundPloidy, svPoints=sv)
 			dataList.chr
 		} )
 	
