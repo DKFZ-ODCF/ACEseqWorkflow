@@ -5,7 +5,6 @@
 ### idea if segment too small check for sv of prior and following segment if both neighbouring merge with that that has identical sv type
 ### if copy number closer to one of the segments merge with that one
 
-import numpy
 import argparse
 import sys
 from python_modules import Tabfile
