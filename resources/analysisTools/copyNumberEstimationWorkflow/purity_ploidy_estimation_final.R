@@ -7,7 +7,7 @@ library(scales)
 library(getopt)
 
 script_dir = dirname(get_Rscript_filename())
-#source(paste0(script_dir,"/qq.R"))
+
 #source(paste0(script_dir, "/getopt.R"))
 
 spec <- matrix(c('segments',		's', 1, "character", #"IN: segment file",

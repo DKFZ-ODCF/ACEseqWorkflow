@@ -4,7 +4,7 @@ library(ks)
 library(getopt)
 
 script_dir = dirname(get_Rscript_filename())
-#source(paste0(script_dir,"/qq.R"))
+
 #source(paste0(script_dir, "/getopt.R"))
 source(paste0("",script_dir, "/functions.R"))
 
