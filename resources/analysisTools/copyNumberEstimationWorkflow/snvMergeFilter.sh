@@ -1,21 +1,6 @@
 #!/bin/bash
 
 
-#testing=FILES_SNP
-#array=${CHROMOSOME_INDICES[@]}
-#type=file_array
-
-#source ${TOOL_CHECK_FILES}
-#[[ $? != 0 ]] && echo -e "\nTest for files for PID: ${PID} had non zero exit status, exiting pipeline\n\n" && exit 1
-#[[ ${ok} == 0 ]] && echo -e "\nEvaluation of files for PID: ${PID} had non zero exit status, exiting pipeline\n\n" && exit 1
-
-
-#testing=SNP_OUT
-#type=create
-
-#source ${TOOL_CHECK_FILES}
-#[[ $? != 0 ]] && echo -e "\nCreation of file names for PID: ${PID} had non zero exit status, exiting pipeline\n\n" && exit 2
-
 #do not set minimum coverage in case no control is used
 if [[ ${runWithoutControl} == true ]]
 then

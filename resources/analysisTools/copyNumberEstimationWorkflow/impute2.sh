@@ -1,20 +1,6 @@
 #!/bin/bash
 
 
-#CHR_NAME=${CHR_NR}
-#CHR_NR=${CHR_PREFIX}${CHR_NR}${CHR_SUFFIX}
-#
-#testing=FILES_TO_EVALUATE
-#type=eval_job
-#source ${TOOL_CHECK_FILES}
-#[[ $? != 0 ]] && echo -e "\nTest for files for PID: ${PID} had non zero exit status, exiting pipeline\n\n" && exit 1
-#[[ ${ok} == 0 ]] && echo -e "\nEvaluation of bam files for PID: ${PID} had non zero exit status, exiting pipeline\n\n" && exit 1
-#
-#testing=FILES_IMPUTE
-#type=create
-#source=${TOOL_CHECK_FILES}
-#[[ $? != 0 ]] && echo -e "\nTest for files for PID: ${PID} had non zero exit status, exiting pipeline\n\n" && exit 1
-
 
 source ${TOOL_ANALYZE_BAM_HEADER}
 getRefGenomeAndChrPrefixFromHeader ${FILE_CONTROL_BAM} # Sets CHR_PREFIX and REFERENCE_GENOME

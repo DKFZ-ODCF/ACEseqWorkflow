@@ -1,19 +1,4 @@
 #!/bin/bash
-#
-#PID=$PID
-#
-#testing=CNV_ARRAY
-#array=${CHROMOSOME_INDICES[@]}
-#type=file_array
-#
-#source ${TOOL_CHECK_FILES}
-#[[ $? != 0 ]] && echo -e "\nTest for files for PID: ${PID} had non zero exit status, exiting pipeline\n\n" && exit 1
-#[[ ${ok} == 0 ]] && echo -e "\nEvaluation of bam files for PID: ${PID} had non zero exit status, exiting pipeline\n\n" && exit 1
-#
-#testing=CNV_OUT
-#type=create
-#source ${TOOL_CHECK_FILES}
-#[[ $? != 0 ]] && echo -e "\nCreation of files for PID: ${PID} had non zero exit status, exiting pipeline\n\n" && exit 1
 
 
 ${PYTHON_BINARY} "${TOOL_MERGE_FILTER_CNV}" \
