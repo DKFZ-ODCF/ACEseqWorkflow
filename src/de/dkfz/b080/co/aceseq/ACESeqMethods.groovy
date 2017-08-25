@@ -112,17 +112,18 @@ public final class ACESeqMethods {
     @ScriptCallingMethod
     public static Tuple2<TextFile, TextFile> mergeSv(TextFile knownSegmentsFile, boolean runWithSv) {
 	if (runWithSv) {
-	        TextFile svFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "svFileTag", null, null);
-        	svFile.setAsSourceFile();
-	        JobResult result = new JobResult(knownSegmentsFile.getExecutionContext(), null, JobDependencyID.getFileExistedFakeJob(knownSegmentsFile.getExecutionContext()), false, null, null, null);
-        	svFile.setCreatingJobsResult(result);
-	        boolean b = FileSystemAccessProvider.getInstance().checkBaseFiles(svFile);
+		TextFile svFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "svFileTag", null, null);
+		svFile.setAsSourceFile();
+		JobResult result = new JobResult(knownSegmentsFile.getExecutionContext(), null, JobDependencyID.getFileExistedFakeJob(knownSegmentsFile.getExecutionContext()), false, null, null, null);
+		svFile.setCreatingJobsResult(result);
+        	boolean b = FileSystemAccessProvider.getInstance().checkBaseFiles(svFile);
         	if (b)
 	            return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_AND_SV, knownSegmentsFile, svFile);
+
         	knownSegmentsFile.getExecutionContext().addErrorEntry(ExecutionContextError.EXECUTION_NOINPUTDATA.expand("SV files were not found in input path."));
         	return null;
 	} else  {
-		return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_AND_SV, knownSegmentsFile, svFile);
+		return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_WITHOUT_SV, knownSegmentsFile);
 	}
 
     }

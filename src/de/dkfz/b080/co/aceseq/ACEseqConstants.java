@@ -24,6 +24,7 @@ public final class ACEseqConstants {
     public static final String TOOL_CORRECT_GC_BIAS = "correctGcBias";
     public static final String TOOL_GET_BREAKPOINTS = "getBreakpoints";
     public static final String TOOL_MERGE_BREAKPOINTS_AND_SV = "mergeBreakpointsAndSv";
+    public static final String TOOL_MERGE_BREAKPOINTS_WITHOUT_SV = "mergeBreakpointsWithoutSv";
     public static final String TOOL_MERGE_BREAKPOINTS_AND_SV_CREST = "mergeBreakpointsAndSvCrest";
     public static final String TOOL_GET_SEGMENTS_AND_SNPS = "getSegmentsAndSnps";
     public static final String TOOL_MARK_HOMOZYGOUS_DELETIONS = "markHomozygousDeletions";
@@ -34,6 +35,7 @@ public final class ACEseqConstants {
     public static final String TOOL_ESTIMATE_PURITY_AND_PLOIDY = "estimatePurityAndPloidy";
     public static final String TOOL_GENERATE_RESULTS_AND_PLOTS = "generateResultsAndPlots";
     public static final String TOOL_ESTIMATE_HRD_SCORE = "estimateHrdScore";
+
     
     private ACEseqConstants() {
     }
