@@ -1,9 +1,5 @@
 #!/bin/bash
 
-
-source ${CONFIG_FILE}
-
-
 [[ -z ${PARM_CHR_INDEX-} ]] && echo "Variable is missing" && exit -5
 
 tmpFileSnpPos=${FILENAME_SNP_POS}_tmp

@@ -1,9 +1,5 @@
 #!/usr/bin/sh
 
-
-source ${CONFIG_FILE}
-
-
 cd ${aceseqOutputDirectory}
 
 cat ${FILENAME_PURITY_PLOIDY} | grep -v ploidy | while read line

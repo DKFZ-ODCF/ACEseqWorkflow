@@ -1,9 +1,6 @@
 #!/bin/bash
 
 
-source ${CONFIG_FILE}
-
-
 tmpSegments=${FILENAME_SEGMENTS}_tmp
 nocontrol=${runWithoutControl^^}
 

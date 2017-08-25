@@ -6,37 +6,22 @@
                usedToolFolders="copyNumberEstimationWorkflow,tools">
     <configurationvalues>
 
-	<!--BINARIES-->
-
-
-	<!--<cvalue name="MODULESCRIPT_WORKFLOW" value="$USERHOME/RoddyWorkflowsGit/Plugins/ACEseq/resources/analysisTools/copyNumberEstimation/moduleScript.sh" type="path" />-->
-
-        <cvalue name="BGZIP_VERSION" value="0.2.5" type="filename"/>
-        <cvalue name="BGZIP_BINARY" value="bgzip" type="filename"/>
-
-        <cvalue name="TABIX_VERSION" value="0.2.5" type="filename"/>
-        <cvalue name="TABIX_BINARY" value="tabix-${TABIX_VERSION}" type="filename"/>
-
+    <!--BINARIES-->
+        <cvalue name="HTSLIB_VERSION" value="0.2.5" type="string"/>
         <cvalue name="PERL_VERSION" value="5.20.2" type="string"/>
-        <cvalue name="PERL_BINARY" value="perl-${PERL_VERSION}" type="string"/>
-
-        <cvalue name="PYTHON_VERSION" value="2.7.9" type="path"/>
-        <cvalue name="PYTHON_BINARY" value="python-${PYTHON_VERSION}" type="path"/>
-	
+        <cvalue name="PYTHON_VERSION" value="2.7.9" type="string"/>
         <cvalue name="RSCRIPT_VERSION" value="3.3.1" type="string"/>
-        <cvalue name="RSCRIPT_BINARY" value="Rscript-${RSCRIPT_VERSION}" type="string"/>
+        <cvalue name='BEDTOOLS_VERSION' value='2.16.2' type='string'/>
+        <cvalue name="VCFTOOLS_VERSION" value="0.1.10" type="string"/>
+        <cvalue name="SAMTOOLS_VERSION" value="0.1.19" type="string"/>
 
-        <cvalue name='INTERSECTBED_VERSION' value='2.16.2' type='filename'/>
-        <cvalue name='INTERSECTBED_BINARY' value='intersectBed-${INTERSECTBED_VERSION}' type='filename'/>
-
-        <cvalue name="BCFTOOLS_VERSION" value="0.1.19" type="filename"/>
-        <cvalue name="BCFTOOLS_BINARY" value="bcftools-${BCFTOOLS_VERSION}" type="filename"/>
-
-        <cvalue name="VCFTOOLS_SORT_VERSION" value="0.1.10" type="filename"/>
-        <cvalue name="VCFTOOLS_SORT_BINARY" value="vcf-sort-${VCFTOOLS_SORT_VERSION}" type="filename"/>
-
-        <cvalue name="SAMTOOLS_VERSION" value="0.1.19" type="filename"/>
-        <cvalue name="SAMTOOLS_BINARY" value="samtools-${SAMTOOLS_VERSION}" type="filename"/>
+    <!--ENVIRONMENT (see tools section below for possible values) -->
+        <cvalue name="workflowEnvironmentScript" value="${TOOL_WORKFLOW_ENVIRONMENT_CONDA_TBI_TEST}" type="string"
+                description="Use ${TOOL_WORKFLOW_ENVIRONMENT_CONDA} for a generic Conda environment."/>
+        <!--<cvalue name="workflowEnvironmentScript" value="${TOOL_WORKFLOW_ENVIRONMENT_TBI_PBS}" type="string"/>-->
+        <!--<cvalue name="correctGcBiasEnvironmentScript" value="${TOOL_CORRECT_GC_BIAS_ENVIRONMENT_CONDA}" type="string"/>-->
+        <cvalue name="condaEnvironmentName" value="ACEseqWorkflow" type="string"
+                description="Name of the Conda environment on the execution hosts. Used by the environment setup script conda.sh defined as tool below."/>
 
 	<!--outputMask-->
         <cvalue name='outputUMask' value='007' type='string'/>
@@ -222,6 +207,20 @@
 
     </configurationvalues>
     <processingTools>
+        <!-- Environment Setup Scripts -->
+        <!-- Workflow environment. The tool name for the complete workflow environment is "workflowEnvironment_${environmentTool}" or
+             "workflow_environment_${environmentTool}". -->
+        <tool name="workflowEnvironment_condaTbiTest" value="conda_tbi-pbs-cluster.sh" basepath="copyNumberEstimationWorkflow/environments"/>
+        <tool name="workflowEnvironment_conda" value="conda.sh" basepath="copyNumberEstimationWorkflow/environments"/>
+        <tool name="workflowEnvironment_modules" value="tbi-lsf-cluster.sh" basepath="copyNumberEstimationWorkflow/environments"/>
+        <tool name="workflowEnvironment_tbiPbs" value="tbi-pbs-cluster.sh" basepath="copyNumberEstimationWorkflow/environments"/>
+
+        <!-- Cluster-job specific environments.
+             Tool-specific environments override the global workflows environment. You can reference the tool name
+             (1) prefixed with TOOL_, (2) with all capitals prefixed by an underscore '-', (3) in all capitals.
+             The 'correctGcBiasEnvironment_conda' therefore becomes TOOL_CORRECT_GC_BIAS_ENVIRONMENT_CONDA. -->
+        <!--<tool name="correctGcBiasEnvironment_conda" value="correctGCBias_conda.sh" basepath="copyNumberEstimationWorkflow/environments"/>-->
+
         <!-- cnvSnpGeneration = TOOL_SNP_CNV_GENERATION -->
         <tool name="snpPosCnvWinGenerator" value="snp_cnv.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="mergeFilterSnp" value="merge_and_filter_snp.py" basepath="copyNumberEstimationWorkflow"/>
@@ -342,17 +341,17 @@
             <output type="filegroup" typeof="UnphasedGenotypeFileGroupByChromosome" fileclass="UnphasedGenotypeFile" scriptparameter="FILENAME_UNPHASED_GENOTYPE" passas="array"/>
     </tool>
 
-        <tool name="imputeGenotypesMeta" value="impute2_MetaScript.sh" basepath="copyNumberEstimationWorkflow">
-            <resourcesets>
-                <rset size="l" memory="48" cores="12" nodes="1" walltime="16"/>
-            </resourcesets>
-        </tool>
+        <!--<tool name="imputeGenotypesMeta" value="impute2_MetaScript.sh" basepath="copyNumberEstimationWorkflow">-->
+            <!--<resourcesets>-->
+                <!--<rset size="l" memory="48" cores="12" nodes="1" walltime="16"/>-->
+            <!--</resourcesets>-->
+        <!--</tool>-->
 
         <tool name="imputeGenotypes_noMpileup" value="impute2.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="10" cores="1" nodes="1" walltime="10"/>
             </resourcesets>
-            <input type="indexedfileobjects" typeof="de.dkfz.b080.co.files.UnphasedGenotypeFileGroupByChromosome" scriptparameter="FILENAME_UNPHASED_GENOTYPE" passas="array"/>
+            <input type="filegroup" typeof="UnphasedGenotypeFileGroupByChromosome" scriptparameter="FILENAME_UNPHASED_GENOTYPE" passas="array"/>
             <output type="tuple">
                 <output type="file" fnpatternselectiontag="withChromosomeIndex" typeof="de.dkfz.b080.co.files.PhasedGenotypeFile" scriptparameter="FILENAME_PHASED_GENOTYPES"/>
                 <output type="file" fnpatternselectiontag="withChromosomeIndex" typeof="de.dkfz.b080.co.files.HaploblockGroupFile" scriptparameter="FILENAME_HAPLOBLOCK_GROUPS"/>
@@ -363,7 +362,7 @@
             <resourcesets>
                 <rset size="l" memory="10" cores="1" nodes="1" walltime="10"/>
             </resourcesets>
-            <input type="indexedfileobjects" typeof="de.dkfz.roddy.knowledge.files.UnphasedGenotypeFileGroupByChromosome" scriptparameter="FILENAME_UNPHASED_GENOTYPE" passas="array"/>
+            <input type="filegroup" typeof="UnphasedGenotypeFileGroupByChromosome" scriptparameter="FILENAME_UNPHASED_GENOTYPE" passas="array"/>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEX"/>
             <output type="tuple">
                 <output type="file" fnpatternselectiontag="forChromosomeX" typeof="de.dkfz.b080.co.files.PhasedGenotypeFile" scriptparameter="FILENAME_PHASED_GENOTYPES"/>
@@ -560,9 +559,9 @@
 
     </processingTools>
     <filenames package='de.dkfz.b080.co.files' filestagesbase='de.dkfz.b080.co.files.COFileStage'>
-        <filename class='SNPPositionFile' derivedFrom="BamFile" pattern='${cnvSnpOutputDirectory}/${pid}.chr${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="SNP_SUFFIX"}'/>
-        <!--<filename class='SNPPositionFile' derivedFrom="BamFile" pattern='${outputAnalysisBaseDirectory}/${aceseqOutputDirectory}/${cnvSnpOutputDirectory}/${pid}.chr${jobParameter,name="PARM_CHR_INDEX"}.snp.tab.gz' />-->
-        <filename class='CoverageWindowsFile' derivedFrom="BamFile" pattern='${cnvSnpOutputDirectory}/${pid}.chr${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="CNV_SUFFIX"}'/>
+        <filename class='SNPPositionFile' derivedFrom="de.dkfz.b080.co.files.BamFile" pattern='${cnvSnpOutputDirectory}/${pid}.chr${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="SNP_SUFFIX"}'/>
+        <!--<filename class='SNPPositionFile' derivedFrom="de.dkfz.b080.co.files.BamFile" pattern='${outputAnalysisBaseDirectory}/${aceseqOutputDirectory}/${cnvSnpOutputDirectory}/${pid}.chr${jobParameter,name="PARM_CHR_INDEX"}.snp.tab.gz' />-->
+        <filename class='CoverageWindowsFile' derivedFrom="de.dkfz.b080.co.files.BamFile" pattern='${cnvSnpOutputDirectory}/${pid}.chr${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="CNV_SUFFIX"}'/>
 <!--      <filename class="PhasedGenotypeFile" onScriptParameter="FILENAME_PHASED_GENOTYPES" selectiontag="withChromosomeIndex"
                   pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
         <filename class="HaploblockGroupFile" onScriptParameter="FILENAME_HAPLOBLOCK_GROUPS" selectiontag="withChromosomeIndex"
@@ -572,7 +571,7 @@
         <filename class="HaploblockGroupFile" onScriptParameter="FILENAME_HAPLOBLOCK_GROUPS" selectiontag="forChromosomeX"
                   pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}23.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
 -->
-        <filename class="TextFile" onMethod="SNPPositionFileGroupByChromosome.mergeAndFilter" pattern='${aceseqOutputDirectory}/${pid}_all.snp.tab.gz'/>
+        <filename class="TextFile" onMethod="de.dkfz.b080.co.files.SNPPositionFileGroupByChromosome.mergeAndFilter" pattern='${aceseqOutputDirectory}/${pid}_all.snp.tab.gz'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.getGenotypes" pattern='${aceseqOutputDirectory}/${pid}_all.snp.fakeBAF.tab.gz'/>
 
 	<filename class="PhasedGenotypeFile" onTool="imputeGenotypes_noMpileup" selectiontag="withChromosomeIndex"

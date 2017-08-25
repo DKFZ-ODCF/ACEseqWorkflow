@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-source ${CONFIG_FILE}
 FILENAME_PARAMETER_JSON_tmp=${FILENAME_PARAMETER_JSON}.tmp
 
 ${RSCRIPT_BINARY} 	--vanilla "${TOOL_GENERATE_PLOTS}" \

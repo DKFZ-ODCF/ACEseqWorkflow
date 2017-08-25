@@ -1,10 +1,6 @@
 #!/bin/bash
 
 
-source ${CONFIG_FILE}
-
-
-
 #testing=FILES_SNP
 #array=${CHROMOSOME_INDICES[@]}
 #type=file_array
