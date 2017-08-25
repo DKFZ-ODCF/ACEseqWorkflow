@@ -20,6 +20,7 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         BamFile bamTumorMerged = new BamFile(_bamTumorMerged);
 
         boolean runWithSv = context.getConfiguration().getConfigurationValues().getBoolean("runWithSv", true);
+        boolean runWithCrest = context.getConfiguration().getConfigurationValues().getBoolean("runWithCrest", false);
         boolean runQualityCheckOnly = context.getConfiguration().getConfigurationValues().getBoolean("runQualityCheckOnly", false);
         boolean runWithFakeControl = context.getConfiguration().getConfigurationValues().getBoolean("runWithFakeControl", false);
         boolean runWithoutControl = context.getConfiguration().getConfigurationValues().getBoolean("runWithoutControl", false);
@@ -71,10 +72,11 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         Tuple2<TextFile, TextFile> mergedSvs = null;
 
         if (runWithSv)
-            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0);
-        else
+            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0, runWithSv); // true is passed
+        else if (runWithCrest)
             mergedSvs = ACESeqMethods.mergeCrest(breakpoints.value0);
-        if (mergedSvs == null)
+	else
+            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0, runWithSv); // false is passed
             return true;
 
         TextFile pscbsSegments = ACESeqMethods.getSegmentAndGetSnps(mergedSvs.value0, breakpoints.value1);
