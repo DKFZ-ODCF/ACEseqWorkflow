@@ -262,7 +262,6 @@
             </resourcesets>
         </tool>
 
-        <tool name="convertToVcf" value="convertToVcf.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="generatePlots" value="pscbs_plots.R" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="50" cores="1" nodes="1" walltime="12"/>
@@ -445,6 +444,17 @@
             </resourcesets>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SV"/>
+            <output type="tuple">
+                <output type="file" fnpatternselectiontag="breakpointsSvs" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_BREAKPOINTS"/>
+                <output type="file" fnpatternselectiontag="svPoints" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SV_POINTS"/>
+            </output>
+        </tool>
+
+        <tool name="mergeBreakpointsWithoutSv" value="PSCBSgaps_SV.sh" basepath="copyNumberEstimationWorkflow">
+            <resourcesets>
+                <rset size="l" memory="0.2" cores="2" nodes="1" walltime="1"/>
+            </resourcesets>
+            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
             <output type="tuple">
                 <output type="file" fnpatternselectiontag="breakpointsSvs" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_BREAKPOINTS"/>
                 <output type="file" fnpatternselectiontag="svPoints" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SV_POINTS"/>
