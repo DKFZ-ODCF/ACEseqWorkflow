@@ -9,7 +9,7 @@ import de.dkfz.roddy.plugins.BasePlugin;
 public class CopyNumberEstimationWorkflowPlugin extends BasePlugin {
 
     public static final String CURRENT_VERSION_STRING = "1.2.10";
-    public static final String CURRENT_VERSION_BUILD_DATE = "Mon Aug 21 19:41:24 CEST 2017";
+    public static final String CURRENT_VERSION_BUILD_DATE = "Fri Aug 25 10:02:17 CEST 2017";
 
     @Override
     public String getVersionInfo() {
