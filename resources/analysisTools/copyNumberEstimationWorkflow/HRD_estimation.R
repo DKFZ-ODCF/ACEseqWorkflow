@@ -33,7 +33,8 @@ colnames(centromers) <- c("chromosome", "start","end", "arm", "cytoband")
 
 #calculate aberrant fractions
 totallength <- sum( as.numeric(segments.df$length) )
-totalAberrant <- sum( as.numeric(segments.df$length[segments.df$CNA.type != "TCNneutral"]) )
+totalAberrant <- sum( as.numeric(segments.df$length[segments.df$CNA.type != "TCNneutral"]),
+			 na.rm=TRUE)
 totalLost <- sum( as.numeric(segments.df$length[grep( "(DEL)|(HomeDel)",segments.df$CNA.type)]) )
 totalLostLOH <- sum( as.numeric(segments.df$length[ which( grepl( "(DEL)|(HomeDel)|(LOH)",segments.df$CNA.type) & ! grepl("DUP", segments.df$CNA.type ) ) ] ) )
 totalLOH <- sum( as.numeric(segments.df$length[ which( grepl( "LOH",segments.df$CNA.type) & ! grepl("DUP", segments.df$CNA.type ) ) ] ) )
