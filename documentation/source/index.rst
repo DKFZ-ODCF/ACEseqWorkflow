@@ -9,9 +9,9 @@ ACEseq - Allele-specific copy numbers from sequencing
 
    license
    help
+   installation
    QuickStartGuide
    requirements
-   HowToRun
    parameters
    purityEvaluation
    qualityCheck

@@ -20,17 +20,27 @@ All software required to run ACEseq is stored in Bioconda and can be downloaded 
 The workflow contains a description of a [Conda](https://conda.io/docs/) environment. A number of Conda packages from [BioConda](https://bioconda.github.io/index.html) are required. You should set up the Conda environment at a centralized position available from all compute hosts. 
 
 First install the BioConda channels:
-```
-conda config --add channels r
-conda config --add channels defaults
-conda config --add channels conda-forge
-conda config --add channels bioconda
-```
+
+::
+
+    conda config --add channels r
+::
+
+    conda config --add channels defaults
+
+::
+
+    conda config --add channels conda-forge
+
+::
+
+    conda config --add channels bioconda
+
 Then install the environment
 
-```
-conda env create -n ACEseqWorkflow -f $PATH_TO_PLUGIN_DIRECTORY/resources/copyNumberEstimationWorkflow/environments/conda.yml
-```
+::
+
+    conda env create -n ACEseqWorkflow -f $PATH_TO_PLUGIN_DIRECTORY/resources/copyNumberEstimationWorkflow/environments/conda.yml
 
 The name of the Conda environment is arbitrary but needs to be consistent with the `condaEnvironmentName` variable in `resources/configurationFiles/analysisCopyNumberEstimation.xml`.
 
@@ -40,7 +50,13 @@ If you do not want to use Conda, you can get a complete list of all packages and
 
 
 Reference files
-^^^^^^^^
-To obtain all necessary reference files run $PATH_TO_PLUGIN_DIRECTORY/installation/downloadRefrences. It is tuned to be run on hg19 but a liftover of all files should probably enable a run on GRch38.
+^^^^^^^^^^^^^^^^^
+To obtain all necessary reference files run $PATH_TO_PLUGIN_DIRECTORY/installation/downloadRefrences. 
+It is tuned to be run on hg19 but a liftover of all files should probably enable a run on GRch38.
+
+Please convert the bigwig file in databases/UCSC to a BedGraph (https://genome.ucsc.edu/goldenpath/help/bigWig.html) and save it under wgEncodeCrgMapabilityAlign100mer_chr.bedGraph, 
+compress it with bgzip and index with tabix.
+The variable baseDirectoryReference in the project.xml  needs to be set to the path from which the downloader script was run.
+
 
 
