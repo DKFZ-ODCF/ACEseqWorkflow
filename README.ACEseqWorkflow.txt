@@ -12,6 +12,7 @@ runMetaCNVGeneration        false   Run a meta step for the cnv generation. This
 runWithoutControl	    false Run analysis with matching control and estimate control genotypes based on tumor BAF
 
 == Changelist
+- fix bug in tcc ploidy estimation
 - add bioconda dependencies
 - replace all occurences of qq.R and getopt2 by getopt
 - replace all occurenced of name delly and crest, also in final output 
