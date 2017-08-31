@@ -641,7 +641,7 @@ local_minima = sel_local_minima[sel]
 select = c()
 # select local minimum from each ploidy frame +-0.25
 for (p in seq_along(ploi)) {
-  s <-  which(sel_local_minima == min(local_minima[which(ploi <= ploi[p] + 0.25 & ploi >= ploi[p] - 0.25)]))
+  s <-  which(local_minima == min(local_minima[which(ploi <= ploi[p] + 0.25 & ploi >= ploi[p] - 0.25)]))
   select = c(select, s)
 }
 
