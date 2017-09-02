@@ -1,9 +1,9 @@
 
-REFERENCE_GENOME=false
-dbSNP_FILE=false
-MAPPABILITY_FILE=false
-CHROMOSOME_LENGTH_FILE=false
-statFiles=false
+REFERENCE_GENOME=true
+dbSNP_FILE=true
+MAPPABILITY_FILE=true
+CHROMOSOME_LENGTH_FILE=true
+statFiles=true
 IMPUTE_FILES=false
 
 SCRIPT=$(readlink -f $0)
@@ -48,11 +48,11 @@ then
        wget -qO- http://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/chromInfo.txt.gz  | zcat | grep -Pv "(_)|(chrM)" | sed -e '1i\#chrom\tsize\tfileName' >stats/chrlengths.txt
 fi
 
-if [[ $statFiles != "true" ]]
+if [[ $statFiles == "true" ]]
 then
 	echo downloading statsfile
-       wget -P stats https://github.com/eilslabs/ACEseqWorkflow/blob/github/installation/hg19_GRch37_100genomes_gc_content_10kb.txt
-       wget -P ENCODE https://github.com/eilslabs/ACEseqWorkflow/blob/github/installation/ReplicationTime_10cellines_mean_10KB.Rda
+       cp $scriptdir/hg19_GRch37_100genomes_gc_content_10kb.txt stats/
+       cp $scriptdir/ReplicationTime_10cellines_mean_10KB.Rda ENCODE/
 fi
 
 if [[  $IMPUTE_FILES != "true" ]]
