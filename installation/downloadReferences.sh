@@ -52,7 +52,7 @@ if [[ $statFiles == "true" ]]
 then
 	echo downloading statsfile
        cp $scriptdir/hg19_GRch37_100genomes_gc_content_10kb.txt stats/
-       cp $scriptdir/ReplicationTime_10cellines_mean_10KB.Rda ENCODE/
+       cp $scriptdir/ReplicationTime_10cellines_mean_10KB.Rda databases/ENCODE/
 fi
 
 if [[  $IMPUTE_FILES != "true" ]]

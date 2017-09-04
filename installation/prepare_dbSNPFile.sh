@@ -19,5 +19,8 @@ wget ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606/VCF/00-All.vcf.gz.tbi
 # sort and compress using bgzip
 # created tabix index
 
-(zcat 00-All.vcf.gz | head -n 1000 | grep ^"#" > 00-All.SNV.vcf; zcat 00-All.vcf.gz | grep "VC=SNV") | #sort -k1,1 -k2,2n -T ./) |
+(zcat 00-All.vcf.gz | head -n 1000 | grep ^"#"; zcat 00-All.vcf.gz | grep "VC=SNV" |
+	 perl -nae  '($dbSNP)= $F[7] =~/dbSNPBuildID=(\d\d\d?);/; print join("\t",@F)."\n" if $dbSNP<136') | 
 	bgzip > 00-All.SNV.vcf.gz && tabix -p vcf 00-All.SNV.vcf.gz
+#(zcat 00-All.vcf.gz | head -n 1000 | grep ^"#"; zcat 00-All.vcf.gz | grep "VC=SNV") | #sort -k1,1 -k2,2n -T ./) |
+#	bgzip > 00-All.SNV.vcf.gz && tabix -p vcf 00-All.SNV.vcf.gz
