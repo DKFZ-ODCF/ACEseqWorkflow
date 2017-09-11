@@ -12,6 +12,7 @@ ACEseq - Allele-specific copy numbers from sequencing
    installation
    QuickStartGuide
    requirements
+   alternativeRunningModes
    parameters
    purityEvaluation
    qualityCheck
