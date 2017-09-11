@@ -12,11 +12,15 @@ ACEseq (Allele-specific copy number estimation with whole genome sequencing) is 
 * HRD/TAI/LST score estimation 
 * with/without matched control processing 
 
-The algorithm is further documented under aceseq.readthedocs.io
+## Prepackaged files
 
-## Installation
+ACEseq is available as Docker version and as Roddy-based version for execution in hpc clusters.
+Both versions can be downloaded from http://bfg-nfs3.ipmb.uni-heidelberg.de. 
 
-### High-Throughput Cluster with Shared Storage
+The prepackaged zip file contains a full Roddy / Plugin setup and includes different scripts to 
+install all necessary software and download the required reference files.
+
+Further information about the usage and installation of both versions can be found at our Read The Docs website: (http://aceseq.readthedocs.io).
 
 #### Conda
 
@@ -44,9 +48,4 @@ If you do not want to use Conda, you can get a complete list of all packages and
 
 
 
-## Prepackaged files
-
-There are two different packaged versions of ACEseq and Roddy available. One is a prepackaged zip file with a full Roddy / Plugin setup and different scripts to install everything properly. The second one is a dockerized version of the workflow. You can download both formats here: (http://bfg-nfs3.ipmb.uni-heidelberg.de).
-
-Further information about the usage of both versions can be found at our Read The Docs website: (http://aceseq.readthedocs.io).
 
