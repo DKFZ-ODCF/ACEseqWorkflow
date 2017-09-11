@@ -11,11 +11,11 @@ On a HPC cluster with multiple cores available it will usually finish within 24h
 Software
 ^^^^^^^^
 ACEseq can be run as stand alone pipeline with the Roddy pipeline framework (roddy-documentation.readthedocs.io, https://github.com/eilslabs/Roddy). A complete zipped version required to run ACEseq
-is available under https://hd-hub.XYZXTZ. Currently SGE and PBS schedulers are supported, while LSF support is still in a beta version.
+is available under http://bfg-nfs3.ipmb.uni-heidelberg.de. Currently SGE, PBS and LSF schedulers are supported but a local execution is also possible. 
 
-Additionally a Docker container can be downloaded from https://hd-hub.XYZXYZ
+Additionally a Docker version of ACEseq can be downloaded from http://bfg-nfs3.ipmb.uni-heidelberg.de.
 
-All software required to run ACEseq is stored in Bioconda and can be downloaded to set up a conda environment. Specifications about the packages are given in `$PATH_TO_PLUGIN_DIRECTORY/resources/configurationFiles/analysisCopyNumberEstimation.xml`.
+All software required to run ACEseq is stored in Bioconda and can be downloaded to set up a conda environment. Specifications about the packages are given in `$PATH_TO_PLUGIN_DIRECTORY/resources/analysisTools/copyNumberEstimationWorkflow/environments/conda.yml`
 
 The workflow contains a description of a [Conda](https://conda.io/docs/) environment. A number of Conda packages from [BioConda](https://bioconda.github.io/index.html) are required. You should set up the Conda environment at a centralized position available from all compute hosts. 
 
@@ -40,11 +40,10 @@ Then install the environment
 
 ::
 
-    conda env create -n ACEseqWorkflow -f $PATH_TO_PLUGIN_DIRECTORY/resources/copyNumberEstimationWorkflow/environments/conda.yml
+    conda env create -n ACEseqWorkflow -f $PATH_TO_PLUGIN_DIRECTORY/resources/analysisTools/copyNumberEstimationWorkflow/environments/conda.yml
 
 The name of the Conda environment is arbitrary but needs to be consistent with the `condaEnvironmentName` variable in `resources/configurationFiles/analysisCopyNumberEstimation.xml`.
 
-#### Other
 
 If you do not want to use Conda, you can get a complete list of all packages and package versions Conda would install from the `resources/configurationFiles/conda.yaml`.
 
