@@ -5,7 +5,6 @@ The Roddy based version for direct execution on hpc clusters as well as the Dock
 
 New versions of the ACEseq plugin can be obtained from https://github.com/eilslabs/ACEseqWorkflow and can be used in the Roddy-based version.
 
-
 Roddy-based version
 ^^^^^^^^^^^^^^^^^^^^^
 To run the Roddy-based version of ACEseq please download the pre-packed zip file from http://bfg-nfs3.ipmb.uni-heidelberg.de. Three steps are reuired to ensure running of ACEseq.
