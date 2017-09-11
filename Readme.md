@@ -1,7 +1,7 @@
 # ACEseq Workflow 
 
 Author: Kortine Kleinheinz
-k.kleinhein@dkfz-heidelberg.de
+k.kleinheinz@dkfz-heidelberg.de
 
 ## Description
 ACEseq (Allele-specific copy number estimation with whole genome sequencing) is a tool to estimate allele-specific copy numbers from WGS data and comes along with a variety of features:
@@ -41,4 +41,12 @@ The name of the Conda environment is arbitrary but needs to be consistent with t
 #### Other
 
 If you do not want to use Conda, you can get a complete list of all packages and package versions Conda would install from the `resources/configurationFiles/conda.yaml`.
+
+
+
+## Prepackaged files
+
+There are two different packaged versions of ACEseq and Roddy available. One is a prepackaged zip file with a full Roddy / Plugin setup and different scripts to install everything properly. The second one is a dockerized version of the workflow. You can download both formats here: (http://bfg-nfs3.ipmb.uni-heidelberg.de).
+
+Further information about the usage of both versions can be found at our Read The Docs website: (http://aceseq.readthedocs.io).
 
