@@ -96,7 +96,23 @@ Docker version
 
 	docker load < ACEseqDockerContainer.tar.gz
 
-4. Download the control files archive and extract them. The directory contains the file "roddy.sh". Please call this script with: bash roddy.sh
+4. Download the control files archive and extract them. The directory contains the file "roddy.sh". Please call this script with: bash roddy.sh. You will see:
+
+:: 
+  
+        $ bash roddy.sh 
+        Wrong number of arguments
+        # 1: Run mode, which might be run or testrun
+        # 2: The configuration identifier, normally ACEseq
+        # 3: Dataset identifiert / PID
+        # 4: The control bam file
+        # 5: The tumor bam file
+        # 6: The control bam sample name
+        # 7: The tumor bam sample name
+        # 8: The reference genome file path
+        # 9: The reference files path
+
+Make sure, that you supply all necessary parameters and the analysis will start.
 
 Reference files
 ^^^^^^^^^^^^^^^^
