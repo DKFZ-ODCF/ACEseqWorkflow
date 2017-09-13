@@ -651,7 +651,7 @@ local_minima = sel_local_minima[sel]
 select = c()
 # select local minimum from each ploidy frame +-0.25
 for (p in seq_along(ploi)) {
-  s <-  which(sel_local_minima == min(sel_local_minima[which(ploi <= ploi[p] + 0.25 & ploi >= ploi[p] - 0.25)]))
+  s <-  which(local_minima == min(local_minima[which(ploi <= ploi[p] + 0.25 & ploi >= ploi[p] - 0.25)]))
   select = c(select, s)
 }
 
@@ -667,7 +667,7 @@ while( any (diff(final_ploi) < 0.25 & diff(final_pur) < 0.1 & diff(final_local_m
   s <- which( min(final_local_minima[sel]) != final_local_minima[sel] )
   final_pur  <- final_pur[-sel[s]]
   final_ploi <- final_ploi[-sel[s]]
-  final_local_minima = local_minima[-sel[s]]
+  final_local_minima = final_local_minima[-sel[s]]
 }
 
 pp_matrix = matrix(data = 0, nrow = length(final_pur), ncol = 4, byrow = FALSE, dimnames = NULL )
