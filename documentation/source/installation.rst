@@ -86,7 +86,7 @@ Docker version
 ^^^^^^^^^^^^^^^
 1. Download all reference files as specified in the section below. 
 2. Download the Base and ACEseq Docker images from the website: http://bfg-nfs3.ipmb.uni-heidelberg.de
-3. Import both files with:
+3. Import both files with (names might differ based on supplied version):
 
 ::
 
@@ -100,19 +100,28 @@ Docker version
 
 :: 
   
-        $ bash roddy.sh 
-        Wrong number of arguments
-        # 1: Run mode, which might be run or testrun
-        # 2: The configuration identifier, normally ACEseq
-        # 3: Dataset identifiert / PID
-        # 4: The control bam file
-        # 5: The tumor bam file
-        # 6: The control bam sample name
-        # 7: The tumor bam sample name
-        # 8: The reference genome file path
-        # 9: The reference files path
+        #!/bin/bash
+        # 1: Run mode, which might be "run" or "testrun"
+        # 2: Configuration identifier, normally "ACEseq"
+        # 3: Configuration directory
+        # 4: Dataset identifier / PID
+        # 5: Control bam file
+        # 6: Tumor bam file
+        # 7: Control bam sample name
+        # 8: Tumor bam sample name
+        # 9: Reference files path
+        # 10: Output folder
+        # 11: Optional: The SV file
 
 Make sure, that you supply all necessary parameters and the analysis will start.
+
+An example call is:
+
+::
+
+        bash roddy.sh run ACEseq ./config/ stds /home/roddy/someproject/control_MB99_merged.mdup.bam /home/roddy/someproject/tumor_MB99_merged.mdup.bam control tumor /icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes ./output
+
+Here you tell roddy to run the ACEseq configuration using the config folder in the current directory with a control and tumor bam. Also you tell Roddy the samples for both files namely control and tumor. Finally, you supply the path to the reference files and the folder where you will store your output data.
 
 Reference files
 ^^^^^^^^^^^^^^^^
