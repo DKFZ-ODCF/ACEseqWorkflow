@@ -40,17 +40,17 @@
 
 
 	<!-- Reference files -->
-        <cvalue name="baseDirectoryReference" value="/icgc/ngs_share/assemblies/" type="path"/>
-        <cvalue name="referenceGenome_1KGRef" value="${baseDirectoryReference}/hg19_GRCh37_1000genomes/sequence/1KGRef/hs37d5.fa" type="path"/>
+        <cvalue name="baseDirectoryReference" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes" type="path"/>
+        <cvalue name="referenceGenome_1KGRef" value="${baseDirectoryReference}/sequence/1KGRef/hs37d5.fa" type="path"/>
         <cvalue name='REFERENCE_GENOME' value="${referenceGenome_1KGRef}" type="string" />
-        <cvalue name="dbSNP_FILE" value="${baseDirectoryReference}/hg19_GRCh37_1000genomes/databases/dbSNP/dbSNP_135/00-All.SNV.vcf.gz" type="path"/>
-        <cvalue name="MAPPABILITY_FILE" value="${baseDirectoryReference}/hg19_GRCh37_1000genomes/databases/UCSC/wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz" type="path"/>
-        <cvalue name="CHROMOSOME_LENGTH_FILE" value="${baseDirectoryReference}/hg19_GRCh37_1000genomes/stats/chrlengths.txt" type="path"/>
-        <cvalue name="REPLICATION_TIME_FILE" value="${baseDirectoryReference}/hg19_GRCh37_1000genomes/databases/ENCODE/ReplicationTime_10cellines_mean_10KB.Rda" type="path"/>
-        <cvalue name="GC_CONTENT_FILE" value="${baseDirectoryReference}/hg19_GRCh37_1000genomes/stats/hg19_GRch37_100genomes_gc_content_10kb.txt" type="path"/>
+        <cvalue name="dbSNP_FILE" value="${baseDirectoryReference}/databases/dbSNP/dbSNP_135/00-All.SNV.vcf.gz" type="path"/>
+        <cvalue name="MAPPABILITY_FILE" value="${baseDirectoryReference}/databases/UCSC/wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz" type="path"/>
+        <cvalue name="CHROMOSOME_LENGTH_FILE" value="${baseDirectoryReference}/stats/chrlengths.txt" type="path"/>
+        <cvalue name="REPLICATION_TIME_FILE" value="${baseDirectoryReference}/databases/ENCODE/ReplicationTime_10cellines_mean_10KB.Rda" type="path"/>
+        <cvalue name="GC_CONTENT_FILE" value="${baseDirectoryReference}/stats/hg19_GRch37_100genomes_gc_content_10kb.txt" type="path"/>
 
 	<!-- Impute -->
-        <cvalue name='imputeBaseDirectory' value="${baseDirectoryReference}/hg19_GRCh37_1000genomes/databases/1000genomes/IMPUTE/" type="path"/>
+        <cvalue name='imputeBaseDirectory' value="${baseDirectoryReference}/databases/1000genomes/IMPUTE/" type="path"/>
         <cvalue name='GENETIC_MAP_FILE'               value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/genetic_map_chr${CHR_NAME}_combined_b37.txt" type="path"/>
         <cvalue name='KNOWN_HAPLOTYPES_FILE'          value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/ALL.chr${CHR_NAME}.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.nomono.haplotypes.gz" type="path"/>
         <cvalue name='KNOWN_HAPLOTYPES_LEGEND_FILE'   value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/ALL.chr${CHR_NAME}.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.nomono.legend.gz"
