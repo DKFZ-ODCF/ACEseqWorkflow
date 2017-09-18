@@ -29,12 +29,12 @@ import static de.dkfz.roddy.execution.io.fs.FileSystemAccessProvider.*;
 public final class ACESeqMethods {
 
     public static CnvSnpGeneratorResultByType generateCNVSNPs(BamFile controlBam, BamFile tumorBam) {
-        IndexedFileObjects indexedFileObjects = ParallelizationHelper.runParallel(COConstants.CVALUE_CHROMOSOME_INDICES, ACEseqConstants.TOOL_CNV_SNP_GENERATION, tumorBam, controlBam, "PARM_CHR_INDEX=");
+        IndexedFileObjects indexedFileObjects = ParallelizationHelper.runParallel(COConstants.CVALUE_CHROMOSOME_INDICES, ACEseqConstants.TOOL_CNV_SNP_GENERATION, tumorBam, controlBam, "${ACEseqConstants.PARM_CHR_INDEX}=");
         return new CnvSnpGeneratorResultByType(indexedFileObjects, controlBam.getExecutionContext());
     }
 
     public static ImputeGenotypeByChromosome imputeGenotypes(BamFile controlBam) {
-        IndexedFileObjects indexedFileObjects = ParallelizationHelper.runParallel(COConstants.CVALUE_AUTOSOME_INDICES, ACEseqConstants.TOOL_IMPUTE_GENOTYPES, controlBam, null, "PARM_CHR_INDEX=");
+        IndexedFileObjects indexedFileObjects = ParallelizationHelper.runParallel(COConstants.CVALUE_AUTOSOME_INDICES, ACEseqConstants.TOOL_IMPUTE_GENOTYPES, controlBam, null, "${ACEseqConstants.PARM_CHR_INDEX}=");
         return new ImputeGenotypeByChromosome(indexedFileObjects, controlBam.getExecutionContext());
     }
 
@@ -42,7 +42,7 @@ public final class ACESeqMethods {
 	Map<String, UnphasedGenotypeFile> mapOfFiles = [:]
 	mapOfFiles += unphasedGenotypeFiles.getFiles();
 	mapOfFiles.remove("X")
-	IndexedFileObjects indexedFileObjects = runParallel(ACEseqConstants.TOOL_IMPUTE_GENOTYPES_NOMPILEUP, new UnphasedGenotypeFileGroupByChromosome(mapOfFiles.keySet() as List<String>, mapOfFiles, unphasedGenotypeFiles.getExecutionContext()), null, "PARM_CHR_INDEX=");
+	IndexedFileObjects indexedFileObjects = runParallel(ACEseqConstants.TOOL_IMPUTE_GENOTYPES_NOMPILEUP, new UnphasedGenotypeFileGroupByChromosome(mapOfFiles.keySet() as List<String>, mapOfFiles, unphasedGenotypeFiles.getExecutionContext()), null, "${ACEseqConstants.PARM_CHR_INDEX}=");
         return new ImputeGenotypeByChromosome(indexedFileObjects, unphasedGenotypeFiles.getExecutionContext());
     }
 
@@ -61,7 +61,7 @@ public final class ACESeqMethods {
     public static UnphasedGenotypeFileGroupByChromosome createUnphased( TextFile genotypeSNPFile ) {
         Map<String, UnphasedGenotypeFile> listOfFiles = new LinkedHashMap<>();
         List<BaseFile> filesToCheck = new LinkedList<>();
-	List<String> keyset =Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "X");
+        List<String> keyset = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "X");
         for (String chrIndex : keyset) {
             UnphasedGenotypeFile unphasedGenotypeFile = (UnphasedGenotypeFile)BaseFile.constructManual(UnphasedGenotypeFile.class, genotypeSNPFile);
             String path = unphasedGenotypeFile.getAbsolutePath();
@@ -74,12 +74,12 @@ public final class ACESeqMethods {
 //        UnphasedGenotypeChrXFile.overrideFilenameUsingSelectionTag("unphasedGenotypeChrXFile");
 //        filesToCheck.add(unphasedGenotypeFile);
 
-        ExecutionContext run = filesToCheck[0].getExecutionContext();
-        Map<String, Object> parameters = run.getDefaultJobParameters(ACEseqConstants.TOOL_CREATE_UNPHASED_GENOTYPE);
-	parameters["FILENAME_SNP_POSITIONS_WG_FAKE"]=genotypeSNPFile.getAbsolutePath();
+        ExecutionContext context = filesToCheck[0].getExecutionContext();
+        Map<String, Object> parameters = context.getDefaultJobParameters(ACEseqConstants.TOOL_CREATE_UNPHASED_GENOTYPE);
+        parameters["FILENAME_SNP_POSITIONS_WG_FAKE"]=genotypeSNPFile.getAbsolutePath();
         parameters.put("FILENAME_UNPHASED_GENOTYPE", "( " + filesToCheck.collect { BaseFile file -> file.getAbsolutePath() }.join(" ") + ' )');
 
-	Job job = new Job(run, run.createJobName((UnphasedGenotypeFile)listOfFiles.get("1"), ACEseqConstants.TOOL_CREATE_UNPHASED_GENOTYPE, true), ACEseqConstants.TOOL_CREATE_UNPHASED_GENOTYPE, null, parameters, [ genotypeSNPFile ] as List<BaseFile>, filesToCheck);
+        Job job = new Job(context, context.createJobName((UnphasedGenotypeFile)listOfFiles.get("1"), ACEseqConstants.TOOL_CREATE_UNPHASED_GENOTYPE, true), ACEseqConstants.TOOL_CREATE_UNPHASED_GENOTYPE, null, parameters, [ genotypeSNPFile ] as List<BaseFile>, filesToCheck)
         JobResult jobResult = job.run();
         for (BaseFile baseFile : filesToCheck) {
             baseFile.setCreatingJobsResult(jobResult);
@@ -113,7 +113,7 @@ public final class ACESeqMethods {
     public static Tuple2<TextFile, TextFile> mergeDelly(TextFile knownSegmentsFile) {
         TextFile svFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "dellyFileTag", null, null);
         svFile.setAsSourceFile();
-        JobResult result = new JobResult(knownSegmentsFile.getExecutionContext(), null, JobDependencyID.getFileExistedFakeJob(knownSegmentsFile.getExecutionContext()), false, null, null, null);
+        JobResult result = new JobResult(new BEJobResult(knownSegmentsFile.getExecutionContext(), null, new FakeBEJob(new BEFakeJobID(BEFakeJobID.FakeJobReason.FILE_EXISTED)), null, null, null, null))
         svFile.setCreatingJobsResult(result);
         boolean b = FileSystemAccessProvider.getInstance().checkBaseFiles(svFile);
         if (b)
@@ -187,7 +187,7 @@ public final class ACESeqMethods {
         Map<String, FileObject> map = new LinkedHashMap<>();
 
         //First one executes locally or via ssh but without a cluster system.
-        def stream = JobManager.getInstance().executesWithoutJobSystem() ? indices.parallelStream() : indices.stream();
+        def stream = Roddy.jobManager.executesWithoutJobSystem() ? indices.parallelStream() : indices.stream();
         stream.each{String index -> ParallelizationHelper.callWithIndex(toolID, index, indexParameterName, map, (BaseFile) fileGroup.getIndexedFileObjects().get(index), otherFile)};
 
         return new IndexedFileObjects(indices, map, fileGroup.getExecutionContext());

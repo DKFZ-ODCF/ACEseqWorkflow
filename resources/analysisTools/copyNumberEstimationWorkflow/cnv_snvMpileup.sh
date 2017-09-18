@@ -1,6 +1,6 @@
 #!/bin/bash
 
-[[ -z ${PARM_CHR_INDEX-} ]] && echo "Variable is missing" && exit -5
+[[ -z ${PARM_CHR_INDEX-} ]] && echo "PARM_CHR_INDEX variable is missing" && exit -5
 
 tmpFileSnpPos=${FILENAME_SNP_POS}_tmp
 tmpFileCovWin=${FILENAME_COV_WIN}_tmp
