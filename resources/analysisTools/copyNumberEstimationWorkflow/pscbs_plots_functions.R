@@ -3,6 +3,11 @@ require(ggplot2)
 require(gridExtra)
 require(grid)
 
+# increase expressions value as a large number of crest events per chromosome could lead to a script crash
+# reason for this crash is a limitation of elements that can be added to a ggplot object (p in our case)
+# (script crash was observed in hipo2 K02K-S5HJ3F on Chr2 by G. Warsow)
+options(expressions=100000)
+
 #plot TCNs
 #chr is the chromosome number
 #ratio: data.frame; subset (chromosome) of dataAll dataframe containing all SNPs
