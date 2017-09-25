@@ -3,7 +3,6 @@ require(ggplot2)
 require(gridExtra)
 require(grid)
 
-
 #plot TCNs
 #chr is the chromosome number
 #ratio: data.frame; subset (chromosome) of dataAll dataframe containing all SNPs
