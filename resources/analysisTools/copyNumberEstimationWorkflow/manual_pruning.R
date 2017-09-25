@@ -308,7 +308,7 @@ if (clustering_YN == "yes") {
 	            
 	cat(qq("@{length(rem)} lines dropped.\n\n")) #
 	if ( length(rem) > 0){
-	        weights = log2(segAll$length[-rem]) #sepcify your size vector here
+	        weights = log2(segAll$length[-rem] + 0.00001) #sepcify your size vector here
                                                      #weights <- 1
           cluster_matrix_norm = cluster_matrix_norm[-rem, ]
       	  #convert limits to scaled coordinates
@@ -318,7 +318,7 @@ if (clustering_YN == "yes") {
           covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
           
   }else{
-      	   weights = log2(segAll$length)
+      	   weights = log2(segAll$length + 0.00001)
       	   cluster_matrix_norm = cluster_matrix_norm
       	   #convert limits to scaled coordinates
       	   covLeftNorm  <- (log2(covLeft)-mean(log2(tcnMean)) )/sd(log2(tcnMean))
