@@ -8,7 +8,7 @@ tmpFileCovWin=${FILENAME_COV_WIN}_tmp
 source ${TOOL_ANALYZE_BAM_HEADER}
 getRefGenomeAndChrPrefixFromHeader ${FILE_TUMOR_BAM} # Sets CHR_PREFIX and REFERENCE_GENOME
 
-CHR_NR=${CHR_PREFIX}${CHR_NAME}
+CHR_NR=${CHR_PREFIX}${CHR_NAME:?CHR_NAME is not set}
 runWithoutControl=${runWithoutControl^}
 
 if [[ $runWithoutControl == "True" ]]

@@ -1,49 +1,62 @@
-package de.dkfz.b080.co.aceseq;
+package de.dkfz.b080.co.aceseq
 
-import de.dkfz.b080.co.common.ParallelizationHelper;
-import de.dkfz.b080.co.files.*;
-import de.dkfz.roddy.Roddy;
-import de.dkfz.roddy.core.ExecutionContext;
-import de.dkfz.roddy.core.ExecutionContextError;
-import de.dkfz.roddy.execution.io.fs.FileSystemAccessProvider;
-import de.dkfz.roddy.execution.jobs.*;
-import de.dkfz.roddy.knowledge.files.*;
-import de.dkfz.roddy.knowledge.methods.GenericMethod;
-
-
-import javax.xml.soap.Text;
-import java.io.File;
-import java.nio.file.spi.FileSystemProvider;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import static de.dkfz.roddy.execution.io.fs.FileSystemAccessProvider.*;
+import de.dkfz.b080.co.common.ParallelizationHelper
+import de.dkfz.b080.co.files.*
+import de.dkfz.roddy.Roddy
+import de.dkfz.roddy.config.Configuration
+import de.dkfz.roddy.core.ExecutionContext
+import de.dkfz.roddy.core.ExecutionContextError
+import de.dkfz.roddy.execution.io.fs.FileSystemAccessProvider
+import de.dkfz.roddy.execution.jobs.*
+import de.dkfz.roddy.knowledge.files.*
+import de.dkfz.roddy.knowledge.methods.GenericMethod
 
 /**
  * Created by kleinhei on 6/16/14.
  */
 @groovy.transform.CompileStatic
 @StaticScriptProviderClass
-public final class ACESeqMethods {
+final class ACESeqMethods {
 
-    public static CnvSnpGeneratorResultByType generateCNVSNPs(BamFile controlBam, BamFile tumorBam) {
-        IndexedFileObjects indexedFileObjects = ParallelizationHelper.runParallel(COConstants.CVALUE_CHROMOSOME_INDICES, ACEseqConstants.TOOL_CNV_SNP_GENERATION, tumorBam, controlBam, "${ACEseqConstants.PARM_CHR_INDEX}=");
-        return new CnvSnpGeneratorResultByType(indexedFileObjects, controlBam.getExecutionContext());
+    static LinkedHashMap<String, String> getGlobalJobSpecificParameters(Configuration config) {
+        return new LinkedHashMap<String, String>(
+                "CHR_NR": config.configurationValues.getString(ACEseqConstants.CHR_NAME),
+                 "CHR_NAME": config.configurationValues.getString(ACEseqConstants.CHR_NR))
     }
 
-    public static ImputeGenotypeByChromosome imputeGenotypes(BamFile controlBam) {
-        IndexedFileObjects indexedFileObjects = ParallelizationHelper.runParallel(COConstants.CVALUE_AUTOSOME_INDICES, ACEseqConstants.TOOL_IMPUTE_GENOTYPES, controlBam, null, "${ACEseqConstants.PARM_CHR_INDEX}=");
-        return new ImputeGenotypeByChromosome(indexedFileObjects, controlBam.getExecutionContext());
+    static CnvSnpGeneratorResultByType generateCNVSNPs(BamFile controlBam, BamFile tumorBam) {
+        IndexedFileObjects indexedFileObjects = ParallelizationHelper.runParallel(
+                COConstants.CVALUE_CHROMOSOME_INDICES,
+                ACEseqConstants.TOOL_CNV_SNP_GENERATION,
+                tumorBam,
+                controlBam,
+                ACEseqConstants.PARM_CHR_INDEX,
+                getGlobalJobSpecificParameters(controlBam.executionContext.configuration))
+        return new CnvSnpGeneratorResultByType(indexedFileObjects, controlBam.getExecutionContext())
     }
 
-    public static ImputeGenotypeByChromosome imputeGenotypes( UnphasedGenotypeFileGroupByChromosome unphasedGenotypeFiles) {
+    static ImputeGenotypeByChromosome imputeGenotypes(BamFile controlBam) {
+        IndexedFileObjects indexedFileObjects = ParallelizationHelper.runParallel(
+                COConstants.CVALUE_AUTOSOME_INDICES,
+                ACEseqConstants.TOOL_IMPUTE_GENOTYPES,
+                controlBam,
+                null,
+                ACEseqConstants.PARM_CHR_INDEX,
+                getGlobalJobSpecificParameters(controlBam.executionContext.configuration))
+        return new ImputeGenotypeByChromosome(indexedFileObjects, controlBam.getExecutionContext())
+    }
+
+    static ImputeGenotypeByChromosome imputeGenotypes( UnphasedGenotypeFileGroupByChromosome unphasedGenotypeFiles) {
 	Map<String, UnphasedGenotypeFile> mapOfFiles = [:]
-	mapOfFiles += unphasedGenotypeFiles.getFiles();
+	mapOfFiles += unphasedGenotypeFiles.getFiles()
 	mapOfFiles.remove("X")
-	IndexedFileObjects indexedFileObjects = runParallel(ACEseqConstants.TOOL_IMPUTE_GENOTYPES_NOMPILEUP, new UnphasedGenotypeFileGroupByChromosome(mapOfFiles.keySet() as List<String>, mapOfFiles, unphasedGenotypeFiles.getExecutionContext()), null, "${ACEseqConstants.PARM_CHR_INDEX}=");
-        return new ImputeGenotypeByChromosome(indexedFileObjects, unphasedGenotypeFiles.getExecutionContext());
+	IndexedFileObjects indexedFileObjects = runParallel(
+            ACEseqConstants.TOOL_IMPUTE_GENOTYPES_NOMPILEUP,
+            new UnphasedGenotypeFileGroupByChromosome(mapOfFiles.keySet() as List<String>, mapOfFiles, unphasedGenotypeFiles.getExecutionContext()),
+            null,
+            ACEseqConstants.PARM_CHR_INDEX,
+            getGlobalJobSpecificParameters(unphasedGenotypeFiles.executionContext.configuration))
+        return new ImputeGenotypeByChromosome(indexedFileObjects, unphasedGenotypeFiles.getExecutionContext())
     }
 
     public static Tuple2<PhasedGenotypeFile, HaploblockGroupFile> imputeGenotypeX(TextFile sexFile, BamFile controlBam) {
@@ -182,13 +195,20 @@ public final class ACESeqMethods {
         return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_ESTIMATE_HRD_SCORE, genderFile, cnvParameterFile);
     }
 
-    public static IndexedFileObjects runParallel( String toolID, IndexedFileObjects fileGroup, BaseFile otherFile, String indexParameterName) {
+    static IndexedFileObjects runParallel( String toolID, IndexedFileObjects fileGroup, BaseFile otherFile, String indexParameterName, LinkedHashMap<String, String> parameters = [:]) {
         List<String> indices = fileGroup.getIndices();
-        Map<String, FileObject> map = new LinkedHashMap<>();
 
         //First one executes locally or via ssh but without a cluster system.
         def stream = Roddy.jobManager.executesWithoutJobSystem() ? indices.parallelStream() : indices.stream();
-        stream.each{String index -> ParallelizationHelper.callWithIndex(toolID, index, indexParameterName, map, (BaseFile) fileGroup.getIndexedFileObjects().get(index), otherFile)};
+        Map<String, FileObject> map = stream.collect { String index ->
+            LinkedHashMap<String, String> indexMap = new LinkedHashMap((indexParameterName): index)
+            indexMap.putAll(parameters)
+            new MapEntry(index, ParallelizationHelper.callWithOptionalSecondaryBam(
+                    toolID,
+                    (BaseFile) fileGroup.getIndexedFileObjects().get(index),
+                    otherFile,
+                    indexMap))
+        } as Map<String, FileObject>
 
         return new IndexedFileObjects(indices, map, fileGroup.getExecutionContext());
     }
