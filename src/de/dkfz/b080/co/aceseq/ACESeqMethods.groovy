@@ -93,7 +93,7 @@ final class ACESeqMethods {
         parameters.put("FILENAME_UNPHASED_GENOTYPE", "( " + filesToCheck.collect { BaseFile file -> file.getAbsolutePath() }.join(" ") + ' )');
 
         Job job = new Job(context, context.createJobName((UnphasedGenotypeFile)listOfFiles.get("1"), ACEseqConstants.TOOL_CREATE_UNPHASED_GENOTYPE, true), ACEseqConstants.TOOL_CREATE_UNPHASED_GENOTYPE, null, parameters, [ genotypeSNPFile ] as List<BaseFile>, filesToCheck)
-        JobResult jobResult = job.run();
+        BEJobResult jobResult = job.run();
         for (BaseFile baseFile : filesToCheck) {
             baseFile.setCreatingJobsResult(jobResult);
         }
@@ -126,7 +126,7 @@ final class ACESeqMethods {
     public static Tuple2<TextFile, TextFile> mergeDelly(TextFile knownSegmentsFile) {
         TextFile svFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "dellyFileTag", null, null);
         svFile.setAsSourceFile();
-        JobResult result = new JobResult(new BEJobResult(null, new FakeBEJob(new BEFakeJobID(BEFakeJobID.FakeJobReason.FILE_EXISTED)), null, null, null, null))
+        BEJobResult result = new BEJobResult(null, new FakeBEJob(new BEFakeJobID(BEFakeJobID.FakeJobReason.FILE_EXISTED)), null, null, null, null)
         svFile.setCreatingJobsResult(result);
         boolean b = FileSystemAccessProvider.getInstance().checkBaseFiles(svFile);
         if (b)

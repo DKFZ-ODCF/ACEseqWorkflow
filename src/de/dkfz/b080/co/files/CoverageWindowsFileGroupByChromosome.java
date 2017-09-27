@@ -2,13 +2,12 @@ package de.dkfz.b080.co.files;
 
 import de.dkfz.b080.co.aceseq.ACEseqConstants;
 import de.dkfz.roddy.core.ExecutionContext;
+import de.dkfz.roddy.execution.jobs.BEJobResult;
 import de.dkfz.roddy.execution.jobs.Job;
-import de.dkfz.roddy.execution.jobs.JobResult;
 import de.dkfz.roddy.knowledge.files.BaseFile;
 import de.dkfz.roddy.knowledge.files.FileGroup;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +48,7 @@ public class CoverageWindowsFileGroupByChromosome extends FileGroup {
         parameters.put("FILENAME_SEX", genderFile.getAbsolutePath());
 
         Job job = new Job(run, run.createJobName((BaseFile)getFilesInGroup().get(0), ACEseqConstants.TOOL_ANNOTATE_COV_WIN, true), ACEseqConstants.TOOL_ANNOTATE_COV_WIN, null, parameters, (List<BaseFile>)getFilesInGroup(), filesToCheck);
-        JobResult jobResult = job.run();
+        BEJobResult jobResult = job.run();
         for (BaseFile baseFile : filesToCheck) {
             baseFile.setCreatingJobsResult(jobResult);
         }
