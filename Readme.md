@@ -1,12 +1,26 @@
-# ACE-seq Workflow 
+# ACEseq Workflow 
 
 Author: Kortine Kleinheinz
+k.kleinheinz@dkfz-heidelberg.de
 
 ## Description
+ACEseq (Allele-specific copy number estimation with whole genome sequencing) is a tool to estimate allele-specific copy numbers from WGS data and comes along with a variety of features:
+* GC/replication timin Bias correction
+* quality check
+* SV breakpoint inclusion
+* automated estimation of ploidy and tumore cell content
+* HRD/TAI/LST score estimation 
+* with/without matched control processing 
 
-## Installation
+## Prepackaged files
 
-### High-Throughput Cluster with Shared Storage
+ACEseq is available as Docker version and as Roddy-based version for execution in hpc clusters.
+Both versions can be downloaded from http://bfg-nfs3.ipmb.uni-heidelberg.de. 
+
+The prepackaged zip file contains a full Roddy / Plugin setup and includes different scripts to 
+install all necessary software and download the required reference files.
+
+Further information about the usage and installation of both versions can be found at our Read The Docs website: (http://aceseq.readthedocs.io).
 
 #### Conda
 
@@ -31,4 +45,7 @@ The name of the Conda environment is arbitrary but needs to be consistent with t
 #### Other
 
 If you do not want to use Conda, you can get a complete list of all packages and package versions Conda would install from the `resources/configurationFiles/conda.yaml`.
+
+
+
 

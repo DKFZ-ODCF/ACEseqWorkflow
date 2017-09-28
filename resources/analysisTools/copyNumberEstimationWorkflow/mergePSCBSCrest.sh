@@ -1,11 +1,14 @@
 #!/bin/bash
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 set -p pipefail
 
 tmp_breakpoints=${FILENAME_BREAKPOINTS}.tmp
 svPoints_tmp=${FILENAME_SV_POINTS}.tmp
 
-if [[ "${CREST}" == 'yes' ]]
+if [[ "${SV}" == 'yes' ]]
 then
 	${PYTHON_BINARY} "${TOOL_ADD_CREST_TO_PSCBS_GAPS}" \
             --crest_deldupinv "${FILENAME_CREST_DELDUPINV}" \

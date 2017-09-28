@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 # This script replaces segments_to_data.pl and segments_to_data_2.pl.
 #
 # usage: segments_to_data.py --pscbs [FILE] --input [FILE] --output [FILE]
@@ -63,7 +66,7 @@ if options:
 				outfile.stdin.write(
 				    pscbs_line["chromosome"]+'\t'+pscbs_line["x"      ]+'\t'+
 				    in_line   ["start"     ]+'\t'+in_line   ["end"    ]+'\t'+
-				    in_line   ["crest"     ]+'\t'+pscbs_line["CT"     ]+'\t'+
+				    in_line   ["SV.Type"     ]+'\t'+pscbs_line["CT"     ]+'\t'+
 				    pscbs_line["covT"      ]+'\t'+in_line   ["tcnMean"]+'\t'+
 				    pscbs_line["betaT"     ]+'\t'+pscbs_line["betaN"  ]+'\t'+
 				    pscbs_line["Atumor"    ]+'\t'+pscbs_line["Btumor" ]+'\t'+

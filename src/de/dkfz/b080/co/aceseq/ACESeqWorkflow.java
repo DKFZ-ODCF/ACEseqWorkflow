@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2017 The ACEseq workflow developers.
+ *
+ * Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+ */
+
 package de.dkfz.b080.co.aceseq;
 
 import de.dkfz.b080.co.common.*;
@@ -19,9 +25,9 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         BamFile bamControlMerged = new BamFile(_bamControlMerged);
         BamFile bamTumorMerged = new BamFile(_bamTumorMerged);
 
-        boolean runWithDelly = context.getConfiguration().getConfigurationValues().getBoolean("runWithDelly", true);
+        boolean runWithSv = context.getConfiguration().getConfigurationValues().getBoolean("runWithSv", true);
+        boolean runWithCrest = context.getConfiguration().getConfigurationValues().getBoolean("runWithCrest", false);
         boolean runQualityCheckOnly = context.getConfiguration().getConfigurationValues().getBoolean("runQualityCheckOnly", false);
-        boolean runMetaCNVGeneration = context.getConfiguration().getConfigurationValues().getBoolean("runMetaCNVGeneration", false);
         boolean runWithFakeControl = context.getConfiguration().getConfigurationValues().getBoolean("runWithFakeControl", false);
         boolean runWithoutControl = context.getConfiguration().getConfigurationValues().getBoolean("runWithoutControl", false);
         
@@ -71,12 +77,14 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         Tuple2<TextFile, TextFile> breakpoints = ACESeqMethods.pscbsGaps(haplotypedSNPFile, correctedWindowFile.value0, annotationResult.getGenderFile());
         Tuple2<TextFile, TextFile> mergedSvs = null;
 
-        if (runWithDelly)
-            mergedSvs = ACESeqMethods.mergeDelly(breakpoints.value0);
-        else
+        if (runWithSv) {
+            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0, runWithSv); // true is passed
+        } else if (runWithCrest) {
             mergedSvs = ACESeqMethods.mergeCrest(breakpoints.value0);
-        if (mergedSvs == null)
+	} else {
+            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0, runWithSv); // false is passed
             return true;
+	}
 
         TextFile pscbsSegments = ACESeqMethods.getSegmentAndGetSnps(mergedSvs.value0, breakpoints.value1);
         TextFile homoDelSegments = ACESeqMethods.markSegsWithHomozygDel(pscbsSegments, mergedSvs.value1);

@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 ##Kortine Kleinheinz
 ## 8.01.2013
 ## Group haplotype Blocks obtained with imputation

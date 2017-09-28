@@ -1,9 +1,15 @@
+<!--
+  ~ Copyright (c) 2017 The ACEseq workflow developers.
+  ~
+  ~ Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+  -->
+
 <configuration name='copyNumberEstimationAnalysis' description='CNV Calling for NGS data.'
                configurationType='analysis' class='de.dkfz.roddy.core.Analysis' workflowClass='de.dkfz.b080.co.aceseq.ACESeqWorkflow'
                runtimeServiceClass='de.dkfz.b080.co.common.BasicCOProjectsRuntimeService'
                imports="commonCOWorkflowsSettings"
                listOfUsedTools="mergeAndFilterSnpFiles,cnvSnpGeneration,annotateCnvFiles,imputeGenotypes,imputeGenotypes_X,addHaplotypesToSnpFile,getBreakpoints,mergeBreakpointsAndSv,getSegmentsAndSnps,markHomozygousDeletions"
-               usedToolFolders="copyNumberEstimationWorkflow,tools">
+               usedToolFolders="copyNumberEstimationWorkflow,cobasetools">
     <configurationvalues>
 
     <!--BINARIES-->
@@ -34,16 +40,17 @@
 
 
 	<!-- Reference files -->
-        <cvalue name="referenceGenome_1KGRef" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/sequence/1KGRef/hs37d5.fa" type="path"/>
+        <cvalue name="baseDirectoryReference" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes" type="path"/>
+        <cvalue name="referenceGenome_1KGRef" value="${baseDirectoryReference}/sequence/1KGRef/hs37d5.fa" type="path"/>
         <cvalue name='REFERENCE_GENOME' value="${referenceGenome_1KGRef}" type="string" />
-        <cvalue name="dbSNP_FILE" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/dbSNP/dbSNP_135/00-All.SNV.vcf.gz" type="path"/>
-        <cvalue name="MAPPABILITY_FILE" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/UCSC/wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz" type="path"/>
-        <cvalue name="CHROMOSOME_LENGTH_FILE" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/stats/chrlengths.txt" type="path"/>
-        <cvalue name="REPLICATION_TIME_FILE" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/ENCODE/ReplicationTime_10cellines_mean_10KB.Rda" type="path"/>
-        <cvalue name="GC_CONTENT_FILE" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/stats/hg19_GRch37_100genomes_gc_content_10kb.txt" type="path"/>
+        <cvalue name="dbSNP_FILE" value="${baseDirectoryReference}/databases/dbSNP/dbSNP_135/00-All.SNV.vcf.gz" type="path"/>
+        <cvalue name="MAPPABILITY_FILE" value="${baseDirectoryReference}/databases/UCSC/wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz" type="path"/>
+        <cvalue name="CHROMOSOME_LENGTH_FILE" value="${baseDirectoryReference}/stats/chrlengths.txt" type="path"/>
+        <cvalue name="REPLICATION_TIME_FILE" value="${baseDirectoryReference}/databases/ENCODE/ReplicationTime_10cellines_mean_10KB.Rda" type="path"/>
+        <cvalue name="GC_CONTENT_FILE" value="${baseDirectoryReference}/stats/hg19_GRch37_100genomes_gc_content_10kb.txt" type="path"/>
 
 	<!-- Impute -->
-        <cvalue name='imputeBaseDirectory' value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/1000genomes/IMPUTE/" type="path"/>
+        <cvalue name='imputeBaseDirectory' value="${baseDirectoryReference}/databases/1000genomes/IMPUTE/" type="path"/>
         <cvalue name='GENETIC_MAP_FILE'               value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/genetic_map_chr${CHR_NAME}_combined_b37.txt" type="path"/>
         <cvalue name='KNOWN_HAPLOTYPES_FILE'          value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/ALL.chr${CHR_NAME}.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.nomono.haplotypes.gz" type="path"/>
         <cvalue name='KNOWN_HAPLOTYPES_LEGEND_FILE'   value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/ALL.chr${CHR_NAME}.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.nomono.legend.gz"
@@ -75,7 +82,7 @@
         <cvalue name='CHROMOSOME_INDICES_OPTIMIZED_CNV_SNV_MPILEUP' value='( 2 1 3 5 4 6 8 12 7 11 10 9 X 16 13 15 14 18 17 19 20 22 21 Y )' type='bashArray'/>
         <cvalue name='AUTOSOME_INDICES' value='( {1..22} )' type='bashArray'/>
 
-        <cvalue name='CREST' value='yes' type='string' description='include SV breakpoints in analysis (yes|no)'/>
+        <cvalue name='SV' value='yes' type='string' description='include SV breakpoints in analysis (yes|no)'/>
 
         <cvalue name='runOnPancan' value='false' type='boolean'/>
 
@@ -117,9 +124,9 @@
         <cvalue name='SNP_SUFFIX' value='snp.tab.gz' type="string"/>
         <cvalue name='snp_min_coverage' value='5' type="integer"/>
 
-	<cvalue name='MALE_FAKE_CONTROL_PRE' value="/icgc/dkfzlsdf/analysis/mmml/whole_genome_pcawg/results_per_pid/4128477/ACEseq/cnv_snp/4128477.chr" type='path' 
+	<cvalue name='MALE_FAKE_CONTROL_PRE' value="pathToPID/${pid}/ACEseq/cnv_snp/${pid}.chr" type='path' 
 		description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for male patients" /> 
-	<cvalue name='FEMALE_FAKE_CONTROL_PRE' value="/icgc/dkfzlsdf/analysis/mmml/whole_genome_pcawg/results_per_pid/4109142/ACEseq/cnv_snp/4109142.chr" type='path'
+	<cvalue name='FEMALE_FAKE_CONTROL_PRE' value="pathToPID/${pid}/ACEseq/cnv_snp/${pid}.chr" type='path'
 		description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for female patients" /> 
 	<cvalue name='FAKE_CONTROL_POST' value=".cnv.anno.tab.gz" type='string' description="suffix for chromosome wise 1kb coverage files used for fake control workflow"/> 
 	<cvalue name='PATIENTSEX' value="male" type='string' description="patient sex used in case of no control workflow (male|female|klinefelter)" /> 
@@ -240,7 +247,7 @@
         <tool name="correctGcBiasR" value="correctGCBias.R" basepath="copyNumberEstimationWorkflow"/>
         <tool name="convertToJson" value="convertTabToJson.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="defineBreakpoints" value="datatable_and_PSCBSgaps.R" basepath="copyNumberEstimationWorkflow"/>
-        <tool name="addDellyToPscbsGaps" value="PSCBSgabs_plus_delly_points.py" basepath="copyNumberEstimationWorkflow"/>
+        <tool name="addSvToPscbsGaps" value="PSCBSgabs_plus_sv_points.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="addCrestToPscbsGaps" value="PSCBSgabs_plus_CRESTpoints.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="pscbsSegmentation" value="pscbs_all.R" basepath="copyNumberEstimationWorkflow"/>
         <tool name="addHomozygousDeletion" value="homozygous_deletion.pl" basepath="copyNumberEstimationWorkflow"/>
@@ -262,7 +269,6 @@
             </resourcesets>
         </tool>
 
-        <tool name="convertToVcf" value="convertToVcf.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="generatePlots" value="pscbs_plots.R" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="50" cores="1" nodes="1" walltime="12"/>
@@ -439,12 +445,23 @@
             </output>
         </tool>
 
-        <tool name="mergeBreakpointsAndSvDelly" value="PSCBSgaps_Delly.sh" basepath="copyNumberEstimationWorkflow">
+        <tool name="mergeBreakpointsAndSv" value="PSCBSgaps_SV.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="1"/>
             </resourcesets>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_DELLY_SV"/>
+            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SV"/>
+            <output type="tuple">
+                <output type="file" fnpatternselectiontag="breakpointsSvs" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_BREAKPOINTS"/>
+                <output type="file" fnpatternselectiontag="svPoints" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SV_POINTS"/>
+            </output>
+        </tool>
+
+        <tool name="mergeBreakpointsWithoutSv" value="PSCBSgaps_SV.sh" basepath="copyNumberEstimationWorkflow">
+            <resourcesets>
+                <rset size="l" memory="0.2" cores="2" nodes="1" walltime="1"/>
+            </resourcesets>
+            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
             <output type="tuple">
                 <output type="file" fnpatternselectiontag="breakpointsSvs" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_BREAKPOINTS"/>
                 <output type="file" fnpatternselectiontag="svPoints" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SV_POINTS"/>
@@ -606,9 +623,8 @@
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.replaceControl" pattern='${aceseqOutputDirectory}/checkpointFakeControl.txt'/>
         <filename class="TextFile" onMethod="CoverageWindowsFileAnnotationResult.mergeAndFilterCoverageWindowFiles" pattern='${aceseqOutputDirectory}/${pid}_all.cnv.tab.gz'/>
         <filename class="TextFile" derivedFrom='TextFile' selectiontag='covWinFileWithBadControl' pattern='${aceseqOutputDirectory}/${pid}_all.cnv.tab.gz'/>
-        <!--<filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.pscbsGapsAndMergeDelly" selectiontag="crestFileTag" pattern='${aceseqOutputDirectory}/crestFile.txt' />-->
+
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.correctGC" selectiontag="correctedWindows" pattern='${aceseqOutputDirectory}/${pid}_all.cnv.corrected.tab.gz'/>
-        <!--<filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.correctGC" selectiontag="plot" pattern='${plotOutputDirectory}/${pid}_gc_corrected.png' />-->
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.correctGC" selectiontag="tabSlim" pattern='${plotOutputDirectory}/${pid}_qc_gc_corrected.json'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.correctGC" selectiontag="tab" pattern='${plotOutputDirectory}/${pid}_qc_gc_corrected.tsv'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.pscbsGaps" selectiontag="knownsegments" pattern='${aceseqOutputDirectory}/${pid}_knownsegments.txt'/>
@@ -617,9 +633,9 @@
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="crestTranslocFileTag" pattern='${crestOutputDirectory}/tumor_${pid}.${cvalue,name="crestTransSuffix",default="TX"}'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="svPoints" pattern='${aceseqOutputDirectory}/${pid}_sv_points.txt'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeDelly" selectiontag="dellyFileTag" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeDelly" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeDelly" selectiontag="svPoints" pattern='${aceseqOutputDirectory}/${pid}_sv_points.txt'/>
+        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeSv" selectiontag="svFileTag" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>
+        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
+        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeSv" selectiontag="svPoints" pattern='${aceseqOutputDirectory}/${pid}_sv_points.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.getSegmentAndGetSnps" selectiontag="segments" pattern='${aceseqOutputDirectory}/${pid}_fit.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.markSegsWithHomozygDel" pattern='${aceseqOutputDirectory}/${pid}_homozygous_deletion.txt.gz'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.segsToSnpDataHomodel" pattern='${aceseqOutputDirectory}/${pid}_all_seg.txt.gz'/>

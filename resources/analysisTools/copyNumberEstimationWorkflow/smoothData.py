@@ -1,11 +1,13 @@
 #!/usr/bin/python
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 
 
-### idea if segment too small check for crest of prior and following segment if both neighbouring merge with that that has identical crest type
+
+### idea if segment too small check for sv of prior and following segment if both neighbouring merge with that that has identical sv type
 ### if copy number closer to one of the segments merge with that one
 
-import numpy
 import argparse
 import sys
 from python_modules import Tabfile
@@ -89,7 +91,7 @@ def merge_lines_CN(prior_line, newline, next_line):
 	return ( [prior_line, newline] )
 
 def find_closer_match_CN(prior_line, newline, next_line):
-	"Find closest match according to tcn and crest definition"
+	"Find closest match according to tcn and sv definition"
 	neighbours =  [ next_line, prior_line ]
 	#considered for merging if segments are directly neighboured and central segment is either homozygous Deletion or less than 0.3 different from neighbour TCN
 	#additional criteria: segment is exceptionally short (<101)

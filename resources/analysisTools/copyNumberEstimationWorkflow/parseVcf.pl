@@ -1,4 +1,7 @@
 #!/usr/bin/perl
+
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the GNU GENERAL PUBLIC LICENSE (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE_GNU.txt).
 use strict;
 use warnings;
 
