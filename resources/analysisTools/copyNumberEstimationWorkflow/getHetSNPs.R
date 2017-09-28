@@ -1,4 +1,8 @@
 #!/usr/bin
+
+# Copyright (c) 2017 The ACEseq workflow developers.
+# This script is licenced under (license terms are at
+# https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 #kortine Kleinheinz k.kleinheinz@dkfz.de
 #first draft to estimate control allele frequencies based on the tumor BAF
 
@@ -6,8 +10,8 @@ library(getopt)
 library(data.table)
 
 script_dir = dirname(get_Rscript_filename())
-source(paste0(script_dir,"/qq.R"))
-source(paste0(script_dir, "/getopt.R"))
+
+#source(paste0(script_dir, "/getopt.R"))
 
 
 readfile <- function(filename, chrom){
@@ -61,12 +65,17 @@ estimateControlBAF <- function(data, minHet, maxHet){
 hetMin <- 0.1
 hetMax <- 0.9
 
-getopt2( matrix(c( 'file_snp',           's', 1, "character", "input coverage data, dbSNP",               # input, /ibios/co02/bludau/ACEseq/medullo_pediatric/MBBL8/all.snp.tab
-		   'hetMin',	         'l','2',"numeric", "minimum BAF in tumor to be heterozygous",
-		   'hetMax',	         'h','2',"numeric", "maximum BAF in tumor to be hetereozygous"
-                ), ncol = 5, byrow = TRUE))
-      
-write(qq("file_snp: @{file_snp}\n\n"), stderr())
+spec <-  matrix(c( 'file_snp',   's', 1, "character", #"input coverage data, dbSNP",
+		   'hetMin',	'l','2',"numeric",   #"minimum BAF in tumor to be heterozygous",
+		   'hetMax',	'h','2',"numeric"    #"maximum BAF in tumor to be hetereozygous"
+                ), ncol = 4, byrow = TRUE)
+
+opt = getopt(spec);
+for(item in names(opt)){
+       assign( item, opt[[item]])
+}
+     
+write(paste0("file_snp: ",file_snp,"\n\n"), stderr())
 write("\n", stderr())
 
 

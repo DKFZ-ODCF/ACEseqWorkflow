@@ -1,11 +1,13 @@
 #!/usr/bin/python
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 
 
-### idea if segment too small check for crest of prior and following segment if both neighbouring merge with that that has identical crest type
+
+### idea if segment too small check for sv of prior and following segment if both neighbouring merge with that that has identical sv type
 ### if copy number closer to one of the segments merge with that one
 
-import numpy
 import argparse
 import sys
 from python_modules import Tabfile
@@ -139,7 +141,7 @@ def merge_lines_CN(prior_line, newline, next_line):
 	return ( [prior_line, newline] )
 
 def find_closer_match_CN(prior_line, newline, next_line):
-	"Find closest match according to tcn and crest definition"
+	"Find closest match according to tcn and sv definition"
 	neighbours =  [ next_line, prior_line ]
 	#considered for merging if segments are directly neighboured and central segment is either homozygous Deletion or less than 0.3 different from neighbour TCN
 	#additional criteria: segment is exceptionally short (<101)
@@ -169,8 +171,8 @@ def find_closer_match_CN(prior_line, newline, next_line):
 	if nextTrue and priorTrue:
 		
 		same_tcn = [ i for i, j in enumerate( neighbours ) if j[ "tcnMean" ] == newline["tcnMean"] ]
-		same_crest = [ i for i, j in enumerate( neighbours ) if j[ "crest" ]   == newline["crest"] ]
-		crest_defined = [ i for i, j in enumerate( neighbours ) if j[ "crest" ]   != "NA" ]
+		same_sv = [ i for i, j in enumerate( neighbours ) if j[ "SV.Type" ]   == newline["SV.Type"] ]
+		sv_defined = [ i for i, j in enumerate( neighbours ) if j[ "SV.Type" ]   != "NA" ]
 			
 		if len( same_tcn ) == 2:
 			if not float( newline["tcnMean"] ) == 0:
@@ -178,24 +180,24 @@ def find_closer_match_CN(prior_line, newline, next_line):
 					priorTrue, nextTrue = [ False, True ] 
 				else:
 					 priorTrue, nextTrue = [ True, False ]
-			elif len(same_crest) == 2 or len(same_crest) < 1 or same_crest[0] == 0:
+			elif len(same_sv) == 2 or len(same_sv) < 1 or same_sv[0] == 0:
 				priorTrue, nextTrue = [ False, True ]
-			elif same_crest[0] == 1:
+			elif same_sv[0] == 1:
 				priorTrue, nextTrue = [ True, False ]
 		elif len(same_tcn) > 0:
 			if same_tcn[0] == 1:
 					priorTrue, nextTrue = [ True, False ]
 			elif same_tcn[0] == 0:
 					priorTrue, nextTrue = [ False, True ]
-		elif len(same_crest) > 0:
-			if same_crest[0] == 0:
+		elif len(same_sv) > 0:
+			if same_sv[0] == 0:
 				priorTrue, nextTrue = [ False, True ]
-			elif same_crest[0] == 1:
+			elif same_sv[0] == 1:
 				priorTrue, nextTrue = [ True, False ]
-		elif len(crest_defined) > 0:
-			if crest_defined[0] == 0:
+		elif len(sv_defined) > 0:
+			if sv_defined[0] == 0:
 				priorTrue, nextTrue = [ False, True ]
-			elif crest_defined[0] == 1:
+			elif sv_defined[0] == 1:
 				priorTrue, nextTrue = [ True, False ]
 
 	return( [nextTrue, priorTrue ])

@@ -1,5 +1,9 @@
 #!/usr/bin/R
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# This script is licenced under (license terms are at
+# https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 library(reshape)
 library(reshape2)
 library(ggplot2)
@@ -7,39 +11,44 @@ library(scales)
 library(getopt)
 
 script_dir = dirname(get_Rscript_filename())
-source(paste0(script_dir,"/qq.R"))
-source(paste0(script_dir, "/getopt.R"))
 
-getopt2(matrix(c('segments',		's', 1, "character", "IN: segment file",
-		 'file_sex',		'f', 1, "character", "IN: file with sex of patient",
-		 'purity_ploidy',	'u', 1, "character", "OUT: file with purities and ploidies",
-		 'out',			'x', 1, "character", "OUT: output directory",
-		 'min_length_purity',	'l', 1, "numeric",   "minimal length of segments to be considered for estimation",
-		 'min_hetSNPs_purity',	'h', 1, "numeric",   "minimum number of heterozygous SNPs in segments to be considered for estimation",
-		 'dh_Stop',		'd', 1, "character", "red line for DH boundary estimated by mean or max values",
-		 'min_length_dh_stop',	'm', 1, "numeric",   "minimum length of segment to be considered for border value (mean|max)",
-		 'dh_zero',		'z', 1, "character", "can dh be zero (yes|no)",
-		 'purity_min',		'a', 1, "numeric",   "minimum purity",
-		 'purity_max',		'b', 1, "numeric",   "maximium purity",
-		 'ploidy_min',		'p', 1, "numeric",   "minimum poidy",
-		 'ploidy_max',		'q', 1, "numeric",   "maximum ploidy",
-		 'pid',			'i', 1, "character",  "patient identifier"
-                ), ncol = 5, byrow = TRUE))
+#source(paste0(script_dir, "/getopt.R"))
 
-cat(qq("segments: @{segments}\n\n"))
-cat(qq("sex: @{file_sex}\n\n"))
-cat(qq("purity_ploidy_out: @{purity_ploidy}\n\n"))
-cat(qq("out: @{out}\n\n"))
-cat(qq("min_length_purity: @{min_length_purity}\n\n"))
-cat(qq("min_hetSNPs_purity: @{min_hetSNPs_purity}\n\n"))
-cat(qq("dh_Stop: @{dh_Stop}\n\n"))
-cat(qq("min_length_dh_stop: @{min_length_dh_stop}\n\n"))
-cat(qq("dh_zero: @{dh_zero}\n\n"))
-cat(qq("purity_min: @{purity_min}\n\n"))
-cat(qq("purity_max: @{purity_max}\n\n"))
-cat(qq("ploidy_min: @{ploidy_min}\n\n"))
-cat(qq("ploidy_max: @{ploidy_max}\n\n"))
-cat(qq("pid: @{pid}\n\n"))
+spec <- matrix(c('segments',		's', 1, "character", #"IN: segment file",
+		 'file_sex',		'f', 1, "character", #"IN: file with sex of patient",
+		 'purity_ploidy',	'u', 1, "character", #"OUT: file with purities and ploidies",
+		 'out',			'x', 1, "character", #"OUT: output directory",
+		 'min_length_purity',	'l', 1, "numeric",   #"minimal length of segments to be considered for estimation",
+		 'min_hetSNPs_purity',	'h', 1, "numeric",   #"minimum number of heterozygous SNPs in segments to be considered for estimation",
+		 'dh_Stop',		'd', 1, "character", #"red line for DH boundary estimated by mean or max values",
+		 'min_length_dh_stop',	'm', 1, "numeric",   #"minimum length of segment to be considered for border value (mean|max)",
+		 'dh_zero',		'z', 1, "character", #"can dh be zero (yes|no)",
+		 'purity_min',		'a', 1, "numeric",   #"minimum purity",
+		 'purity_max',		'b', 1, "numeric",   #"maximium purity",
+		 'ploidy_min',		'p', 1, "numeric",   #"minimum poidy",
+		 'ploidy_max',		'q', 1, "numeric",   #"maximum ploidy",
+		 'pid',			'i', 1, "character"  #"patient identifier"
+                ), ncol = 4, byrow = TRUE)
+ 
+opt = getopt(spec);
+for(item in names(opt)){
+       assign( item, opt[[item]])
+}
+ 
+cat(paste0("segments: ", segments, "\n\n"))
+cat(paste0("sex: ", file_sex, "\n\n"))
+cat(paste0("purity_ploidy_out: ", purity_ploidy, "\n\n"))
+cat(paste0("out: ", out, "\n\n"))
+cat(paste0("min_length_purity: ", min_length_purity, "\n\n"))
+cat(paste0("min_hetSNPs_purity: ", min_hetSNPs_purity, "\n\n"))
+cat(paste0("dh_Stop: ", dh_Stop, "\n\n"))
+cat(paste0("min_length_dh_stop: ", min_length_dh_stop, "\n\n"))
+cat(paste0("dh_zero: ", dh_zero, "\n\n"))
+cat(paste0("purity_min: ", purity_min, "\n\n"))
+cat(paste0("purity_max: ", purity_max, "\n\n"))
+cat(paste0("ploidy_min: ", ploidy_min, "\n\n"))
+cat(paste0("ploidy_max: ", ploidy_max, "\n\n"))
+cat(paste0("pid: ",pid, "\n\n"))
 
 #functions
 getD   = function(alpha, P) 		    alpha * P + 2 * (1-alpha)  
@@ -136,7 +145,7 @@ a = 0
 
 for (ploidy in posPloidies) { 
 	a = a + 1
-	cat(qq("ploidy_@{ploidy}\n\n"))
+	cat(paste0("ploidy_", ploidy, "\n\n"))
 	
 	for (purity in posPurities) 	{
 
@@ -321,7 +330,7 @@ colnames(DH) = posPurities
 rownames(DH) = posPloidies
 
 
-cat(qq("dist_DH @{dim(dist_DH)}\n\n"))
+cat(paste0("dist_DH ",dim(dist_DH), "\n\n"))
 testPlot = melt(data.frame(dist_DH))
 ploi = rep(posPloidies, length(posPurities))
 testPlot$ploidy = ploi
@@ -357,25 +366,6 @@ for (i in seq_along(posPloidies)) {
 #defining red lines in plot
 df.vlines <- data.frame(ploi=ploi, vline=limitDH)
 
-# png(qq("@{out}/dh_ABERRANT_more.png"), width = 1200, height = 1200)
-# ggplot(testPlot, aes(purity, ploidy)) + geom_tile(aes(fill = dh.distance), colour = "white") + 
-# 	scale_fill_gradient(low = "white", high = "black", limits = c(0, 0.3), na.value = "black") + 
-# 	theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 10)) + 
-# 	geom_errorbar(data = df.vlines, aes(x = vline, ymax = ploi, ymin = ploi), colour="#AA0000")
-# dev.off() 
-# 
-# testPlot = melt(data.frame(dist_TCN))
-# ploi = rep(posPloidies, length(posPurities))
-# testPlot$ploidy = ploi
-# colnames(testPlot) = c('purity', 'tcn.distance', 'ploidy')
-
-# ####    
-# png(qq("@{out}/tcn_ABERRANT_more.png"), width = 1200, height = 1200)
-# ggplot(testPlot, aes(purity, ploidy)) + geom_tile(aes(fill = tcn.distance), colour = "white") +
-# 	scale_fill_gradient(low = "white", high = "black", limits = c(0, 0.3), na.value = "black") + 
-# 	theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 10)) + 
-# 	geom_errorbar(data = df.vlines, aes(x = vline, ymax = ploi, ymin = ploi), colour="#AA0000")
-# dev.off() 
 
 ############ non-aberrant segments
 
@@ -408,7 +398,7 @@ a = 0
 
 for (ploidy in posPloidies) { 
 	a = a + 1
-	cat(qq("ploidy_@{ploidy}\n\n"))
+	cat(paste0("ploidy_",ploidy, "\n\n"))
 	
 	for (purity in posPurities) {
 
@@ -544,7 +534,7 @@ colnames(testPlot) = c('purity', 'tcn.distance', 'ploidy')
 ####limits can be taken over from aberrant segments
 df.vlines = data.frame(ploi = ploi, vline = limitDH)
 
-png(qq("@{out}/@{pid}_tcn_NON_ABERRANT_n_more.png"), width = 1200, height = 1200, type='cairo')
+png(paste0(out, "/", pid, "_tcn_NON_ABERRANT_n_more.png"), width = 1200, height = 1200, type='cairo')
 print( ggplot(testPlot, aes(purity, ploidy)) + geom_tile(aes(fill = tcn.distance), colour =   "white") + 
 	scale_fill_gradient(low = "white", high = "black", limits=c(0, 0.2), na.value = "black") + 
 	theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 10)) + 
@@ -577,7 +567,7 @@ testPlot$ploidy = testPlotploi
 names(testPlot) = c("purity", "distance", "ploidy")
 testPlot$purity = substring(testPlot$purity, 2, 5)
 testPlot$purity = as.numeric(testPlot$purity)
-png(qq("@{out}/@{pid}_tcn_distances_combined.png"), width = 1200, height = 1200, type='cairo')
+png(paste0("",out, "/",pid, "_tcn_distances_combined.png"), width = 1200, height = 1200, type='cairo')
 erupt = ggplot(testPlot, aes(purity, ploidy, fill = distance)) +
 	geom_tile() + 
 	scale_x_continuous(expand = c(0 ,0)) + 
@@ -651,7 +641,7 @@ local_minima = sel_local_minima[sel]
 select = c()
 # select local minimum from each ploidy frame +-0.25
 for (p in seq_along(ploi)) {
-  s <-  which(sel_local_minima == min(sel_local_minima[which(ploi <= ploi[p] + 0.25 & ploi >= ploi[p] - 0.25)]))
+  s <-  which(local_minima == min(local_minima[which(ploi <= ploi[p] + 0.25 & ploi >= ploi[p] - 0.25)]))
   select = c(select, s)
 }
 
@@ -667,7 +657,7 @@ while( any (diff(final_ploi) < 0.25 & diff(final_pur) < 0.1 & diff(final_local_m
   s <- which( min(final_local_minima[sel]) != final_local_minima[sel] )
   final_pur  <- final_pur[-sel[s]]
   final_ploi <- final_ploi[-sel[s]]
-  final_local_minima = local_minima[-sel[s]]
+  final_local_minima = final_local_minima[-sel[s]]
 }
 
 pp_matrix = matrix(data = 0, nrow = length(final_pur), ncol = 4, byrow = FALSE, dimnames = NULL )
@@ -708,7 +698,7 @@ names(testPlot) = c("purity", "distance", "ploidy")
 testPlot$purity = substring(testPlot$purity, 2, 5)
 testPlot$purity = as.numeric(testPlot$purity)
 
-png(qq("@{out}/@{pid}_tcn_distances_combined_star.png"), width = 800, height = 800, type='cairo')
+png(paste0("",out, "/",pid, "_tcn_distances_combined_star.png"), width = 800, height = 800, type='cairo')
 erupt = ggplot(testPlot, aes(purity, ploidy, fill = distance)) +
 	geom_tile()+ 
 	scale_x_continuous(expand = c(0, 0)) + 

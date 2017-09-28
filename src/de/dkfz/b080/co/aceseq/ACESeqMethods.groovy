@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2017 The ACEseq workflow developers.
+ *
+ * Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+ */
+
 package de.dkfz.b080.co.aceseq;
 
 import de.dkfz.b080.co.common.ParallelizationHelper;
@@ -110,17 +116,21 @@ public final class ACESeqMethods {
     }
 
     @ScriptCallingMethod
-    public static Tuple2<TextFile, TextFile> mergeDelly(TextFile knownSegmentsFile) {
-        TextFile svFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "dellyFileTag", null, null);
-        svFile.setAsSourceFile();
-        JobResult result = new JobResult(new BEJobResult(knownSegmentsFile.getExecutionContext(), null, new FakeBEJob(new BEFakeJobID(BEFakeJobID.FakeJobReason.FILE_EXISTED)), null, null, null, null))
-        svFile.setCreatingJobsResult(result);
-        boolean b = FileSystemAccessProvider.getInstance().checkBaseFiles(svFile);
-        if (b)
-            return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_AND_SV_DELLY, knownSegmentsFile, svFile);
+    static Tuple2<TextFile, TextFile> mergeSv(TextFile knownSegmentsFile, boolean runWithSv) {
+        if (runWithSv) {
+            TextFile svFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "svFileTag", null, null);
+            svFile.setAsSourceFile();
+            JobResult result = new JobResult(new BEJobResult(knownSegmentsFile.getExecutionContext(), null, new FakeBEJob(new BEFakeJobID(BEFakeJobID.FakeJobReason.FILE_EXISTED)), null, null, null, null))
+            svFile.setCreatingJobsResult(result);
+            boolean b = FileSystemAccessProvider.getInstance().checkBaseFiles(svFile);
+            if (b)
+                return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_AND_SV, knownSegmentsFile, svFile);
 
-        knownSegmentsFile.getExecutionContext().addErrorEntry(ExecutionContextError.EXECUTION_NOINPUTDATA.expand("Delly files were not found in input path."));
-        return null;
+            knownSegmentsFile.getExecutionContext().addErrorEntry(ExecutionContextError.EXECUTION_NOINPUTDATA.expand("SV files were not found in input path."));
+            return null;
+        } else {
+            return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_WITHOUT_SV, knownSegmentsFile);
+        }
     }
 
     @ScriptCallingMethod

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 
 tmpSnpsUpdate=${FILENAME_ALL_SNP_UPDATE1}_tmp
 

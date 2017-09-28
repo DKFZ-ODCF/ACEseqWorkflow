@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 modules load "htslib/$HTSLIB_VERSION"
 modules load "perl/$PERL_VERSION"
 modules load "python/$PYTHON_VERSION"

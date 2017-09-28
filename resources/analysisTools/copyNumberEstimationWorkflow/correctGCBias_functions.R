@@ -1,4 +1,8 @@
 ##################
+
+# Copyright (c) 2017 The ACEseq workflow developers.
+# This script is licenced under (license terms are at
+# https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 ## start Daniel ##
 ##################
 
@@ -168,7 +172,7 @@ checkControl <- function(coverage, covIndex){
         diffPeaks <- c(diffPeaks, NA)
     }
     
-    plot(dens, col="blue", main = qq("chr: @{chr}"), xlab="normalized coverage control")
+    plot(dens, col="blue", main = paste0("chr: ",chr), xlab="normalized coverage control")
   }
   
   return(diffPeaks)

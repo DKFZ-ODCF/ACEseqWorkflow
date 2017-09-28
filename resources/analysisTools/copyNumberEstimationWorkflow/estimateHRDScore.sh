@@ -1,5 +1,8 @@
 #!/usr/bin/sh
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 source ${CONFIG_FILE}
 
 PIPELINE_DIR=`dirname ${TOOL_HRD_ESTIMATION}`
@@ -9,15 +12,17 @@ PIPELINE_DIR=`dirname ${TOOL_HRD_ESTIMATION}`
 		exit 2
 	fi
 
-$PYTHON_BINARY ${TOOL_PARSE_JSON} -f ${FILENAME_PARAMETER_JSON} | while read line
+$PYTHON_BINARY ${TOOL_PARSE_JSON} -f ${FILENAME_PARAMETER_JSON} >${FILENAME_PARAMETER_JSON}.tmp
+cat ${FILENAME_PARAMETER_JSON}.tmp | while read line
 do
-	solutions=$(line)
+	solutions=$line
 	for item in ${solutions[@]}; do
 		eval $item
 	done
 	combProFile=${aceseqOutputDirectory}/${pid}_comb_pro_extra${ploidyFactor}_${tcc}.txt
 	HRDFile=${aceseqOutputDirectory}/${pid}_HRDscore_${ploidyFactor}_${tcc}.txt
 	echo $combProFile
+
 	mostImportantFile=${aceseqOutputDirectory}/${pid}_comb_pro_extra${ploidyFactor}_${tcc}.txt
 	##remove artifact regions
 	combProFileNew=$(echo $combProFile | sed 's/.txt/.smoothed.txt/')
@@ -53,7 +58,7 @@ do
 	fi
 
 	#this file could be written out and sorted according to chromosomes
-	${PYTHON_BINARY} ${TOOL_SMOOTH_DATA} -f $combProFile.tmp  -o $combProFile.tmp.tmp && mv $combProFile.tmp.tmp $combProFile.tmp && \
+	${PYTHON_BINARY} ${TOOL_SMOOTH_DATA} -f $combProFile.tmp  -o $combProFile.tmp.tmp && mv $combProFile.tmp.tmp $combProFile.tmp  && \
 	${PYTHON_BINARY} ${TOOL_REMOVE_BREAKPOINTS} -f $combProFile.tmp -o $combProFile.tmp.tmp && mv $combProFile.tmp.tmp $combProFile.tmp
 	if [[ "$?" != 0 ]]
 	then
@@ -61,18 +66,25 @@ do
 		exit 2
 	fi
 
-	patientsex=`cat $SEX_FILE`
+	patientsex=`cat ${FILENAME_SEX:-iDoNotExist.txt}`
+
+	if [[ "$?" != 0 ]]
+	then
+		echo "There was a non-zero exit code getting patient sex" 
+		exit 2
+	fi
+
 
 	${RSCRIPT_BINARY} ${TOOL_HRD_ESTIMATION} \
-		--patientsex $gender \
-		--ploidy $ploidy \
-		--tcc $tcc \
-		--pid $pid \
-		--segmentfile $combProFileNoArtifacts \
-		--mergedfile $combProFile.tmp \
-		--outfile $HRDFile.tmp \
-		--pipelineDir $PIPELINE_DIR \
-		--centromerFile $PIPELINE_DIR/${centromerFilename}
+		 $combProFileNoArtifacts \
+		 $combProFile.tmp \
+		 $gender \
+		 $ploidy \
+		 $tcc \
+		 $pid \
+		 $HRDFile.tmp \
+		 $PIPELINE_DIR/${centromerFilename} \
+		 $PIPELINE_DIR 
 
 	if [[ "$?" != 0 ]]
 	then
@@ -90,11 +102,12 @@ do
 	fi
 
 	mv $HRDFile.tmp $HRDFile
+	rm $combProFile.tmp 
 done
 if [[ "$?" != 0 ]]
 then
 	echo "There was a non-zero exit code while processing solutions" 
 	exit 2
 fi
-
+rm ${FILENAME_PARAMETER_JSON}.tmp 
 touch $FILENAME_CHECKPOINT_HRD 

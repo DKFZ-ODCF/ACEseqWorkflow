@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 
 #estimate sex of patient from X and Y coverage
 Y_FILE="${SNP_VCF_CNV_PATH}Y.${CNV_SUFFIX}"

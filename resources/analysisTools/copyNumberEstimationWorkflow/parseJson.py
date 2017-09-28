@@ -1,5 +1,8 @@
 
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 import json
 import argparse
 import sys
@@ -15,6 +18,9 @@ json_data=args.file.read()
 solutions =  json.loads(json_data)
 
 for index in solutions.keys():
+	outstring = ""
 	for detail in solutions[index].keys():
-		sys.stdout.write( " " + detail + "=" + solutions[index][detail] +" ")
-	sys.stdout.write("\n")
+		outstring = outstring + detail + "=" + solutions[index][detail] + " "
+#		sys.stdout.write( " " + detail + "=" + solutions[index][detail] +" ")
+#	sys.stdout.write("\n")
+	print(outstring)

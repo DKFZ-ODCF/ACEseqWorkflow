@@ -1,19 +1,8 @@
 #!/bin/bash
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 
-#CHR_NAME=${CHR_NR}
-#CHR_NR=${CHR_PREFIX}${CHR_NR}${CHR_SUFFIX}
-#
-#testing=FILES_TO_EVALUATE
-#type=eval_job
-#source ${TOOL_CHECK_FILES}
-#[[ $? != 0 ]] && echo -e "\nTest for files for PID: ${PID} had non zero exit status, exiting pipeline\n\n" && exit 1
-#[[ ${ok} == 0 ]] && echo -e "\nEvaluation of bam files for PID: ${PID} had non zero exit status, exiting pipeline\n\n" && exit 1
-#
-#testing=FILES_IMPUTE
-#type=create
-#source=${TOOL_CHECK_FILES}
-#[[ $? != 0 ]] && echo -e "\nTest for files for PID: ${PID} had non zero exit status, exiting pipeline\n\n" && exit 1
 
 
 source ${TOOL_ANALYZE_BAM_HEADER}
