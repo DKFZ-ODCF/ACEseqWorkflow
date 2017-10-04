@@ -42,6 +42,9 @@ public final class ACEseqConstants {
     public static final String TOOL_GENERATE_RESULTS_AND_PLOTS = "generateResultsAndPlots";
     public static final String TOOL_ESTIMATE_HRD_SCORE = "estimateHrdScore";
 
+    public static final String PARM_CHR_INDEX = "PARM_CHR_INDEX";
+    public static final String CHR_NAME = "CHR_NAME";
+    public static final String CHR_NR = "CHR_NR";
     
     private ACEseqConstants() {
     }
