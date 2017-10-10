@@ -22,10 +22,10 @@
         <cvalue name="SAMTOOLS_VERSION" value="0.1.19" type="string"/>
 
     <!--ENVIRONMENT (see tools section below for possible values) -->
-        <cvalue name="workflowEnvironmentScript" value="${TOOL_WORKFLOW_ENVIRONMENT_CONDA_TBI_PBS}" type="string"
-                description="Use ${TOOL_WORKFLOW_ENVIRONMENT_CONDA} for a generic Conda environment."/>
+        <cvalue name="workflowEnvironmentScript" value="workflowEnvironment_conda" type="string"
+                description="Use 'workflowEnvironment_conda' for a generic Conda environment."/>
         <!--<cvalue name="workflowEnvironmentScript" value="${TOOL_WORKFLOW_ENVIRONMENT_TBI_PBS}" type="string"/>-->
-        <!--<cvalue name="correctGcBiasEnvironmentScript" value="${TOOL_CORRECT_GC_BIAS_ENVIRONMENT_CONDA}" type="string"/>-->
+        <cvalue name="correctGcBiasEnvironmentScript" value="workflowEnvironment_condaTbiPbsCorrectGcBias" type="string"/>
         <cvalue name="condaEnvironmentName" value="ACEseqWorkflow" type="string"
                 description="Name of the Conda environment on the execution hosts. Used by the environment setup script conda.sh defined as tool below."/>
 
@@ -219,8 +219,6 @@
              "workflow_environment_${environmentTool}". -->
         <tool name="workflowEnvironment_condaTbiPbs" value="conda_tbi-pbs-cluster.sh" basepath="copyNumberEstimationWorkflow/environments"/>
         <tool name="workflowEnvironment_conda" value="conda.sh" basepath="copyNumberEstimationWorkflow/environments"/>
-        <tool name="workflowEnvironment_modules" value="tbi-lsf-cluster.sh" basepath="copyNumberEstimationWorkflow/environments"/>
-        <tool name="workflowEnvironment_tbiPbs" value="tbi-pbs-cluster.sh" basepath="copyNumberEstimationWorkflow/environments"/>
 
         <!-- Cluster-job specific environments.
              Tool-specific environments override the global workflows environment. You can reference the tool name
