@@ -25,7 +25,6 @@
         <cvalue name="workflowEnvironmentScript" value="workflowEnvironment_conda" type="string"
                 description="Use 'workflowEnvironment_conda' for a generic Conda environment."/>
         <!--<cvalue name="workflowEnvironmentScript" value="${TOOL_WORKFLOW_ENVIRONMENT_TBI_PBS}" type="string"/>-->
-        <cvalue name="correctGcBiasEnvironmentScript" value="workflowEnvironment_condaTbiPbsCorrectGcBias" type="string"/>
         <cvalue name="condaEnvironmentName" value="ACEseqWorkflow" type="string"
                 description="Name of the Conda environment on the execution hosts. Used by the environment setup script conda.sh defined as tool below."/>
 
