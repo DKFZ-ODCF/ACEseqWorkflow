@@ -90,7 +90,7 @@ fi
 		    -g "${UNPHASED_GENOTYPE}" \
 		    -int $[5000000*${SEGMENT}] $[5000000*${SEGMENT} + 4999999] \
 		    -Ne 20000 \
-		    -o "${PHASED_GENOTYPE_PART}"
+		    -o "${PHASED_GENOTYPE_PART}" 2>&1 /dev/stderr
 
 		if [[ "$?" != 0 ]]
 			then

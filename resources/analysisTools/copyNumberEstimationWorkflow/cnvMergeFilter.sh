@@ -10,7 +10,8 @@ ${PYTHON_BINARY} "${TOOL_MERGE_FILTER_CNV}" \
             --output       "${FILENAME_COV_WINDOWS_WG}" \
 	        --coverage     ${cnv_min_coverage} \
             --mappability  ${mapping_quality} \
-            --NoOfWindows  ${min_windows} 
+            --NoOfWindows  ${min_windows} \
+            > /dev/stderr
 
 if [[ "$?" != 0 ]]
 then

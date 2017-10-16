@@ -25,8 +25,11 @@ final class ACESeqMethods {
 
     static LinkedHashMap<String, String> getGlobalJobSpecificParameters(Configuration config) {
         return new LinkedHashMap<String, String>(
-                "CHR_NR": config.configurationValues.getString(ACEseqConstants.CHR_NAME),
-                 "CHR_NAME": config.configurationValues.getString(ACEseqConstants.CHR_NR))
+                (ACEseqConstants.CHR_NAME): config.configurationValues.getString(ACEseqConstants.CHR_NAME),
+                (ACEseqConstants.CHR_NR): config.configurationValues.getString(ACEseqConstants.CHR_NR),
+                (ACEseqConstants.GENETIC_MAP_FILE): config.configurationValues.getString(ACEseqConstants.GENETIC_MAP_FILE),
+                (ACEseqConstants.KNOWN_HAPLOTYPES_FILE): config.configurationValues.getString(ACEseqConstants.KNOWN_HAPLOTYPES_FILE),
+                (ACEseqConstants.KNOWN_HAPLOTYPES_LEGEND_FILE): config.configurationValues.getString(ACEseqConstants.KNOWN_HAPLOTYPES_LEGEND_FILE))
     }
 
     static CnvSnpGeneratorResultByType generateCNVSNPs(BamFile controlBam, BamFile tumorBam) {
@@ -94,10 +97,12 @@ final class ACESeqMethods {
 
         ExecutionContext context = filesToCheck[0].getExecutionContext();
         Map<String, Object> parameters = context.getDefaultJobParameters(ACEseqConstants.TOOL_CREATE_UNPHASED_GENOTYPE);
-        parameters["FILENAME_SNP_POSITIONS_WG_FAKE"]=genotypeSNPFile.getAbsolutePath();
+        parameters["FILENAME_SNP_POSITIONS_WG_FAKE"] = genotypeSNPFile.getAbsolutePath();
         parameters.put("FILENAME_UNPHASED_GENOTYPE", "( " + filesToCheck.collect { BaseFile file -> file.getAbsolutePath() }.join(" ") + ' )');
 
-        Job job = new Job(context, context.createJobName((UnphasedGenotypeFile)listOfFiles.get("1"), ACEseqConstants.TOOL_CREATE_UNPHASED_GENOTYPE, true), ACEseqConstants.TOOL_CREATE_UNPHASED_GENOTYPE, null, parameters, [ genotypeSNPFile ] as List<BaseFile>, filesToCheck)
+        Job job = new Job(context, context.createJobName((UnphasedGenotypeFile)listOfFiles.get("1"), ACEseqConstants.TOOL_CREATE_UNPHASED_GENOTYPE,
+                true), ACEseqConstants.TOOL_CREATE_UNPHASED_GENOTYPE, null, parameters,
+                [ genotypeSNPFile ] as List<BaseFile>, filesToCheck)
         BEJobResult jobResult = job.run();
         for (BaseFile baseFile : filesToCheck) {
             baseFile.setCreatingJobsResult(jobResult);
