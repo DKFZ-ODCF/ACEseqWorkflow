@@ -156,6 +156,10 @@ Reference files
 ^^^^^^^^^^^^^^^^
 To get all necessary reference files run the script $PATH_TO_PLUGIN_DIRECTORY/installation/downloadReferences.sh in the destination path for all files. The script will create directories directly beneath the path where it executed.
 
-Please convert the bigwig file in databases/UCSC to BedGraph format (https://genome.ucsc.edu/goldenpath/help/bigWig.html) and save it under wgEncodeCrgMapabilityAlign100mer_chr.bedGraph, compress it with bgzip and index it with tabix. Please use the tabix from htslib 0.2.5. We suggest you simply use the previously installed Conda environment to do that.
+Please convert the bigwig file in databases/UCSC to BedGraph format (https://genome.ucsc.edu/goldenpath/help/bigWig.html) and save it under wgEncodeCrgMapabilityAlign100mer_chr.bedGraph, compress it with bgzip and index it with tabix. Please use the tabix from htslib 0.2.5. We suggest you simply use the previously installed Conda environment to do that. This is more or less the code to do the conversion:
+
+    bigWigToBedGraph wgEncodeCrgMapabilityAlign100mer.bigWig wgEncodeCrgMapabilityAlign100mer_chr.bedGraph
+    bgzip wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz
+    tabix -0 wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz
 
 Finally, set the variable baseDirectoryReference in the project.xml to the path from which the downloader script was run.
