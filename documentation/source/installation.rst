@@ -9,11 +9,13 @@ New versions of the ACEseq plugin can be obtained from https://github.com/eilsla
 
 Roddy-based Deployment
 ^^^^^^^^^^^^^^^^^^^^^^^
+The workflow management tool Roddy supports the batch processing systems Torque/PBS and IBM LSF. Other systems are planned but currently not supported.
+
 To run the Roddy-based version of ACEseq please download the pre-packed zip file from http://bfg-nfs3.ipmb.uni-heidelberg.de. Three steps are required to ensure running of ACEseq.
 
 1. Run the "prepareRoddyInstallation.sh" script.
-2. Download all reference files as specified in the section below.
-3. Set up the Conda environment or install the necessary software as specified in the section below.
+2. Download all reference files as specified in the section "Reference files" (below).
+3. Set up the Conda environment or install the necessary software as specified in the section "Software" (below).
 
 Before running ACEseq a few parameters need to be adjusted in the configuration files. The output directory is specified in $PATH_TO_ACEseq_RODDY_VERSION/configurations/projectsACEseqTest.xml. Here the variables "baseDirectoryReference", "inputBaseDirectory", "outputBaseDirectory", "outputAnalysisBaseDirectory" need to be set. If no SVs should be included the following configuration values (cvalues) should be included:
 
@@ -157,6 +159,8 @@ Reference files
 To get all necessary reference files run the script $PATH_TO_PLUGIN_DIRECTORY/installation/downloadReferences.sh in the destination path for all files. The script will create directories directly beneath the path where it executed.
 
 Please convert the bigwig file in databases/UCSC to BedGraph format (https://genome.ucsc.edu/goldenpath/help/bigWig.html) and save it under wgEncodeCrgMapabilityAlign100mer_chr.bedGraph, compress it with bgzip and index it with tabix. Please use the tabix from htslib 0.2.5. We suggest you simply use the previously installed Conda environment to do that. This is more or less the code to do the conversion:
+
+::
 
     bigWigToBedGraph wgEncodeCrgMapabilityAlign100mer.bigWig wgEncodeCrgMapabilityAlign100mer_chr.bedGraph
     bgzip wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz
