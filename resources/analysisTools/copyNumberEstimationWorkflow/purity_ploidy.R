@@ -73,7 +73,7 @@ averageCoverage <- sum(as.numeric(totalCoverage$totalReads))/sum(as.numeric(tota
 cat("average SNP coverage observed in control: ", averageCoverage, "\n")
 
 #get area under the curve for each segment's BAF distribution
-segAll$area = runTheStuff(segments, chromosomes = chromosomes, minLim=minLim, maxLim=maxLim, averageCoverage, minCov=minCoverage)
+segAll$area = runTheStuff(segments, chromosomes = chromosomes, minLim=minLim, maxLim=maxLim, averageCov = averageCoverage, minCov=minCoverage)
 cat(segAll$area[1:10],"\n")
 #estimate cut off for classification  into imbalanced and balanced
 densDiff <- density(segAll$area,from=0.25,to=0.35, na.rm=T)

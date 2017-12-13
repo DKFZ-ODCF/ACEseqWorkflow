@@ -307,24 +307,26 @@ if (clustering_YN == "yes") {
 	            cluster_matrix_norm[,2] == "-Inf")
 	            
 	cat(qq("@{length(rem)} lines dropped.\n\n")) #
-	if ( length(rem) > 0){
-	        weights = log2(segAll$length[-rem] + 0.00001) #sepcify your size vector here
-                                                     #weights <- 1
-          cluster_matrix_norm = cluster_matrix_norm[-rem, ]
-      	  #convert limits to scaled coordinates
-      	  covLeftNorm  <- ( log2(covLeft)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
-      	  covRightNorm <- ( log2(covRight)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
-      	  covLeftFullNorm <- ( log2(covLeft-covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
-          covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+	if ( length(rem) > 0) {
+		# +1 as pseudo count to account for segments of length 1bp
+		weights = log2(segAll$length[-rem] + 1) #sepcify your size vector here
+												 #weights <- 1
+		cluster_matrix_norm = cluster_matrix_norm[-rem, ]
+		#convert limits to scaled coordinates
+		covLeftNorm  <- ( log2(covLeft)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+		covRightNorm <- ( log2(covRight)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+		covLeftFullNorm <- ( log2(covLeft-covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+		covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
           
-  }else{
-      	   weights = log2(segAll$length + 0.00001)
-      	   cluster_matrix_norm = cluster_matrix_norm
-      	   #convert limits to scaled coordinates
-      	   covLeftNorm  <- (log2(covLeft)-mean(log2(tcnMean)) )/sd(log2(tcnMean))
-      	   covRightNorm <- (log2(covRight)-mean(log2(tcnMean)) )/sd(log2(tcnMean))  
-           covLeftFullNorm <- ( log2(covLeft-covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
-           covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+  } else {
+		# +1 as pseudo count to account for segments of length 1bp
+		weights = log2(segAll$length + 1)
+		cluster_matrix_norm = cluster_matrix_norm
+		#convert limits to scaled coordinates
+		covLeftNorm  <- (log2(covLeft)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
+		covRightNorm <- (log2(covRight)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
+		covLeftFullNorm <- ( log2(covLeft-covWidth/2)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
+		covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
   }
   
 	cluster_matrix = scale(cluster_matrix_norm)
