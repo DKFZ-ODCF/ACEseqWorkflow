@@ -218,6 +218,7 @@
              "workflow_environment_${environmentTool}". -->
         <tool name="workflowEnvironment_condaTbiPbs" value="conda_tbi-pbs-cluster.sh" basepath="copyNumberEstimationWorkflow/environments"/>
         <tool name="workflowEnvironment_conda" value="conda.sh" basepath="copyNumberEstimationWorkflow/environments"/>
+        <tool name="workflowEnvironment_tbiCluster" value="tbi-cluster.sh" basepath="copyNumberEstimationWorkflow/environments"/>
 
         <!-- Cluster-job specific environments.
              Tool-specific environments override the global workflows environment. You can reference the tool name
