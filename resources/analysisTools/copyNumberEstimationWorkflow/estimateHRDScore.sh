@@ -78,7 +78,7 @@ do
 	${RSCRIPT_BINARY} ${TOOL_HRD_ESTIMATION} \
 		 $combProFileNoArtifacts \
 		 $combProFile.tmp \
-		 $gender \
+		 $patientsex \
 		 $ploidy \
 		 $tcc \
 		 $pid \
