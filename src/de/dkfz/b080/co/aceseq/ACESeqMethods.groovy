@@ -15,6 +15,9 @@ import de.dkfz.roddy.execution.io.fs.FileSystemAccessProvider
 import de.dkfz.roddy.execution.jobs.*
 import de.dkfz.roddy.knowledge.files.*
 import de.dkfz.roddy.knowledge.methods.GenericMethod
+import de.dkfz.roddy.plugins.LibrariesFactory
+
+import java.util.logging.Level
 
 /**
  * Created by kleinhei on 6/16/14.
@@ -38,8 +41,9 @@ final class ACESeqMethods {
                 ACEseqConstants.TOOL_CNV_SNP_GENERATION,
                 tumorBam,
                 controlBam,
-                ACEseqConstants.PARM_CHR_INDEX,
-                getGlobalJobSpecificParameters(controlBam.executionContext.configuration))
+                ACEseqConstants.PARM_CHR_INDEX)
+//        ,
+//                getGlobalJobSpecificParameters(controlBam.executionContext.configuration))
         return new CnvSnpGeneratorResultByType(indexedFileObjects, controlBam.getExecutionContext())
     }
 
@@ -49,21 +53,22 @@ final class ACESeqMethods {
                 ACEseqConstants.TOOL_IMPUTE_GENOTYPES,
                 controlBam,
                 null,
-                ACEseqConstants.PARM_CHR_INDEX,
-                getGlobalJobSpecificParameters(controlBam.executionContext.configuration))
+                ACEseqConstants.PARM_CHR_INDEX)
+//        ,
+//                getGlobalJobSpecificParameters(controlBam.executionContext.configuration))
         return new ImputeGenotypeByChromosome(indexedFileObjects, controlBam.getExecutionContext())
     }
 
-    static ImputeGenotypeByChromosome imputeGenotypes( UnphasedGenotypeFileGroupByChromosome unphasedGenotypeFiles) {
-	Map<String, UnphasedGenotypeFile> mapOfFiles = [:]
-	mapOfFiles += unphasedGenotypeFiles.getFiles()
-	mapOfFiles.remove("X")
-	IndexedFileObjects indexedFileObjects = runParallel(
-            ACEseqConstants.TOOL_IMPUTE_GENOTYPES_NOMPILEUP,
-            new UnphasedGenotypeFileGroupByChromosome(mapOfFiles.keySet() as List<String>, mapOfFiles, unphasedGenotypeFiles.getExecutionContext()),
-            null,
-            ACEseqConstants.PARM_CHR_INDEX,
-            getGlobalJobSpecificParameters(unphasedGenotypeFiles.executionContext.configuration))
+    static ImputeGenotypeByChromosome imputeGenotypes(UnphasedGenotypeFileGroupByChromosome unphasedGenotypeFiles) {
+        Map<String, UnphasedGenotypeFile> mapOfFiles = [:]
+        mapOfFiles += unphasedGenotypeFiles.getFiles()
+        mapOfFiles.remove("X")
+        IndexedFileObjects indexedFileObjects = runParallel(
+                ACEseqConstants.TOOL_IMPUTE_GENOTYPES_NOMPILEUP,
+                new UnphasedGenotypeFileGroupByChromosome(mapOfFiles.keySet() as List<String>, mapOfFiles, unphasedGenotypeFiles.getExecutionContext()),
+                null,
+                ACEseqConstants.PARM_CHR_INDEX,
+                getGlobalJobSpecificParameters(unphasedGenotypeFiles.executionContext.configuration))
         return new ImputeGenotypeByChromosome(indexedFileObjects, unphasedGenotypeFiles.getExecutionContext())
     }
 
@@ -71,20 +76,20 @@ final class ACESeqMethods {
         return (Tuple2<PhasedGenotypeFile, HaploblockGroupFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_IMPUTE_GENOTYPEX, controlBam, sexFile);
     }
 
-    public static Tuple2<PhasedGenotypeFile, HaploblockGroupFile> imputeGenotypeX(TextFile sexFile, UnphasedGenotypeFileGroupByChromosome unphasedGenotypeFiles ) {
+    public static Tuple2<PhasedGenotypeFile, HaploblockGroupFile> imputeGenotypeX(TextFile sexFile, UnphasedGenotypeFileGroupByChromosome unphasedGenotypeFiles) {
         return (Tuple2<PhasedGenotypeFile, HaploblockGroupFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_IMPUTE_GENOTYPEX_NOMPILEUP, unphasedGenotypeFiles.getFiles().get("X"), sexFile);
     }
 
-    public static TextFile getGenotypes( TextFile mergedAndFilteredSNPFile ) {
-	return (TextFile) GenericMethod.callGenericTool( ACEseqConstants.TOOL_GET_GENOTYPES, mergedAndFilteredSNPFile );
+    public static TextFile getGenotypes(TextFile mergedAndFilteredSNPFile) {
+        return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_GET_GENOTYPES, mergedAndFilteredSNPFile);
     }
 
-    public static UnphasedGenotypeFileGroupByChromosome createUnphased( TextFile genotypeSNPFile ) {
+    public static UnphasedGenotypeFileGroupByChromosome createUnphased(TextFile genotypeSNPFile) {
         Map<String, UnphasedGenotypeFile> listOfFiles = new LinkedHashMap<>();
         List<BaseFile> filesToCheck = new LinkedList<>();
         List<String> keyset = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "X");
         for (String chrIndex : keyset) {
-            UnphasedGenotypeFile unphasedGenotypeFile = (UnphasedGenotypeFile)BaseFile.constructManual(UnphasedGenotypeFile.class, genotypeSNPFile);
+            UnphasedGenotypeFile unphasedGenotypeFile = (UnphasedGenotypeFile) BaseFile.constructManual(UnphasedGenotypeFile.class, genotypeSNPFile);
             String path = unphasedGenotypeFile.getAbsolutePath();
             unphasedGenotypeFile.setPath(new File(path.replace("#CHROMOSOME_INDEX#", chrIndex)));
             listOfFiles.put(chrIndex, unphasedGenotypeFile);
@@ -100,9 +105,9 @@ final class ACESeqMethods {
         parameters["FILENAME_SNP_POSITIONS_WG_FAKE"] = genotypeSNPFile.getAbsolutePath();
         parameters.put("FILENAME_UNPHASED_GENOTYPE", "( " + filesToCheck.collect { BaseFile file -> file.getAbsolutePath() }.join(" ") + ' )');
 
-        Job job = new Job(context, context.createJobName((UnphasedGenotypeFile)listOfFiles.get("1"), ACEseqConstants.TOOL_CREATE_UNPHASED_GENOTYPE,
+        Job job = new Job(context, context.createJobName((UnphasedGenotypeFile) listOfFiles.get("1"), ACEseqConstants.TOOL_CREATE_UNPHASED_GENOTYPE,
                 true), ACEseqConstants.TOOL_CREATE_UNPHASED_GENOTYPE, null, parameters,
-                [ genotypeSNPFile ] as List<BaseFile>, filesToCheck)
+                [genotypeSNPFile] as List<BaseFile>, filesToCheck)
         BEJobResult jobResult = job.run();
         for (BaseFile baseFile : filesToCheck) {
             baseFile.setCreatingJobsResult(jobResult);
@@ -116,8 +121,8 @@ final class ACESeqMethods {
         return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_ADD_HAPLOTYPES_TO_SNP_FILE, mergedAndFilteredSNPFile, phasedGenotypes, phasedGenotypeX);
     }
 
-    public static TextFile createControlBafPlot(TextFile haplotypedSNPFile , TextFile genderFile) {
-        return (TextFile) GenericMethod.callGenericTool( ACEseqConstants.TOOL_CREATE_CONTROL_BAF_PLOTS, haplotypedSNPFile, genderFile );
+    public static TextFile createControlBafPlot(TextFile haplotypedSNPFile, TextFile genderFile) {
+        return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_CREATE_CONTROL_BAF_PLOTS, haplotypedSNPFile, genderFile);
     }
 
     public static TextFile replaceControl(TextFile genderFile) {
@@ -133,25 +138,29 @@ final class ACESeqMethods {
     }
 
     @ScriptCallingMethod
-    static Tuple2<TextFile, TextFile> mergeSv(TextFile knownSegmentsFile, boolean runWithSv) {
+    static Tuple2<SVFile, TextFile> mergeSv(TextFile knownSegmentsFile, boolean runWithSv) {
         if (runWithSv) {
-            TextFile svFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "svFileTag", null, null);
-            svFile.setAsSourceFile();
-            BEJobResult result = new BEJobResult(null, new FakeBEJob(new BEFakeJobID(BEFakeJobID.FakeJobReason.FILE_EXISTED)), null, null, null, null)
-            svFile.setCreatingJobsResult(result);
+            BaseFile svFile = getSVFile(knownSegmentsFile)
             boolean b = FileSystemAccessProvider.getInstance().checkBaseFiles(svFile);
             if (b)
-                return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_AND_SV, knownSegmentsFile, svFile);
+                return (Tuple2<SVFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_AND_SV, knownSegmentsFile, svFile);
 
-            knownSegmentsFile.getExecutionContext().addErrorEntry(ExecutionContextError.EXECUTION_NOINPUTDATA.expand("SV files were not found in input path."));
+            knownSegmentsFile.getExecutionContext().addErrorEntry(ExecutionContextError.EXECUTION_NOINPUTDATA.expand("SV files were not found in input path.", Level.WARNING));
             return null;
         } else {
-            return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_WITHOUT_SV, knownSegmentsFile);
+            return (Tuple2<SVFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_WITHOUT_SV, knownSegmentsFile);
         }
     }
 
+
+    static BaseFile getSVFile(BaseFile anyFile) {
+        BaseFile svFile = BaseFile.deriveFrom(anyFile, SVFile.class.name)
+        svFile.setAsSourceFile()
+        return svFile
+    }
+
     @ScriptCallingMethod
-    public static Tuple2<TextFile, TextFile> mergeCrest(TextFile knownSegmentsFile) {
+    public static Tuple2<SVFile, TextFile> mergeCrest(TextFile knownSegmentsFile) {
         TextFile svFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "crestDelDupInvFileTag", null, null);
         TextFile translocFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "crestTranslocFileTag", null, null);
 
@@ -161,11 +170,11 @@ final class ACESeqMethods {
             return null;
         }
 
-        return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_AND_SV_CREST, knownSegmentsFile, svFile, translocFile);
+        return (Tuple2<SVFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_AND_SV_CREST, knownSegmentsFile, svFile, translocFile);
     }
 
     @ScriptCallingMethod
-    public static TextFile getSegmentAndGetSnps(TextFile breaks, TextFile pscbsSnps) {
+    public static TextFile getSegmentAndGetSnps(BaseFile breaks, TextFile pscbsSnps) {
         return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_GET_SEGMENTS_AND_SNPS, breaks, pscbsSnps);
     }
 
@@ -209,7 +218,7 @@ final class ACESeqMethods {
         return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_ESTIMATE_HRD_SCORE, genderFile, cnvParameterFile);
     }
 
-    static IndexedFileObjects runParallel( String toolID, IndexedFileObjects fileGroup, BaseFile otherFile, String indexParameterName, LinkedHashMap<String, String> parameters = [:]) {
+    static IndexedFileObjects runParallel(String toolID, IndexedFileObjects fileGroup, BaseFile otherFile, String indexParameterName, LinkedHashMap<String, String> parameters = [:]) {
         List<String> indices = fileGroup.getIndices();
 
         //First one executes locally or via ssh but without a cluster system.
@@ -221,7 +230,8 @@ final class ACESeqMethods {
                     toolID,
                     (BaseFile) fileGroup.getIndexedFileObjects().get(index),
                     otherFile,
-                    indexMap))
+                    indexMap)
+            )
         } as Map<String, FileObject>
 
         return new IndexedFileObjects(indices, map, fileGroup.getExecutionContext());

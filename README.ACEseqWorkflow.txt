@@ -5,14 +5,22 @@ Some description
 == Run flags / switches
 
 Switch                      Default Description
-runWithDelly          		true    Run with delly output (from EMBLs delly workflow) or with crest
+runWithSv                   true    By default, the workflow will try to use an SV file for breakpoints
+allowMissingSVFile          false   Allows the workflow to stop without an error, if the SV file does not exist
+
+runWithDelly          		false   Run with delly output (from EMBLs delly workflow) or with crest
 runQualityCheckOnly      	false   Stop the workflow after the gc correction.
 runMetaCNVGeneration        false   Run a meta step for the cnv generation. This submits a single,
 									slightly optimized step instead of several (per chromosome) jobs.
-runWithoutControl	    false Run analysis with matching control and estimate control genotypes based on tumor BAF
+runWithoutControl	        false   Run analysis with matching control and estimate control genotypes based on tumor BAF
 
 == Changelist
+
+
+- Add flags and checks for handling the sv file and remove null pointer exceptions
 - fix bug in tcc ploidy estimation
+
+* Version update to 1.2.10?
 - add bioconda dependencies
 - replace all occurences of qq.R and getopt2 by getopt
 - replace all occurenced of name delly and crest, also in final output 
@@ -23,6 +31,7 @@ runWithoutControl	    false Run analysis with matching control and estimate cont
 - add HRD score estimation, smooth segments and filter for blacklist segments
 - add 0.00001 to lengths when getting log2 for weights to consider segments with length=1, which will be merged in a future release
 - adjust colors for clustering so they are consistent across all three cluster plots
+
 * Version update to 1.2.8-1
 - remove vcf creation in final job (obsolete)
 

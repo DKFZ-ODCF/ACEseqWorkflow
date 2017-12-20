@@ -20,28 +20,37 @@ import de.dkfz.roddy.knowledge.methods.GenericMethod;
  */
 public class ACESeqWorkflow extends WorkflowUsingMergedBams {
 
+
+    private boolean allowMissingSVFile(ExecutionContext context) {
+        return getflag(context, "allowMissingSVFile", false);
+    }
+
+    private boolean runWithSV(ExecutionContext context) {
+        return getflag(context, "runWithSv", true);
+    }
+
     @Override
     public boolean execute(ExecutionContext context, BasicBamFile _bamControlMerged, BasicBamFile _bamTumorMerged) {
 
         BamFile bamControlMerged = new BamFile(_bamControlMerged);
         BamFile bamTumorMerged = new BamFile(_bamTumorMerged);
 
-        boolean runWithSv = context.getConfiguration().getConfigurationValues().getBoolean("runWithSv", true);
-        boolean runWithCrest = context.getConfiguration().getConfigurationValues().getBoolean("runWithCrest", false);
-        boolean runQualityCheckOnly = context.getConfiguration().getConfigurationValues().getBoolean("runQualityCheckOnly", false);
-        boolean runWithFakeControl = context.getConfiguration().getConfigurationValues().getBoolean("runWithFakeControl", false);
-        boolean runWithoutControl = context.getConfiguration().getConfigurationValues().getBoolean("runWithoutControl", false);
+        boolean runWithSV = runWithSV(context);
+        boolean runWithCrest = getflag(context, "runWithCrest", false);
+        boolean runQualityCheckOnly = getflag(context, "runQualityCheckOnly", false);
+        boolean runWithFakeControl = getflag(context, "runWithFakeControl", false);
+        boolean runWithoutControl = getflag(context, "runWithoutControl", false);
 
-        context.getConfiguration().getConfigurationValues().add(new ConfigurationValue("tumorSample", ((COFileStageSettings) _bamTumorMerged.getFileStage()).getSample().getName()));
-        context.getConfiguration().getConfigurationValues().add(new ConfigurationValue("controlSample", ((COFileStageSettings) _bamControlMerged.getFileStage()).getSample().getName()));
+        context.getConfigurationValues().add(new ConfigurationValue("tumorSample", ((COFileStageSettings) _bamTumorMerged.getFileStage()).getSample().getName()));
+        context.getConfigurationValues().add(new ConfigurationValue("controlSample", ((COFileStageSettings) _bamControlMerged.getFileStage()).getSample().getName()));
 
-        CnvSnpGeneratorResultByType resultByType = null;
+        CnvSnpGeneratorResultByType resultByType;
         resultByType = ACESeqMethods.generateCNVSNPs(bamControlMerged, bamTumorMerged);
 
         //TODO The annotate job tool id is not visible in the jobstate logfile.
         CoverageWindowsFileAnnotationResult annotationResult = resultByType.getCoverageWindowsFiles().annotate();
-        TextFile replaceControlFile = null;
-        TextFile mergedAndFilteredCoverageWindowFiles = null;
+        TextFile replaceControlFile;
+        TextFile mergedAndFilteredCoverageWindowFiles;
         if (runWithFakeControl || runWithoutControl) {
             replaceControlFile = ACESeqMethods.replaceControl(annotationResult.getGenderFile());
             mergedAndFilteredCoverageWindowFiles = GenericMethod.callGenericTool("mergeAndFilterCnvFiles_withReplaceBadControl", replaceControlFile, new GenericFileGroup(annotationResult.getListOfFiles()));
@@ -53,9 +62,9 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         if (runQualityCheckOnly)
             return true;
 
-        ImputeGenotypeByChromosome imputedGenotypeByChromosome = null;
-        Tuple2<PhasedGenotypeFile, HaploblockGroupFile> phasedGenotypeX = null;
-        TextFile haplotypedSNPFile = null;
+        ImputeGenotypeByChromosome imputedGenotypeByChromosome;
+        Tuple2<PhasedGenotypeFile, HaploblockGroupFile> phasedGenotypeX;
+        TextFile haplotypedSNPFile;
 
         if (runWithoutControl) {
             TextFile mergedAndFilteredSNPFile = resultByType.getPositionFiles().mergeAndFilter();
@@ -76,19 +85,20 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
 
 
         Tuple2<TextFile, TextFile> breakpoints = ACESeqMethods.pscbsGaps(haplotypedSNPFile, correctedWindowFile.value0, annotationResult.getGenderFile());
-        Tuple2<TextFile, TextFile> mergedSvs = null;
+        Tuple2<SVFile, TextFile> mergedSvs = null;
 
-        if (runWithSv) {
-            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0, runWithSv); // true is passed
+        if (runWithSV) {
+            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0, runWithSV); // true is passed
+            if (mergedSvs == null) {
+                return allowMissingSVFile(context); // It might be allowed to exit here without an error
+            }
         } else if (runWithCrest) {
             mergedSvs = ACESeqMethods.mergeCrest(breakpoints.value0);
+            if (mergedSvs == null)
+                return false;  // Getting no merged SVs from the Crest step is always wrong. It is not all
         } else {
-            ACESeqMethods.mergeSv(breakpoints.value0, runWithSv); // false is passed
-            return true;
+            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0, runWithSV); // false is passed
         }
-
-        if (mergedSvs == null)
-            return false;
 
         TextFile pscbsSegments = ACESeqMethods.getSegmentAndGetSnps(mergedSvs.value0, breakpoints.value1);
         TextFile homoDelSegments = ACESeqMethods.markSegsWithHomozygDel(pscbsSegments, mergedSvs.value1);
@@ -103,15 +113,22 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         return true;
     }
 
-    private boolean checkSvFile(ExecutionContext executionContext) {
-        // TODO getInitialBamFiles(executionContext)[0]
-        return true;
+    private boolean checkSvFileIfNecessary(ExecutionContext context) {
+        // Just return true, if the file is not used.
+        if (!runWithSV(context))
+            return true;
+
+        // Check, if the file exists
+        boolean fileIsAccessible = context.fileIsAccessible(ACESeqMethods.getSVFile(getInitialBamFiles(context)[0]).getPath());
+
+        // It is either allowed to run with the file or we see, if the file really exists.
+        return allowMissingSVFile(context) || fileIsAccessible;
     }
 
     @Override
     public boolean checkExecutability(ExecutionContext context) {
         boolean executable = super.checkExecutability(context);
-        executable &= checkSvFile(context);
+        executable &= checkSvFileIfNecessary(context);
         return executable;
     }
 }
