@@ -41,9 +41,8 @@ final class ACESeqMethods {
                 ACEseqConstants.TOOL_CNV_SNP_GENERATION,
                 tumorBam,
                 controlBam,
-                ACEseqConstants.PARM_CHR_INDEX)
-//        ,
-//                getGlobalJobSpecificParameters(controlBam.executionContext.configuration))
+                ACEseqConstants.PARM_CHR_INDEX,
+                getGlobalJobSpecificParameters(controlBam.executionContext.configuration))
         return new CnvSnpGeneratorResultByType(indexedFileObjects, controlBam.getExecutionContext())
     }
 
@@ -53,9 +52,8 @@ final class ACESeqMethods {
                 ACEseqConstants.TOOL_IMPUTE_GENOTYPES,
                 controlBam,
                 null,
-                ACEseqConstants.PARM_CHR_INDEX)
-//        ,
-//                getGlobalJobSpecificParameters(controlBam.executionContext.configuration))
+                ACEseqConstants.PARM_CHR_INDEX,
+                getGlobalJobSpecificParameters(controlBam.executionContext.configuration))
         return new ImputeGenotypeByChromosome(indexedFileObjects, controlBam.getExecutionContext())
     }
 
