@@ -1,9 +1,13 @@
 #!/usr/bin/R
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# This script is licenced under (license terms are at
+# https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 library(getopt)
 library(data.table)
-source("/home/kleinhei/R_lib/qq.R")
-source("/home/kleinhei/R_lib/getopt.R")
+#source("/home/kleinhei/R_lib/qq.R")
+#source("/home/kleinhei/R_lib/getopt.R")
 
 ################################################################################
 ## I wrap getopt into a function, which can check options, default values
@@ -12,16 +16,21 @@ source("/home/kleinhei/R_lib/getopt.R")
 
 # variables in the first column will be exported into global environment
 # I add the fifth column because it can explain the options in the first column
-getopt2(matrix(c('file_snp',           's', 1, "character", "input coverage data, dbSNP",               # input, /ibios/co02/bludau/ACEseq/medullo_pediatric/MBBL8/all.snp.tab
-		 'file_sex',	       'g','1',"character", "file with sex of patient",			# input 
-		 'chrLengthFile',      'f','1',"character", "file with sex of patient",			# input 
-		 'pid',                'p','1',"character", "patient identifier",			# input 
-                 'plot_Dir',          'd', 2, "character", "output file for SNPS"                     # output
-                ), ncol = 5, byrow = TRUE));
-      
-cat(qq("file_snp: @{file_snp}\n\n"))
-cat(qq("plot_Dir: @{plot_Dir}\n\n"))
-cat(qq("file_sex:@{file_sex}\n\n"))
+spec <- matrix(c('file_snp',           's', 1, "character" , #"input coverage data, dbSNP",              # input,
+		 'file_sex',	       'g','1',"character", #"file with sex of patient",		# input 
+		 'chrLengthFile',      'f','1',"character", #"file with sex of patient",		# input 
+		 'pid',                'p','1',"character", #"patient identifier",			# input 
+                 'plot_Dir',          'd', 2, "character"  #"output file for SNPS"                     # output
+                ), ncol = 4, byrow = TRUE)
+
+opt = getopt(spec);
+for(item in names(opt)){
+       assign( item, opt[[item]])
+}
+     
+cat(paste0("file_snp: ",file_snp, "\n\n"))
+cat(paste0("plot_Dir: ",plot_Dir, "\n\n"))
+cat(paste0("file_sex: ",file_sex, "\n\n"))
 cat("\n")
 
 plotCoverage <- function(coverageTab, chromosomeBorders=NULL, chr=NULL, ylims=c(0,1.2) ) {
@@ -87,7 +96,7 @@ chrLengthTab$chromosome <- gsub('Y', 24, chrLengthTab$chromosome)
 chrLengthTab$chromosome <- as.numeric(chrLengthTab$chromosome)
 
 #input coverage data, dbSNP
-cat(qq("reading @{file_snp}...\n\n"))
+cat(paste0("reading ",file_snp, "...\n\n"))
 colNamesAllele = c("chromosome", "pos", "Anormal1", "Bnormal1", "Atumor1", "Btumor1", "haplotype")
 
 #if patient is female remove all Y chromosome windows (will lead to exclusion of SNPs during merge) 
