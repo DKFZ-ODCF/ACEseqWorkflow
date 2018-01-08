@@ -8,7 +8,7 @@ Switch                      Default Description
 runWithSv                   true    By default, the workflow will try to use an SV file for breakpoints
 allowMissingSVFile          false   Allows the workflow to stop without an error, if the SV file does not exist
 
-runWithDelly          		false   Run with delly output (from EMBLs delly workflow) or with crest
+runWithCrest          		false   Run with crest output
 runQualityCheckOnly      	false   Stop the workflow after the gc correction.
 runMetaCNVGeneration        false   Run a meta step for the cnv generation. This submits a single,
 									slightly optimized step instead of several (per chromosome) jobs.

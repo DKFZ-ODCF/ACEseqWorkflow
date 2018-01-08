@@ -90,7 +90,7 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         if (runWithSV) {
             mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0, runWithSV); // true is passed
             if (mergedSvs == null) {
-                return allowMissingSVFile(context); // It might be allowed to exit here without an error
+                return allowMissingSVFile(context); // Here, exit with error (false) is possible
             }
         } else if (runWithCrest) {
             mergedSvs = ACESeqMethods.mergeCrest(breakpoints.value0);
