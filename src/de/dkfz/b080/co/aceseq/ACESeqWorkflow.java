@@ -88,16 +88,16 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         Tuple2<SVFile, TextFile> mergedSvs = null;
 
         if (runWithSV) {
-            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0, runWithSV); // true is passed
+            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0, true);
             if (mergedSvs == null) {
                 return allowMissingSVFile(context); // Here, exit with error (false) is possible
             }
         } else if (runWithCrest) {
             mergedSvs = ACESeqMethods.mergeCrest(breakpoints.value0);
             if (mergedSvs == null)
-                return false;  // Getting no merged SVs from the Crest step is always wrong. It is not all
+                return false;  // Getting no merged SVs from the Crest step is always wrong.
         } else {
-            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0, runWithSV); // false is passed
+            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0, false);
         }
 
         TextFile pscbsSegments = ACESeqMethods.getSegmentAndGetSnps(mergedSvs.value0, breakpoints.value1);

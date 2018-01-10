@@ -64,8 +64,6 @@ do
 		exit 2
 	fi
 
-	patientsex=`cat ${FILENAME_SEX:-iDoNotExist.txt}`
-
 	if [[ "$?" != 0 ]]
 	then
 		echo "There was a non-zero exit code getting patient sex" 
@@ -76,6 +74,7 @@ do
 	${RSCRIPT_BINARY} ${TOOL_HRD_ESTIMATION} \
 		 $combProFileNoArtifacts \
 		 $combProFile.tmp \
+		 $gender \
 		 $ploidy \
 		 $tcc \
 		 $pid \
