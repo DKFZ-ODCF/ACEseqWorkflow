@@ -6,14 +6,14 @@
 
 package de.dkfz.b080.co.files;
 
-/**
- */
-public class SNPPositionFile extends COBaseFile {
-    public SNPPositionFile(ConstructionHelperForBaseFiles helper) {
+import de.dkfz.roddy.knowledge.files.BaseFile;
+
+public class SVFile extends COBaseFile {
+    public SVFile(ConstructionHelperForBaseFiles helper) {
         super(helper);
     }
 
-    public SNPPositionFile(BamFile parentFile) {
-        super(parentFile);
+    public SVFile(BaseFile parent) {
+        super(parent);
     }
 }
