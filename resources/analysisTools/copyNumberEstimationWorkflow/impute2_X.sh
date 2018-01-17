@@ -1,10 +1,5 @@
 #!/bin/bash
 
-source ${CONFIG_FILE}
-
-
-
-
 source ${TOOL_ANALYZE_BAM_HEADER}
 getRefGenomeAndChrPrefixFromHeader ${FILE_CONTROL_BAM} # Sets CHR_PREFIX and REFERENCE_GENOME
 

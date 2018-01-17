@@ -59,6 +59,8 @@ if __name__=='__main__':
 	count=2
 	for i,j  in enumerate(entries):
 		if i==index: continue
+		# The following line is buggy according to commit 7d707b9 (on Github).
+		# Due to potential interference with output we decided to keep this bug to preserve compatibility with 1.2.8-3 plugin version.
 		solutions[count]="%s_%s"% ( entries[index[0]][1], entries[index[0]][2] )
 		count+=1
 	

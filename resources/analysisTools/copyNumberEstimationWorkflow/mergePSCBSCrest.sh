@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -p pipefail
-source ${CONFIG_FILE}
 
 
 tmp_breakpoints=${FILENAME_BREAKPOINTS}.tmp

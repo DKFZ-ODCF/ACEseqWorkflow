@@ -1,9 +1,6 @@
 #!/bin/bash
 
 
-source ${CONFIG_FILE}
-
-
 echo "starting to merge PSCBS breakpoints and crest points"
 
 tmp_breakpoints=${FILENAME_BREAKPOINTS}_tmp

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source ${CONFIG_FILE}
-
 tmpClusteredSeg=${FILENAME_CLUSTERED_SEGMENTS}_tmp
 tmpSnpsOut=${FILENAME_ALL_SNP_UPDATE2}_tmp
 

@@ -1,9 +1,5 @@
 #!/bin/bash
 
-
-source ${CONFIG_FILE}
-
-
 ${RSCRIPT_BINARY} ${TOOL_CREATE_BAF_PLOTS} --file_snp  ${FILENAME_SNP_POSITIONS_HAPLO_WG} \
 					   --file_sex  ${FILENAME_SEX} \
 					   --chrLengthFile ${CHROMOSOME_LENGTH_FILE} \

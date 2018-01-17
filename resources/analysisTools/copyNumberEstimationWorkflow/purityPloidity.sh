@@ -1,9 +1,6 @@
 #!/bin/bash
 
 
-source ${CONFIG_FILE}
-
-
 tmpSegmentsPeaks=${FILENAME_SEGMENTS_W_PEAKS}_tmp
 
 ${RSCRIPT_BINARY}  --vanilla "${TOOL_ESTIMATE_PEAKS}" \

@@ -1,38 +1,48 @@
 #!/usr/bin/R
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# This script is licenced under (license terms are at
+# https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 library(getopt)
 script_dir = dirname(get_Rscript_filename())
-source(paste0(script_dir,"/qq.R"))
-source(paste0(script_dir, "/getopt.R"))
 
-getopt2(matrix(c('SNPfile',       'f', 1, "character", '',
-                 'crestFile',     'c', 1, "character", '',
-                 'segments',      's', 1, "character", '',
-                 'outfile',       'o', 1, "character", '',
-                 'chrLengthFile', 'l', 1, "character", '',
-                 'pp',            'p', 1, "character", '',
-                 'outDir',        'x', 1, "character", '',
-                 'file_sex',      'g', 1, "character", '',
-                 'crest_YN',      'y', 1, "character", '',
-                 'ID',            'i', 1, "character", '',
-		 'pipelineDir',	  'd', 1, "character", ''
-                ), ncol = 5, byrow = TRUE))
+#source(paste0(script_dir, "/getopt.R"))
+
+spec <- matrix(c('SNPfile',       'f', 1, "character",
+                 'crestFile',     'c', 1, "character",
+                 'segments',      's', 1, "character",
+                 'outfile',       'o', 1, "character",
+                 'chrLengthFile', 'l', 1, "character",
+                 'pp',            'p', 1, "character",
+                 'outDir',        'x', 1, "character",
+                 'file_sex',      'g', 1, "character",
+                 'crest_YN',      'y', 1, "character",
+                 'ID',            'i', 1, "character",
+		 'pipelineDir',	  'd', 1, "character"
+                ), ncol = 4, byrow = TRUE)
                
-cat(qq("SNPfile: @{SNPfile}\n\n"))
-cat(qq("crest: @{crestFile}\n\n"))
-cat(qq("segments: @{segments}\n\n"))
-cat(qq("outfile: @{outfile}\n\n"))
-cat(qq("chrLengthFile: @{chrLengthFile}\n\n"))
-cat(qq("pp: @{pp}\n\n"))
-cat(qq("outDir: @{outDir}\n\n"))
-cat(qq("file_sex: @{file_sex}\n\n"))
-cat(qq("crest_YN: @{crest_YN}\n\n"))
-cat(qq("ID: @{ID}\n\n"))
+
+opt = getopt(spec);
+for(item in names(opt)){
+       assign( item, opt[[item]])
+}
+
+cat(paste0("SNPfile: ", SNPfile, "\n\n"))
+cat(paste0("crest: ", crestFile, "\n\n"))
+cat(paste0("segments: ", segments, "\n\n"))
+cat(paste0("outfile: ", outfile, "\n\n"))
+cat(paste0("chrLengthFile: ", chrLengthFile, "\n\n"))
+cat(paste0("pp: ", pp, "\n\n"))
+cat(paste0("outDir: ", outDir, "\n\n"))
+cat(paste0("file_sex: ", file_sex, "\n\n"))
+cat(paste0("crest_YN: ", crest_YN, "\n\n"))
+cat(paste0("ID: ", ID, "\n\n"))
 cat("\n")
 
 source( file.path(pipelineDir, "pscbs_plots_functions.R") )
 		                 
-cat(qq("reading \n\n"))
+cat("reading \n\n")
 
 #read data and set variables
 if (crest_YN == "yes") {
@@ -111,7 +121,7 @@ plotChromosomes = function (chrom, dat, comb,  TCC, ploi , roundPloi, crestPoint
 	X = which( (ratio$betaN > 0.3) & (ratio$betaN < 0.7) )
 	p3 <- plotRawBAF( ratio[X,], seg=segs, chrL ) 
 
-        plotTitle <- textGrob( qq("@{ID}_chr_@{chrom} Ploidy=@{roundPloi}, corr=@{round(ploi,digits=3)}, Tumor_cell_content=@{round(TCC,digits=3)}") )
+        plotTitle <- textGrob( paste0("",ID, "_chr_",chrom, " Ploidy=",roundPloi, ", corr=",round(ploi,digits=3), ", Tumor_cell_content=",round(TCC,digits=3), "") )
         p = arrangeGrob(plotTitle, p1, p2, p3, nrow=4, heights=c(1,7,7,7))
 
 	fileName=paste0(outfile,"_",round(ploi,digits=3),"extra_",round(TCC,digits=3),"_",chrom,".png")
@@ -182,7 +192,7 @@ plotAll <- function(dat, comb, ploi, TCC, roundPloi, chrCount) {
 	p3 <- p3 + vlines + labs(x=NULL) + theme( axis.text.x=element_blank() )
 
 	#combine all plots into single object and save
-        plotTitle <- textGrob( qq("@{ID}_Ploidy=@{roundPloi}, corr=@{round(ploi,digits=3)}, Tumor_cell_content=@{round(TCC,digits=3)}, sex=@{sex}"))
+        plotTitle <- textGrob( paste0("",ID, "_Ploidy=",roundPloi, ", corr=",round(ploi,digits=3), ", Tumor_cell_content=",round(TCC,digits=3), ", sex=",sex, ""))
         p = arrangeGrob(plotTitle, p1, p2, p3, nrow=4, heights=c(1,7,7,7))
 
 	fileName= paste0( outfile, "_", round(ploi,digits=3), "_", round(TCC,digits=3), "_ALL", ".png" )
@@ -194,7 +204,7 @@ plotAll <- function(dat, comb, ploi, TCC, roundPloi, chrCount) {
 colNamesData <- c( "chromosome", "SNP", "start", "end", "crest", "copyT", "covT", "meanTCN", "betaT","betaN", "Atumor", "Btumor", "Anormal", "Bnormal", "haplotype", "map" )
 
 for( index in seq_len( nrow(pp) ) ) {
-	cat(qq("plotting @{index}/@{nrow(pp)}\n\n"))
+	cat(paste0("plotting ",index, "/",nrow(pp), "\n\n"))
 
 	ploidy      = pp[index, 2]
 	tcc      = pp[index, 3]

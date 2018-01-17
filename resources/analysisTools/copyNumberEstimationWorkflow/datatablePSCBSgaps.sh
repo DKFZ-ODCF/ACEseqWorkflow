@@ -1,9 +1,6 @@
 #!/bin/bash
 
 
-source ${CONFIG_FILE}
-
-
 tmp_knownsegments=${FILENAME_KNOWNSEGMENTS}_tmp
 tmp_pscbsData=${FILE_PSCBS_DATA}_tmp
 

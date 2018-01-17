@@ -1,14 +1,8 @@
 package de.dkfz.b080.co.files;
 
-import de.dkfz.b080.co.aceseq.ACEseqConstants;
 import de.dkfz.roddy.core.ExecutionContext;
-import de.dkfz.roddy.execution.jobs.Job;
-import de.dkfz.roddy.execution.jobs.JobResult;
-import de.dkfz.roddy.knowledge.files.*;
+import de.dkfz.roddy.knowledge.files.IndexedFileObjects;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
