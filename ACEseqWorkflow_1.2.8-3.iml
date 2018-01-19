@@ -18,5 +18,7 @@
     <orderEntry type="library" name="Gradle: org.codehaus.groovy:groovy-all:2.4.9" level="project" />
     <orderEntry type="module" module-name="COWorkflows_1.2.76" />
     <orderEntry type="module" module-name="RoddyToolLib_main" />
+    <orderEntry type="library" name="R User Library" level="project" />
+    <orderEntry type="library" name="R Skeletons" level="application" />
   </component>
 </module>
