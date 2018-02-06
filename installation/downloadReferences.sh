@@ -8,11 +8,6 @@ CHROMOSOME_LENGTH_FILE=true
 statFiles=true
 IMPUTE_FILES=true
 
-SCRIPT=$(readlink -f $0)
-scriptdir=`dirname $SCRIPT`
-
-echo $scriptdir
-
 mkdir -p hg19_GRCh37_1000genomes &&
 cd hg19_GRCh37_1000genomes
 
@@ -68,11 +63,11 @@ fi
 
 if [[ "$statFiles" == "true" ]]
 then
-	echo downloading statsfile
+	echo downloading statsfile....
 	mkdir -p stats
-	cp $scriptdir/hg19_GRch37_100genomes_gc_content_10kb.txt stats/
+	wget -c -O stats/hg19_GRch37_100genomes_gc_content_10kb.txt https://github.com/eilslabs/ACEseqWorkflow/blob/github/installation/hg19_GRch37_100genomes_gc_content_10kb.txt?raw=true
 	mkdir -p databases/ENCODE/
-	cp $scriptdir/ReplicationTime_10cellines_mean_10KB.Rda databases/ENCODE/
+	wget -c -O databases/ENCODE/ReplicationTime_10cellines_mean_10KB.Rda https://github.com/eilslabs/ACEseqWorkflow/blob/github/installation/ReplicationTime_10cellines_mean_10KB.Rda?raw=true
 fi
 
 if [[ "$IMPUTE_FILES" == "true" ]]
