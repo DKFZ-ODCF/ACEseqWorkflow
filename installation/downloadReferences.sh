@@ -54,9 +54,10 @@ then
 	# sort and compress using bgzip
 	# created tabix index
 
-	(zcat 00-All.vcf.gz | head -n 1000 | grep ^"#"; zcat 00-All.vcf.gz | grep "VC=SNV" |
-	 perl -nae  '($dbSNP)= $F[7] =~/dbSNPBuildID=(\d\d\d?);/; print join("\t",@F)."\n" if $dbSNP<136') |
-	 bgzip > 00-All.SNV.vcf.gz && tabix -p vcf 00-All.SNV.vcf.gz
+	zcat 00-All.vcf.gz |
+	awk '/^#/{print} /VC=SNV/{ v=$8; sub(/.*dbSNPBuildID=/, "", v); sub(/;.*/, "", v); if (v~/^[0-9]+$/ && int(v)<=135) print }' |
+	bgzip > 00-All.SNV.vcf.gz &&
+	tabix -p vcf 00-All.SNV.vcf.gz
 fi
 
 if [[ "$MAPPABILITY_FILE" == "true" ]]
