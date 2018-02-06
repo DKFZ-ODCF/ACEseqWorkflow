@@ -341,11 +341,11 @@
             <output type="filegroup" typeof="UnphasedGenotypeFileGroupByChromosome" fileclass="UnphasedGenotypeFile" scriptparameter="FILENAME_UNPHASED_GENOTYPE" passas="array"/>
         </tool>
 
-        <tool name="imputeGenotypesMeta" value="impute2_MetaScript.sh" basepath="copyNumberEstimationWorkflow">
-            <resourcesets>
-                <rset size="l" memory="48" cores="12" nodes="1" walltime="16"/>
-            </resourcesets>
-        </tool>
+        <!--<tool name="imputeGenotypesMeta" value="impute2_MetaScript.sh" basepath="copyNumberEstimationWorkflow">-->
+            <!--<resourcesets>-->
+                <!--<rset size="l" memory="48" cores="12" nodes="1" walltime="16"/>-->
+            <!--</resourcesets>-->
+        <!--</tool>-->
 
         <tool name="imputeGenotypes_noMpileup" value="impute2.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
