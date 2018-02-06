@@ -46,6 +46,9 @@ then
 	awk '/^#/{print} /VC=SNV/{ v=$8; sub(/.*dbSNPBuildID=/, "", v); sub(/;.*/, "", v); if (v~/^[0-9]+$/ && int(v)<=135) print }' |
 	bgzip > 00-All.SNV.vcf.gz &&
 	tabix -p vcf 00-All.SNV.vcf.gz
+
+	# CLEANUP
+	rm -f 00-All.vcf.gz 00-All.vcf.gz.tbi
 fi
 
 if [[ "$MAPPABILITY_FILE" == "true" ]]
@@ -78,7 +81,9 @@ then
 	mkdir -p databases/1000genomes/IMPUTE
 	wget -P databases/1000genomes/IMPUTE https://mathgen.stats.ox.ac.uk/impute/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono.tgz
 	tar -xzvf databases/1000genomes/IMPUTE/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono.tgz -C databases/1000genomes/IMPUTE
+	rm -f databases/1000genomes/IMPUTE/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono.tgz
 	wget -P databases/1000genomes/IMPUTE https://mathgen.stats.ox.ac.uk/impute/ALL_1000G_phase1integrated_v3_impute.tgz
 	tar -xzvf databases/1000genomes/IMPUTE/ALL_1000G_phase1integrated_v3_impute.tgz -C databases/1000genomes/IMPUTE
+	rm -f databases/1000genomes/IMPUTE/ALL_1000G_phase1integrated_v3_impute.tgz
 fi
 
