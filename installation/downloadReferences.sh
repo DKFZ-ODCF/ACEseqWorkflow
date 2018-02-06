@@ -62,9 +62,12 @@ if [[ "$MAPPABILITY_FILE" == "true" ]]
 then
 	echo downloading mappability file....
 	mkdir -p databases/UCSC &&
-	wget -P databases/UCSC  http://hgdownload.soe.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeMapability/wgEncodeCrgMapabilityAlign100mer.bigWig ||
+	wget -P databases/UCSC http://hgdownload.soe.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeMapability/wgEncodeCrgMapabilityAlign100mer.bigWig &&
+	bigWigToBedGraph databases/UCSC/wgEncodeCrgMapabilityAlign100mer.bigWig databases/UCSC/wgEncodeCrgMapabilityAlign100mer_chr.bedGraph &&
+	rm -f databases/UCSC/wgEncodeCrgMapabilityAlign100mer.bigWig &&
+	bgzip databases/UCSC/wgEncodeCrgMapabilityAlign100mer_chr.bedGraph &&
+	tabix -p bed databases/UCSC/wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz ||
 	exit_on_fail
-	echo "please convert the bigwig file to bedgraph"
 fi
 
 if [[ "$CHROMOSOME_LENGTH_FILE" == "true" ]] 
