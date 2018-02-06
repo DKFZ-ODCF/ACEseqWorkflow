@@ -1,3 +1,4 @@
+#!/bin/bash
 
 REFERENCE_GENOME=true
 dbSNP_FILE=true
