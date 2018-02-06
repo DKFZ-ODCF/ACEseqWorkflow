@@ -70,11 +70,12 @@ then
 	exit_on_fail
 fi
 
-if [[ "$CHROMOSOME_LENGTH_FILE" == "true" && ! -e stats/chrlengths.txt ]] 
+if [[ "$CHROMOSOME_LENGTH_FILE" == "true" && ! -e stats/chrlengths.txt ]]
 then
-	echo downloading dbSNP file....
-	mkdir -p stats &&
-	wget -qO- http://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/chromInfo.txt.gz  | zcat | grep -Pv "(_)|(chrM)" | sed -e '1i\#chrom\tsize\tfileName' >stats/chrlengths.txt ||
+	echo downloading chromosome lengths file....
+	wget -c -P stats http://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/chromInfo.txt.gz &&
+	zcat stats/chromInfo.txt.gz | grep -Pv "(_)|(chrM)" | sed -e '1i\#chrom\tsize\tfileName' > stats/chrlengths.txt &&
+	rm -f stats/chromInfo.txt.gz ||
 	exit_on_fail
 fi
 
