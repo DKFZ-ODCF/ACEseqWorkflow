@@ -85,10 +85,9 @@ then
 	check_md5sum && exit 0 || echo downloading mappability file....
 
 	wget -c http://hgdownload.soe.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeMapability/wgEncodeCrgMapabilityAlign100mer.bigWig
-	bigWigToBedGraph wgEncodeCrgMapabilityAlign100mer.bigWig wgEncodeCrgMapabilityAlign100mer_chr.bedGraph
-	rm -f wgEncodeCrgMapabilityAlign100mer.bigWig
-	bgzip wgEncodeCrgMapabilityAlign100mer_chr.bedGraph
+	bigWigToBedGraph wgEncodeCrgMapabilityAlign100mer.bigWig /dev/stdout | bgzip > wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz
 	tabix -p bed wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz
+	rm -f wgEncodeCrgMapabilityAlign100mer.bigWig
 
 	check_md5sum
 	)
