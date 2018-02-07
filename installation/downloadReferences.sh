@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -o pipefail
+set -u
 
 # which files to download
 REFERENCE_GENOME=true
