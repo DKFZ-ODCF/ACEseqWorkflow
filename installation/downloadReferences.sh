@@ -79,7 +79,7 @@ then
 	(
 	echo downloading replication timing file....
 	mkdir_cd databases/ENCODE &&
-	wget -c ReplicationTime_10cellines_mean_10KB.Rda https://github.com/eilslabs/ACEseqWorkflow/blob/github/installation/ReplicationTime_10cellines_mean_10KB.Rda?raw=true
+	wget -c https://raw.githubusercontent.com/eilslabs/ACEseqWorkflow/github/installation/ReplicationTime_10cellines_mean_10KB.Rda
 	) || exit_on_fail
 fi
 
@@ -93,7 +93,7 @@ then
 	zcat chromInfo.txt.gz | grep -Pv "(_)|(chrM)" | sed -e '1i\#chrom\tsize\tfileName' > chrlengths.txt &&
 	rm -f chromInfo.txt.gz &&
 
-	wget -c -O hg19_GRch37_100genomes_gc_content_10kb.txt https://github.com/eilslabs/ACEseqWorkflow/blob/github/installation/hg19_GRch37_100genomes_gc_content_10kb.txt?raw=true
+	wget -c https://raw.githubusercontent.com/eilslabs/ACEseqWorkflow/github/installation/hg19_GRch37_100genomes_gc_content_10kb.txt
 	) || exit_on_fail
 fi
 
