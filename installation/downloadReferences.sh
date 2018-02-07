@@ -34,7 +34,7 @@ then
 	check_md5sum && exit 0 || echo downloading reference genome....
 	mkdir_cd sequence/1KGRef
 	wget -c ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/phase2_reference_assembly_sequence/hs37d5.fa.gz
-	gunzip sequence/1KGRef/hs37d5.fa.gz
+	gunzip hs37d5.fa.gz
 	check_md5sum
 	)
 fi
@@ -118,10 +118,10 @@ then
 	check_md5sum && exit 0 || echo downloading impute files....
 	mkdir_cd databases/1000genomes/IMPUTE
 	wget -c https://mathgen.stats.ox.ac.uk/impute/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono.tgz
-	tar -xzvf ALL.integrated_phase1_SHAPEIT_16-06-14.nomono.tgz -C databases/1000genomes/IMPUTE
+	tar -xzvf ALL.integrated_phase1_SHAPEIT_16-06-14.nomono.tgz
 	rm -f ALL.integrated_phase1_SHAPEIT_16-06-14.nomono.tgz
 	wget -c https://mathgen.stats.ox.ac.uk/impute/ALL_1000G_phase1integrated_v3_impute.tgz
-	tar -xzvf ALL_1000G_phase1integrated_v3_impute.tgz -C databases/1000genomes/IMPUTE
+	tar -xzvf ALL_1000G_phase1integrated_v3_impute.tgz
 	rm -f ALL_1000G_phase1integrated_v3_impute.tgz
 	check_md5sum
 	)
