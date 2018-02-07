@@ -44,7 +44,8 @@ then
 	(
 	EXPECTED_MD5SUM=fed2a31b5a5d8fe12e072576c0c17199
 	check_md5sum && exit 0 || echo downloading dbSNP file....
-	mkdir_cd databases/dbSNP/dbSNP_135
+	DBSNP_VERSION=135
+	mkdir_cd databases/dbSNP/dbSNP_$DBSNP_VERSION
 
 	# CITATION
 	# As a NCBI Resource: "Sherry ST, Ward MH, Kholodov M, Baker J, Phan L, Smigielski EM, Sirotkin K. dbSNP: the NCBI database of genetic variation. Nucleic Acids Res. 2001 Jan 1;29(1):308-11."
@@ -52,14 +53,15 @@ then
 	# A single or a range of Submitted SNP (ss) or Reference SNP (rs) entries: "Database of Single Nucleotide Polymorphisms (dbSNP). Bethesda (MD): National Center for Biotechnology Information, National Library of Medicine. dbSNP accession:{ss1 or ss1 – ss100}, (dbSNP Build ID: 141). Available from: http://www.ncbi.nlm.nih.gov/SNP/"
 
 	# DOWNLOAD
-	wget -c ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b150_GRCh37p13/VCF/README.txt
-	wget -c ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b150_GRCh37p13/VCF/00-All.vcf.gz
-	wget -c ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b150_GRCh37p13/VCF/00-All.vcf.gz.tbi
+	DBSNP_BASE_URL="ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b150_GRCh37p13/VCF"
+	wget -c "$DBSNP_BASE_URL/README.txt"
+	wget -c "$DBSNP_BASE_URL/00-All.vcf.gz"
+	wget -c "$DBSNP_BASE_URL/00-All.vcf.gz.tbi"
 
 	# POST PROCESSING
 	# extract SNPs from dbSNP version 135 and older
 	zcat 00-All.vcf.gz |
-	awk '/^#/{print} /VC=SNV/{ v=$8; sub(/.*dbSNPBuildID=/, "", v); sub(/;.*/, "", v); if (v~/^[0-9]+$/ && int(v)<=135) print }' |
+	awk '/^#/{print} /VC=SNV/{ v=$8; sub(/.*dbSNPBuildID=/, "", v); sub(/;.*/, "", v); if (v~/^[0-9]+$/ && int(v)<='$DBSNP_VERSION') print }' |
 	bgzip > 00-All.SNV.vcf.gz
 	tabix -p vcf 00-All.SNV.vcf.gz
 
