@@ -62,7 +62,6 @@ mkdir_cd hg19_GRCh37_1000genomes
 	DBSNP_BASE_URL="ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b150_GRCh37p13/VCF"
 	wget -c "$DBSNP_BASE_URL/README.txt"
 	wget -c "$DBSNP_BASE_URL/00-All.vcf.gz"
-	wget -c "$DBSNP_BASE_URL/00-All.vcf.gz.tbi"
 
 	# POST PROCESSING
 	# extract SNPs from dbSNP version 135 and older
@@ -72,7 +71,7 @@ mkdir_cd hg19_GRCh37_1000genomes
 	tabix -p vcf 00-All.SNV.vcf.gz
 
 	# CLEANUP
-	rm -f 00-All.vcf.gz 00-All.vcf.gz.tbi
+	rm -f 00-All.vcf.gz
 
 	check_md5sum
 )
