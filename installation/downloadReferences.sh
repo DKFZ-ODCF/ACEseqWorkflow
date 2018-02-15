@@ -1,35 +1,36 @@
 #!/bin/bash
 
+# tell bash to abort on error
 set -o pipefail
 set -u
-
-# which files to download
-REFERENCE_GENOME=true
-dbSNP_FILE=true
-MAPPABILITY_FILE=true
-REPLICATION_TIMING_FILE=true
-statFiles=true
-IMPUTE_FILES=true
-
 set -eE
 trap 'echo "Download incomplete. Please restart script."' ERR
 
+# convenience function to create a directory and change into it
 mkdir_cd() {
 	mkdir -p "$1"
 	cd "$1"
 }
 
+# compute an MD5 sum over all files found recursively in the current directory
+# and check it against the MD5 sum given in the variable EXPECTED_MD5SUM
 check_md5sum() {
 	local FILES=$(find -type f | sort)
 	local MD5SUM=$([ -n "$FILES" ] && cat $FILES | md5sum | cut -f1 -d' ')
 	[ "$EXPECTED_MD5SUM" = "$MD5SUM" ]
 }
 
+
+###############################################################################
+# create download directory
+###############################################################################
+
 mkdir_cd hg19_GRCh37_1000genomes
 
-if [[ "$REFERENCE_GENOME" == "true" ]] 
-then
-	(
+###############################################################################
+# download reference genome
+###############################################################################
+(
 	mkdir_cd sequence/1KGRef
 
 	EXPECTED_MD5SUM=12a0bed94078e2d9e8c00da793bbc84e
@@ -39,12 +40,13 @@ then
 	gunzip hs37d5.fa.gz
 
 	check_md5sum
-	)
-fi
+)
 
-if [[ "$dbSNP_FILE" == "true" ]]
-then
-	(
+
+###############################################################################
+# download dbSNP database
+###############################################################################
+(
 	DBSNP_VERSION=135
 	mkdir_cd databases/dbSNP/dbSNP_$DBSNP_VERSION
 
@@ -73,12 +75,12 @@ then
 	rm -f 00-All.vcf.gz 00-All.vcf.gz.tbi
 
 	check_md5sum
-	)
-fi
+)
 
-if [[ "$MAPPABILITY_FILE" == "true" ]]
-then
-	(
+###############################################################################
+# download mappability file
+###############################################################################
+(
 	mkdir_cd databases/UCSC
 
 	EXPECTED_MD5SUM=3d12d0a4d7afdb52cfd10f886d48b5f0
@@ -90,12 +92,12 @@ then
 	rm -f wgEncodeCrgMapabilityAlign100mer.bigWig
 
 	check_md5sum
-	)
-fi
+)
 
-if [[ "$REPLICATION_TIMING_FILE" == "true" ]]
-then
-	(
+###############################################################################
+# download replication timings
+###############################################################################
+(
 	mkdir_cd databases/ENCODE
 
 	EXPECTED_MD5SUM=2a63b34a737383af2a3f7eb32801a5fa
@@ -104,12 +106,12 @@ then
 	wget -c https://raw.githubusercontent.com/eilslabs/ACEseqWorkflow/github/installation/ReplicationTime_10cellines_mean_10KB.Rda
 
 	check_md5sum
-	)
-fi
+)
 
-if [[ "$statFiles" == "true" ]]
-then
-	(
+###############################################################################
+# download chromosome statistics
+###############################################################################
+(
 	mkdir_cd stats
 
 	EXPECTED_MD5SUM=801bdaa8c3b0d5c18a0637b0b29fd337
@@ -122,12 +124,12 @@ then
 	wget -c https://raw.githubusercontent.com/eilslabs/ACEseqWorkflow/github/installation/hg19_GRch37_100genomes_gc_content_10kb.txt
 
 	check_md5sum
-	)
-fi
+)
 
-if [[ "$IMPUTE_FILES" == "true" ]]
-then
-	(
+###############################################################################
+# download IMPUTE database
+###############################################################################
+(
 	mkdir_cd databases/1000genomes/IMPUTE
 
 	EXPECTED_MD5SUM=261a28d6b6917340cd82ada2d7185e17
@@ -142,7 +144,6 @@ then
 	rm -f ALL_1000G_phase1integrated_v3_impute.tgz
 
 	check_md5sum
-	)
-fi
+)
 
 echo "All files downloaded successfully"
