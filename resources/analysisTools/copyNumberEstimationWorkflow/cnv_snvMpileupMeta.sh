@@ -1,8 +1,5 @@
 #!/bin/bash
 
-source $CONFIG_FILE
-
-
 outpath=${aceseqOutputDirectory}
 
 # TODO Assumption #C_IND % 2 == 0!

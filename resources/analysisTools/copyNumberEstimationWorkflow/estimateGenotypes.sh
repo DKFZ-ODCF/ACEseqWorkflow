@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source $CONFIG_FILE
-
 #change header and index file
 
 #get pseudo control counts

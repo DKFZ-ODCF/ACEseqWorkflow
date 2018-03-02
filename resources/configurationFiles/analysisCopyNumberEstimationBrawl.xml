@@ -250,11 +250,11 @@
             <output type="file" typeof="de.dkfz.b080.co.files.TextFile" fnpatternselectiontag="covWinFileWithBadControl" scriptparameter="FILENAME_COV_WINDOWS_WG"/>
         </tool>
 
-        <tool name="imputeGenotypesMeta" value="impute2_MetaScript.sh" basepath="copyNumberEstimationWorkflow">
-            <resourcesets>
-                <rset size="l" memory="48" cores="12" nodes="1" walltime="16"/>
-            </resourcesets>
-        </tool>
+        <!--<tool name="imputeGenotypesMeta" value="impute2_MetaScript.sh" basepath="copyNumberEstimationWorkflow">-->
+            <!--<resourcesets>-->
+                <!--<rset size="l" memory="48" cores="12" nodes="1" walltime="16"/>-->
+            <!--</resourcesets>-->
+        <!--</tool>-->
 
         <tool name="imputeGenotypes" value="impute2.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>

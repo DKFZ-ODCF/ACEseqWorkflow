@@ -414,7 +414,7 @@ combineNeighbours <- function(segments){
                 is.na(chr$crest[ sel[j]+1 ]) &&
                 ( chr$end[ sel[j] ] == chr$start[sel[j+1]] | chr$end[sel[j]]+1 == chr$start[sel[j+1]] ) ) { 
           
-          cat(qq("@{chr$start[sel[j]]} @{chr$end[sel[j]]} -> prune\n\n"))
+          cat(paste0("",chr$start[sel[j]], " ",chr$end[sel[j]], " -> prune\n\n"))
           
           chr$end[ sel[j] ] = chr$end[ sel[j + 1 ] ]
           chr$length[ sel[j] ] = chr$length[ sel[j] ] + chr$length[ sel[j + 1] ]
@@ -446,8 +446,8 @@ combineNeighbours <- function(segments){
 generatePlots<- function(segments, selIdentical, mainCenter, covLeftHalf, covRightHalf, covLeftFull, covRightFull, minNbrOfHets = 5){
 
      pSnpNbr <- ggplot(data=segments, aes(log2(tcnMean), dhMax) ) +
-            geom_point() + 
-       	    ggtitle(qq("nbrOfHets< minNbrOfHets") ) + 
+            geom_point() +
+            ggtitle("nbrOfHets< minNbrOfHets" ) +
             scale_color_manual(values=c('red','blue'), name='nbrOfHets<5') +
             geom_vline( xintercept=c( log2(covLeftFull) ), col='red')+
             geom_vline( xintercept=c( log2(covRightFull) ), col='red' ) +
@@ -456,8 +456,8 @@ generatePlots<- function(segments, selIdentical, mainCenter, covLeftHalf, covRig
             theme(legend.position="none")
 
   pSNPError <- ggplot(data=segments, aes(log2(tcnMean), dhMax) ) +
-            geom_point() + 
-	    ggtitle(qq("errorSNP > distDH") ) + 
+            geom_point() +
+            ggtitle("errorSNP > distDH") +
             scale_color_manual(values=c('red','blue'), name='errorSNP>distDH') +
             geom_vline( xintercept=c( log2(covLeftFull) ), col='red')+
             geom_vline( xintercept=c( log2(covRightFull) ), col='red' ) +
@@ -467,7 +467,7 @@ generatePlots<- function(segments, selIdentical, mainCenter, covLeftHalf, covRig
 
   pError <- ggplot(data=segments, aes(log2(tcnMean), dhMax) ) +
             geom_point() + 
-	    ggtitle(qq("errorLength >distTcn & errorSNP > distDH") ) + 
+	        ggtitle("errorLength >distTcn & errorSNP > distDH") +
             scale_color_manual(values=c('red','blue'), name='totalErr>totalDist' ) +
             geom_vline( xintercept=c( log2(covLeftFull) ), col='red')+
             geom_vline( xintercept=c( log2(covRightFull) ), col='red' ) +
@@ -478,7 +478,7 @@ generatePlots<- function(segments, selIdentical, mainCenter, covLeftHalf, covRig
 
   pLength <- ggplot(data=segments, aes(log2(tcnMean), dhMax) ) +
             geom_point() + 
-	    ggtitle( qq("errorLength>distTcn") ) + 
+	        ggtitle("errorLength>distTcn") +
             scale_color_manual(values=c('red','blue'), name='neighbourMain' ) +
             geom_vline( xintercept=c( log2(covLeftFull) ), col='red')+
             geom_vline( xintercept=c( log2(covRightFull) ), col='red' ) +

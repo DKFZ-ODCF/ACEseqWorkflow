@@ -1,8 +1,5 @@
 #!/bin/bash
 
-source $CONFIG_FILE
-
-
 zcat $dbSNP_FILE | perl $TOOL_ANNOTATE_CNV_VCF  \
 		-a - -b ${FILENAME_SNP_POSITIONS_WG_FAKE} \
 		--bFileType vcflike \

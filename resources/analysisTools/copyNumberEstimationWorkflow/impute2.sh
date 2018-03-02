@@ -1,9 +1,5 @@
 #!/bin/bash
 
-
-source ${CONFIG_FILE}
-
-
 #CHR_NAME=${CHR_NR}
 #CHR_NR=${CHR_PREFIX}${CHR_NR}${CHR_SUFFIX}
 #
@@ -51,7 +47,7 @@ then
          
          if [[ "$?" != 0 ]]
          then
-         	echo "Non zero exit status for mpileup in impute2.sh"
+         	echo "Non zero exit status for mpileup in impute2.sh" >> /dev/stderr
          	exit 2
          fi
 fi
@@ -62,7 +58,7 @@ ${PYTHON_BINARY} "${TOOL_EXTRACT_GENOTYPE_VCF}" \
 
 if [[ "$?" != 0 ]]
 then
-	echo "Non zero exit status while extracting genotype in impute2.sh"
+	echo "Non zero exit status while extracting genotype in impute2.sh" >> /dev/stderr
 	exit 2
 fi
 
@@ -116,16 +112,16 @@ fi
 	
 				if [[ $var == 0 ]]
 				then
-					echo "WARNING: Non zero exit status during segmentation of segment ${SEGMENT} on chr ${CHR_NAME} in impute2.sh"
+					echo "WARNING: Non zero exit status during segmentation of segment ${SEGMENT} on chr ${CHR_NAME} in impute2.sh" >> /dev/stderr
 					exit 2
 				else
-					echo "Warning of no type 2 SNPs was issued but is ignored during segmentation of segment ${SEGMENT} on chr ${CHR_NAME} in impute2.sh"
+					echo "Warning of no type 2 SNPs was issued but is ignored during segmentation of segment ${SEGMENT} on chr ${CHR_NAME} in impute2.sh" >> /dev/stderr
 				fi
 
 				rm ${target_dir}/phasing/exit_check_temp.txt
 				var=0
 			else
-				echo "WARNING: Non zero exit status during segmentation of segment ${SEGMENT} on chr ${CHR_NAME} in impute2.sh"
+				echo "WARNING: Non zero exit status during segmentation of segment ${SEGMENT} on chr ${CHR_NAME} in impute2.sh" >> /dev/stderr
 				exit 2
 
 			fi
@@ -161,7 +157,7 @@ ${PYTHON_BINARY} "${TOOL_EMBED_HAPLOTYPES_VCF}" \
 
 if [[ "$?" != 0 ]]
 then
-	echo "Non zero exit status while embedding haplotypes in impute2.sh"
+	echo "Non zero exit status while embedding haplotypes in impute2.sh" >> /dev/stderr
 	exit 2
 fi
 
@@ -173,7 +169,7 @@ ${PYTHON_BINARY} "${TOOL_GROUP_HAPLOTYPES}" \
 	
 if [[ "$?" != 0 ]]
 then
-	echo "Non zero exit status while grouping haplotypes in impute2.sh"
+	echo "Non zero exit status while grouping haplotypes in impute2.sh" >> /dev/stderr
 	exit 2
 fi
 
