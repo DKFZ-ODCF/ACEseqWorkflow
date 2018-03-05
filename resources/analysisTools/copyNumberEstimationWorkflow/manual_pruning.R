@@ -73,6 +73,8 @@ if ( libloc == "" | libloc == TRUE ){
 
 source(functions)
 
+mclust.options(hcUse = "VARS") # set hcUse to use VARS-method (method will be changed to SVD mith mclust>=5.4 which leads to different results)
+
 cat(paste0("reading ",segments,"...\n\n"))
 segAll = read.table(segments, sep = "\t", as.is = TRUE, header = TRUE)
 
