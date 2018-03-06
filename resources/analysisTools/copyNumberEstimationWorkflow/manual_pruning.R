@@ -19,26 +19,26 @@ script_dir = dirname(get_Rscript_filename())
 wd = getwd()
 min_num_SNPs =15
 libloc=NULL
-spec <- matrix(c('file',                  'f', 1, "character",
-                 'segments',              's', 1, "character",
-		 'functions',		  'p', 1, "character",
-		 'blockPre',		  'b', 1, "character",     # prefix of file containing haplotype groups
-		 'blockSuf',		  'u', 1, "character",     # suffix of file containing haplotype groups
-		 'adjustAlleles',	  'a', 1, "character",     # function to swap alleles where necessary
-		 'sex',		  	  'g', 1, "character",     # sex of patient
-		 'newFile',		  'w', 1, "character",
-                 'out',                   'x', 1, "character",
-		 'segOut',		  'o', 1, "character",
-                 'min_seg_length',        'l', 1, "numeric",
-                 'clustering_YN',         'c', 1, "character",
-                 'min_num_cluster',       'n', 1, "numeric",
-                 'min_num_SNPs',          'i', 2, "numeric",
-		 'min_distance',	  'd', 1, "numeric",
-                 'min_membership',        'm', 1, "numeric",
-      		 'chrLengthFile',         'r', 1, "character",
-     		 'gcCovWidthFile',        'y', 1, "character",
-		 'pid',			  'v', 1, "character",
-		 'libloc',		  'z', 2, 'character'
+spec <- matrix(c('file',                'f', 1, "character",
+                 'segments',            's', 1, "character",
+				 'functions',		  	'p', 1, "character",
+				 'blockPre',		  	'b', 1, "character",     # prefix of file containing haplotype groups
+				 'blockSuf',		  	'u', 1, "character",     # suffix of file containing haplotype groups
+				 'adjustAlleles',	  	'a', 1, "character",     # function to swap alleles where necessary
+				 'sex',		  	  	  	'g', 1, "character",     # sex of patient
+				 'newFile',				'w', 1, "character",
+                 'out',                 'x', 1, "character",
+				 'segOut',		  		'o', 1, "character",
+                 'min_seg_length',      'l', 1, "numeric",
+                 'clustering_YN',       'c', 1, "character",
+                 'min_num_cluster',     'n', 1, "numeric",
+                 'min_num_SNPs',        'i', 2, "numeric",
+		 		 'min_distance',	  	'd', 1, "numeric",
+                 'min_membership',      'm', 1, "numeric",
+				 'chrLengthFile',       'r', 1, "character",
+				 'gcCovWidthFile',      'y', 1, "character",
+				 'pid',			  		'v', 1, "character",
+				 'libloc',		  		'z', 2, 'character'
                 ), ncol = 4, byrow = TRUE)
 
 opt = getopt(spec);
@@ -320,23 +320,25 @@ if (clustering_YN == "yes") {
 	            
 	cat(paste0("",length(rem), " lines dropped.\n\n")) #
 	if ( length(rem) > 0){
-	        weights = log2(segAll$length[-rem] + 0.00001) #sepcify your size vector here
+		# +1 as pseudo count to account for segments of length 1bp
+		weights = log2(segAll$length[-rem] + 1) #sepcify your size vector here
                                                      #weights <- 1
-          cluster_matrix_norm = cluster_matrix_norm[-rem, ]
-      	  #convert limits to scaled coordinates
-      	  covLeftNorm  <- ( log2(covLeft)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
-      	  covRightNorm <- ( log2(covRight)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
-      	  covLeftFullNorm <- ( log2(covLeft-covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
-          covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+		cluster_matrix_norm = cluster_matrix_norm[-rem, ]
+		#convert limits to scaled coordinates
+		covLeftNorm  <- ( log2(covLeft)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+		covRightNorm <- ( log2(covRight)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+		covLeftFullNorm <- ( log2(covLeft-covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+		covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
           
   }else{
-      	   weights = log2(segAll$length + 0.00001)
-      	   cluster_matrix_norm = cluster_matrix_norm
-      	   #convert limits to scaled coordinates
-      	   covLeftNorm  <- (log2(covLeft)-mean(log2(tcnMean)) )/sd(log2(tcnMean))
-      	   covRightNorm <- (log2(covRight)-mean(log2(tcnMean)) )/sd(log2(tcnMean))  
-           covLeftFullNorm <- ( log2(covLeft-covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
-           covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+		# +1 as pseudo count to account for segments of length 1bp
+		weights = log2(segAll$length + 1)
+		cluster_matrix_norm = cluster_matrix_norm
+		#convert limits to scaled coordinates
+		covLeftNorm  <- (log2(covLeft)-mean(log2(tcnMean)) )/sd(log2(tcnMean))
+		covRightNorm <- (log2(covRight)-mean(log2(tcnMean)) )/sd(log2(tcnMean))
+		covLeftFullNorm <- ( log2(covLeft-covWidth/2)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
+		covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
   }
   
 	cluster_matrix = scale(cluster_matrix_norm)
