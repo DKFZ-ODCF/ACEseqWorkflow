@@ -4,9 +4,6 @@
 # Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 
 
-source ${CONFIG_FILE}
-
-
 echo "starting to merge PSCBS breakpoints and sv points"
 
 tmp_breakpoints=${FILENAME_BREAKPOINTS}_tmp

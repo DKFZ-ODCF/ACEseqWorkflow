@@ -6,8 +6,6 @@
 
 library(getopt)
 library(data.table)
-#source("/home/kleinhei/R_lib/qq.R")
-#source("/home/kleinhei/R_lib/getopt.R")
 
 ################################################################################
 ## I wrap getopt into a function, which can check options, default values

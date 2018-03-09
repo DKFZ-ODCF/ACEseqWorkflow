@@ -12,7 +12,6 @@ library(getopt)
 
 script_dir = dirname(get_Rscript_filename())
 
-#source(paste0(script_dir, "/getopt.R"))
 
 spec <- matrix(c('segments',		's', 1, "character", #"IN: segment file",
 		 'file_sex',		'f', 1, "character", #"IN: file with sex of patient",
@@ -29,12 +28,12 @@ spec <- matrix(c('segments',		's', 1, "character", #"IN: segment file",
 		 'ploidy_max',		'q', 1, "numeric",   #"maximum ploidy",
 		 'pid',			'i', 1, "character"  #"patient identifier"
                 ), ncol = 4, byrow = TRUE)
- 
+
 opt = getopt(spec);
 for(item in names(opt)){
        assign( item, opt[[item]])
 }
- 
+
 cat(paste0("segments: ", segments, "\n\n"))
 cat(paste0("sex: ", file_sex, "\n\n"))
 cat(paste0("purity_ploidy_out: ", purity_ploidy, "\n\n"))
@@ -366,6 +365,25 @@ for (i in seq_along(posPloidies)) {
 #defining red lines in plot
 df.vlines <- data.frame(ploi=ploi, vline=limitDH)
 
+# png(qq("@{out}/dh_ABERRANT_more.png"), width = 1200, height = 1200)
+# ggplot(testPlot, aes(purity, ploidy)) + geom_tile(aes(fill = dh.distance), colour = "white") + 
+# 	scale_fill_gradient(low = "white", high = "black", limits = c(0, 0.3), na.value = "black") + 
+# 	theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 10)) + 
+# 	geom_errorbar(data = df.vlines, aes(x = vline, ymax = ploi, ymin = ploi), colour="#AA0000")
+# dev.off() 
+# 
+# testPlot = melt(data.frame(dist_TCN))
+# ploi = rep(posPloidies, length(posPurities))
+# testPlot$ploidy = ploi
+# colnames(testPlot) = c('purity', 'tcn.distance', 'ploidy')
+
+# ####    
+# png(qq("@{out}/tcn_ABERRANT_more.png"), width = 1200, height = 1200)
+# ggplot(testPlot, aes(purity, ploidy)) + geom_tile(aes(fill = tcn.distance), colour = "white") +
+# 	scale_fill_gradient(low = "white", high = "black", limits = c(0, 0.3), na.value = "black") + 
+# 	theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 10)) + 
+# 	geom_errorbar(data = df.vlines, aes(x = vline, ymax = ploi, ymin = ploi), colour="#AA0000")
+# dev.off() 
 
 ############ non-aberrant segments
 
@@ -698,9 +716,29 @@ names(testPlot) = c("purity", "distance", "ploidy")
 testPlot$purity = substring(testPlot$purity, 2, 5)
 testPlot$purity = as.numeric(testPlot$purity)
 
+
+# contour lines will be plotted for each contour_level (e.g. at 101% or 105% of the minimum distance value)
+contour_levels = c(0.01,0.05,0.1,0.15,0.2)
+secondLastLevel = tail(contour_levels,2)[-2]
+countour_local_minima = final_local_minima
+# for contour plots: remove local minima that are not at least 10% larger (or whatever 
+# the third-last value of contour_levels is) than the global minimum
+# that is: no own cloud for minima with near-optimum distance value.
+while (any(abs(diff(countour_local_minima)) <= min(countour_local_minima)*secondLastLevel)) {
+  sel = which(diff(countour_local_minima) <= min(countour_local_minima)*secondLastLevel)[1]
+  sel = c(sel, sel+1)
+  s = which.min( countour_local_minima[sel] )
+  countour_local_minima = countour_local_minima[sel[s]]
+}
+contour_breaks = as.numeric(sapply(countour_local_minima, function(x) {
+  return(x*(1+contour_levels))
+}))
+
+
 png(paste0("",out, "/",pid, "_tcn_distances_combined_star.png"), width = 800, height = 800, type='cairo')
-erupt = ggplot(testPlot, aes(purity, ploidy, fill = distance)) +
-	geom_tile()+ 
+erupt = ggplot(testPlot, aes(purity, ploidy, z = distance)) +
+	geom_tile(aes(fill = distance))+ 
+  stat_contour( aes(colour = ..level..), breaks=contour_breaks) +
 	scale_x_continuous(expand = c(0, 0)) + 
 	scale_y_continuous(expand = c(0, 0)) 
 print( erupt + scale_fill_gradient2(limits = c(0, mean(testPlot$distance[which(!is.na(testPlot$distance))])), midpoint = mean(testPlot$distance[which(!is.na(testPlot$distance))]) / 2, low = "darkred", high = "darkblue", na.value = "darkblue") + 

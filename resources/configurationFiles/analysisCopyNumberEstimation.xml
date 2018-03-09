@@ -1,33 +1,23 @@
-<!--
-  ~ Copyright (c) 2017 The ACEseq workflow developers.
-  ~
-  ~ Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
-  -->
-
 <configuration name='copyNumberEstimationAnalysis' description='CNV Calling for NGS data.'
                configurationType='analysis' class='de.dkfz.roddy.core.Analysis' workflowClass='de.dkfz.b080.co.aceseq.ACESeqWorkflow'
                runtimeServiceClass='de.dkfz.b080.co.common.BasicCOProjectsRuntimeService'
                imports="commonCOWorkflowsSettings"
                listOfUsedTools="mergeAndFilterSnpFiles,cnvSnpGeneration,annotateCnvFiles,imputeGenotypes,imputeGenotypes_X,addHaplotypesToSnpFile,getBreakpoints,mergeBreakpointsAndSv,getSegmentsAndSnps,markHomozygousDeletions"
-               usedToolFolders="copyNumberEstimationWorkflow,cobasetools">
+               usedToolFolders="copyNumberEstimationWorkflow,tools">
     <configurationvalues>
 
-    <!--BINARIES-->
-        <cvalue name="HTSLIB_VERSION" value="0.2.5" type="string"/>
-        <cvalue name="PERL_VERSION" value="5.20.2" type="string"/>
-        <cvalue name="PYTHON_VERSION" value="2.7.9" type="string"/>
-        <cvalue name="RSCRIPT_VERSION" value="3.3.1" type="string"/>
-        <cvalue name='BEDTOOLS_VERSION' value='2.16.2' type='string'/>
-        <cvalue name="VCFTOOLS_VERSION" value="0.1.10" type="string"/>
-        <cvalue name="SAMTOOLS_VERSION" value="0.1.19" type="string"/>
+	<!--BINARIES-->
+	<cvalue name="JAVA_BINARY" value="java" type="filename"/>
+        <cvalue name="BGZIP_BINARY" value="bgzip" type="filename"/>
+        <cvalue name="TABIX_BINARY" value="tabix" type="filename"/>
+        <cvalue name="PERL_BINARY" value="perl" type="string"/>
+        <cvalue name="PYTHON_BINARY" value="python" type="path"/>
+        <cvalue name="RSCRIPT_BINARY" value="Rscript-3.3.1" type="string"/>
+        <cvalue name='INTERSECTBED_BINARY' value='intersectBed-2.16.2' type='filename'/>
 
-    <!--ENVIRONMENT (see tools section below for possible values) -->
-        <cvalue name="workflowEnvironmentScript" value="${TOOL_WORKFLOW_ENVIRONMENT_CONDA_TBI_TEST}" type="string"
-                description="Use ${TOOL_WORKFLOW_ENVIRONMENT_CONDA} for a generic Conda environment."/>
-        <!--<cvalue name="workflowEnvironmentScript" value="${TOOL_WORKFLOW_ENVIRONMENT_TBI_PBS}" type="string"/>-->
-        <!--<cvalue name="correctGcBiasEnvironmentScript" value="${TOOL_CORRECT_GC_BIAS_ENVIRONMENT_CONDA}" type="string"/>-->
-        <cvalue name="condaEnvironmentName" value="ACEseqWorkflow" type="string"
-                description="Name of the Conda environment on the execution hosts. Used by the environment setup script conda.sh defined as tool below."/>
+        <cvalue name="BCFTOOLS_BINARY" value="bcftools-0.1.19" type="filename"/>
+        <cvalue name="VCFTOOLS_SORT_BINARY" value="vcf-sort-0.1.10" type="filename"/>
+        <cvalue name="SAMTOOLS_BINARY" value="samtools-0.1.19" type="filename"/>
 
 	<!--outputMask-->
         <cvalue name='outputUMask' value='007' type='string'/>
@@ -40,17 +30,16 @@
 
 
 	<!-- Reference files -->
-        <cvalue name="baseDirectoryReference" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes" type="path"/>
-        <cvalue name="referenceGenome_1KGRef" value="${baseDirectoryReference}/sequence/1KGRef/hs37d5.fa" type="path"/>
+        <cvalue name="referenceGenome_1KGRef" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/sequence/1KGRef/hs37d5.fa" type="path"/>
         <cvalue name='REFERENCE_GENOME' value="${referenceGenome_1KGRef}" type="string" />
-        <cvalue name="dbSNP_FILE" value="${baseDirectoryReference}/databases/dbSNP/dbSNP_135/00-All.SNV.vcf.gz" type="path"/>
-        <cvalue name="MAPPABILITY_FILE" value="${baseDirectoryReference}/databases/UCSC/wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz" type="path"/>
-        <cvalue name="CHROMOSOME_LENGTH_FILE" value="${baseDirectoryReference}/stats/chrlengths.txt" type="path"/>
-        <cvalue name="REPLICATION_TIME_FILE" value="${baseDirectoryReference}/databases/ENCODE/ReplicationTime_10cellines_mean_10KB.Rda" type="path"/>
-        <cvalue name="GC_CONTENT_FILE" value="${baseDirectoryReference}/stats/hg19_GRch37_100genomes_gc_content_10kb.txt" type="path"/>
+        <cvalue name="dbSNP_FILE" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/dbSNP/dbSNP_135/00-All.SNV.vcf.gz" type="path"/>
+        <cvalue name="MAPPABILITY_FILE" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/UCSC/wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz" type="path"/>
+        <cvalue name="CHROMOSOME_LENGTH_FILE" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/stats/chrlengths.txt" type="path"/>
+        <cvalue name="REPLICATION_TIME_FILE" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/ENCODE/ReplicationTime_10cellines_mean_10KB.Rda" type="path"/>
+        <cvalue name="GC_CONTENT_FILE" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/stats/hg19_GRch37_100genomes_gc_content_10kb.txt" type="path"/>
 
 	<!-- Impute -->
-        <cvalue name='imputeBaseDirectory' value="${baseDirectoryReference}/databases/1000genomes/IMPUTE/" type="path"/>
+        <cvalue name='imputeBaseDirectory' value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/1000genomes/IMPUTE/" type="path"/>
         <cvalue name='GENETIC_MAP_FILE'               value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/genetic_map_chr${CHR_NAME}_combined_b37.txt" type="path"/>
         <cvalue name='KNOWN_HAPLOTYPES_FILE'          value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/ALL.chr${CHR_NAME}.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.nomono.haplotypes.gz" type="path"/>
         <cvalue name='KNOWN_HAPLOTYPES_LEGEND_FILE'   value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/ALL.chr${CHR_NAME}.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.nomono.legend.gz"
@@ -82,9 +71,9 @@
         <cvalue name='CHROMOSOME_INDICES_OPTIMIZED_CNV_SNV_MPILEUP' value='( 2 1 3 5 4 6 8 12 7 11 10 9 X 16 13 15 14 18 17 19 20 22 21 Y )' type='bashArray'/>
         <cvalue name='AUTOSOME_INDICES' value='( {1..22} )' type='bashArray'/>
 
-        <cvalue name='SV' value='yes' type='string' description='include SV breakpoints in analysis (yes|no)'/>
+        <cvalue name='CREST' value='yes' type='string' description='include SV breakpoints in analysis (yes|no)'/>
 
-        <cvalue name='runOnPancan' value='false' type='boolean'/>
+        <cvalue name='runOnPancan' value='' type='boolean'/>
 
         <cvalue name='libloc_PSCBS' value='' type='string' description="path to PSCBS library in R"/>
         <cvalue name='libloc_flexclust' value='' type='string' description="path to felxclust library in R"/>
@@ -124,22 +113,22 @@
         <cvalue name='SNP_SUFFIX' value='snp.tab.gz' type="string"/>
         <cvalue name='snp_min_coverage' value='5' type="integer"/>
 
-	<cvalue name='MALE_FAKE_CONTROL_PRE' value="pathToPID/${pid}/ACEseq/cnv_snp/${pid}.chr" type='path' 
+	<cvalue name='MALE_FAKE_CONTROL_PRE' value="/icgc/dkfzlsdf/analysis/mmml/whole_genome_pcawg/results_per_pid/4128477/ACEseq/cnv_snp/4128477.chr" type='path' 
 		description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for male patients" /> 
-	<cvalue name='FEMALE_FAKE_CONTROL_PRE' value="pathToPID/${pid}/ACEseq/cnv_snp/${pid}.chr" type='path'
+	<cvalue name='FEMALE_FAKE_CONTROL_PRE' value="/icgc/dkfzlsdf/analysis/mmml/whole_genome_pcawg/results_per_pid/4109142/ACEseq/cnv_snp/4109142.chr" type='path'
 		description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for female patients" /> 
 	<cvalue name='FAKE_CONTROL_POST' value=".cnv.anno.tab.gz" type='string' description="suffix for chromosome wise 1kb coverage files used for fake control workflow"/> 
 	<cvalue name='PATIENTSEX' value="male" type='string' description="patient sex used in case of no control workflow (male|female|klinefelter)" /> 
 
         <!--annotateCnvFiles Opts-->
         <cvalue name='CNV_ANNO_SUFFIX' value='cnv.anno.tab.gz' type="string"
-		description="suffix for mappability annotated chromosome-wise 1kb coverage files" /> 
+                description="suffix for mappability annotated chromosome-wise 1kb coverage files"/>
         <cvalue name='CNV_SUFFIX' value='cnv.tab.gz' type="string"
-		description="suffix chromosome-wise 1kb coverage files" /> 
-        <cvalue name='min_X_ratio' value='0.8' type="float" 
-		description="minimum ratio for number of reads on chrY per base over number of reads per base over whole genome to be considered as female" />
+                description="suffix chromosome-wise 1kb coverage files"/>
+        <cvalue name='min_X_ratio' value='0.8' type="float"
+                description="minimum ratio for number of reads on chrY per base over number of reads per base over whole genome to be considered as female"/>
         <cvalue name='min_Y_ratio' value='0.12' type="float"
-		description="minimum ratio for number of reads on chrY per base over number of reads per base over whole genome to be considered as male" />
+                description="minimum ratio for number of reads on chrY per base over number of reads per base over whole genome to be considered as male"/>
 
         <!--cnvMergeFilter Opts-->
         <cvalue name='cnv_min_coverage' value='5000' type="integer"
@@ -211,6 +200,8 @@
 	<cvalue name="centromerFilename" value='centromers.hg19.txt' type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_PRE' value="${pid}_most_important_info" type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_POST' value=".txt" type="string"/>
+        <cvalue name='FILE_SEGMENT_VCF_PRE' value="${aceseqOutputDirectory}/${pid}" type="path"/>
+        <cvalue name='FILE_SEGMENT_VCF_POST' value=".cnv.vcf" type="string"/>
 
     </configurationvalues>
     <processingTools>
@@ -219,7 +210,7 @@
              "workflow_environment_${environmentTool}". -->
         <tool name="workflowEnvironment_condaTbiTest" value="conda_tbi-pbs-cluster.sh" basepath="copyNumberEstimationWorkflow/environments"/>
         <tool name="workflowEnvironment_conda" value="conda.sh" basepath="copyNumberEstimationWorkflow/environments"/>
-        <tool name="workflowEnvironment_modules" value="tbi-lsf-cluster.sh" basepath="copyNumberEstimationWorkflow/environments"/>
+        <tool name="workflowEnvironment_tbiLsf" value="tbi-lsf-cluster.sh" basepath="copyNumberEstimationWorkflow/environments"/>
         <tool name="workflowEnvironment_tbiPbs" value="tbi-pbs-cluster.sh" basepath="copyNumberEstimationWorkflow/environments"/>
 
         <!-- Cluster-job specific environments.
@@ -268,7 +259,7 @@
                 <rset size="l" memory="2" cores="2" nodes="1" walltime="5"/>
             </resourcesets>
         </tool>
-
+        <tool name="convertToVcf" value="convertToVcf.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="generatePlots" value="pscbs_plots.R" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="50" cores="1" nodes="1" walltime="12"/>
@@ -317,11 +308,11 @@
             <resourcesets>
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="5"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_FAKE_CONTROL" />
+            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_FAKE_CONTROL"/>
             <input type="filegroup" typeof="de.dkfz.roddy.knowledge.files.GenericFileGroup" scriptparameter="COV_WIN_FILES" passas="array"/>
             <output type="file" typeof="de.dkfz.b080.co.files.TextFile" fnpatternselectiontag="covWinFileWithBadControl" scriptparameter="FILENAME_COV_WINDOWS_WG"/>
         </tool>
-  
+
         <tool name="mergeAndFilterSnpFiles" value="snvMergeFilter.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="5"/>
@@ -427,7 +418,7 @@
             <output type="tuple">
                 <output type="file" fnpatternselectiontag="correctedWindows" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_GC_CORRECTED_WINDOWS"/>
                 <output type="file" fnpatternselectiontag="tab" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_GC_CORRECTED_QUALITY"/>
-                <output type="file" fnpatternselectiontag="tabSlim" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_QC_GC_CORRECTION_JSON" />
+                <output type="file" fnpatternselectiontag="tabSlim" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_QC_GC_CORRECTION_JSON"/>
             </output>
 
         </tool>
@@ -565,6 +556,15 @@
             </output>
         </tool>
 
+        <tool name="generateVcfFromTab" value="convertTabTovcf.sh" basepath="copyNumberEstimationWorkflow">
+            <resourcesets>
+                <rset size="l" memory="1" cores="1" nodes="1" walltime="2"/>
+            </resourcesets>
+            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_PURITY_PLOIDY"/>
+            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_PLOTS"/>
+            <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_VCF"/>
+        </tool>
+
         <tool name="estimateHrdScore" value="estimateHRDScore.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="1" cores="1" nodes="1" walltime="2"/>
@@ -576,9 +576,9 @@
 
     </processingTools>
     <filenames package='de.dkfz.b080.co.files' filestagesbase='de.dkfz.b080.co.files.COFileStage'>
-        <filename class='SNPPositionFile' derivedFrom="de.dkfz.b080.co.files.BamFile" pattern='${cnvSnpOutputDirectory}/${pid}.chr${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="SNP_SUFFIX"}'/>
-        <!--<filename class='SNPPositionFile' derivedFrom="de.dkfz.b080.co.files.BamFile" pattern='${outputAnalysisBaseDirectory}/${aceseqOutputDirectory}/${cnvSnpOutputDirectory}/${pid}.chr${jobParameter,name="PARM_CHR_INDEX"}.snp.tab.gz' />-->
-        <filename class='CoverageWindowsFile' derivedFrom="de.dkfz.b080.co.files.BamFile" pattern='${cnvSnpOutputDirectory}/${pid}.chr${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="CNV_SUFFIX"}'/>
+        <filename class='SNPPositionFile' derivedFrom="BamFile" pattern='${cnvSnpOutputDirectory}/${pid}.chr${PARM_CHR_INDEX}.${SNP_SUFFIX}'/>
+        <!--<filename class='SNPPositionFile' derivedFrom="BamFile" pattern='${outputAnalysisBaseDirectory}/${aceseqOutputDirectory}/${cnvSnpOutputDirectory}/${pid}.chr${jobParameter,name="PARM_CHR_INDEX"}.snp.tab.gz' />-->
+        <filename class='CoverageWindowsFile' derivedFrom="BamFile" pattern='${cnvSnpOutputDirectory}/${pid}.chr${PARM_CHR_INDEX}.${CNV_SUFFIX}'/>
 <!--      <filename class="PhasedGenotypeFile" onScriptParameter="FILENAME_PHASED_GENOTYPES" selectiontag="withChromosomeIndex"
                   pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
         <filename class="HaploblockGroupFile" onScriptParameter="FILENAME_HAPLOBLOCK_GROUPS" selectiontag="withChromosomeIndex"
@@ -588,7 +588,7 @@
         <filename class="HaploblockGroupFile" onScriptParameter="FILENAME_HAPLOBLOCK_GROUPS" selectiontag="forChromosomeX"
                   pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}23.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
 -->
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.files.SNPPositionFileGroupByChromosome.mergeAndFilter" pattern='${aceseqOutputDirectory}/${pid}_all.snp.tab.gz'/>
+        <filename class="TextFile" onMethod="SNPPositionFileGroupByChromosome.mergeAndFilter" pattern='${aceseqOutputDirectory}/${pid}_all.snp.tab.gz'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.getGenotypes" pattern='${aceseqOutputDirectory}/${pid}_all.snp.fakeBAF.tab.gz'/>
 
 	<filename class="PhasedGenotypeFile" onTool="imputeGenotypes_noMpileup" selectiontag="withChromosomeIndex"
@@ -610,12 +610,12 @@
 		  pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}23.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
 
 
-        <filename class="UnphasedGenotypeFile" derivedFrom="TextFile" 
+        <filename class="UnphasedGenotypeFile" derivedFrom="TextFile"
                   pattern='${imputeOutputDirectory}/${cvalue, name="unphasedGenotypesPrefix", default="unphased_chr"}#CHROMOSOME_INDEX#.${cvalue,name="unphasedGenotypesSuffix",default="vcf"}'/>
-<!--
-        <filename class="TextFile" derivedFrom="TextFile" selectiontag="unphasedGenotypeChrXFile" 
-                  pattern='${imputeOutputDirectory}/${cvalue, name="unphasedGenotypesPrefix", default="unphased_chr"}X.${cvalue,name="unphasedGenotypesSuffix",default="vcf"}'/>
--->
+        <!--
+                <filename class="TextFile" derivedFrom="TextFile" selectiontag="unphasedGenotypeChrXFile"
+                          pattern='${imputeOutputDirectory}/${cvalue, name="unphasedGenotypesPrefix", default="unphased_chr"}X.${cvalue,name="unphasedGenotypesSuffix",default="vcf"}'/>
+        -->
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.addHaploTypes" pattern='${aceseqOutputDirectory}/${pid}_all.snp.haplo.tab.gz'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.createControlBafPlot" pattern='${plotOutputDirectory}/checkpointBaf.txt'/>
         <filename class="TextFile" onMethod="CoverageWindowsFileGroupByChromosome.annotate" selectiontag="annotatedCoverage" pattern='${cnvSnpOutputDirectory}/${pid}.chr#CHROMOSOME_INDEX#.${cvalue,name="CNV_ANNO_SUFFIX"}'/>
@@ -623,7 +623,6 @@
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.replaceControl" pattern='${aceseqOutputDirectory}/checkpointFakeControl.txt'/>
         <filename class="TextFile" onMethod="CoverageWindowsFileAnnotationResult.mergeAndFilterCoverageWindowFiles" pattern='${aceseqOutputDirectory}/${pid}_all.cnv.tab.gz'/>
         <filename class="TextFile" derivedFrom='TextFile' selectiontag='covWinFileWithBadControl' pattern='${aceseqOutputDirectory}/${pid}_all.cnv.tab.gz'/>
-
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.correctGC" selectiontag="correctedWindows" pattern='${aceseqOutputDirectory}/${pid}_all.cnv.corrected.tab.gz'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.correctGC" selectiontag="tabSlim" pattern='${plotOutputDirectory}/${pid}_qc_gc_corrected.json'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.correctGC" selectiontag="tab" pattern='${plotOutputDirectory}/${pid}_qc_gc_corrected.tsv'/>
@@ -646,7 +645,9 @@
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.estimatePurityPloidy" pattern='${aceseqOutputDirectory}/${pid}_ploidy_purity_2D.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.generatePlots" selectiontag="checkpoint" pattern='${aceseqOutputDirectory}/checkpointPlots.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.generatePlots" selectiontag="json" pattern='${aceseqOutputDirectory}/cnv_${pid}_parameter.json'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.estimateHRD" pattern='${aceseqOutputDirectory}/checkpointHRD.txt'/>
+        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.convertToVcf" pattern='${aceseqOutputDirectory}/checkpointVcf.txt'/>
+	<filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.estimateHRD" pattern='${aceseqOutputDirectory}/checkpointHRD.txt'/>
+
 
     </filenames>
 

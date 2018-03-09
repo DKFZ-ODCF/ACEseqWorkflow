@@ -11,8 +11,6 @@ library(getopt)
 
 script_dir = dirname(get_Rscript_filename())
 
-#source(paste0(script_dir, "/getopt.R"))
-
 wd = getwd()
 # set default values 
 min_Y_ratio=0.12

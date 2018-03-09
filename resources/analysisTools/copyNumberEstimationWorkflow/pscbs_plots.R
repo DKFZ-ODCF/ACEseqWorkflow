@@ -41,7 +41,6 @@ cat(paste0("ID: ", ID, "\n\n"))
 cat("\n")
 
 source( file.path(pipelineDir, "pscbs_plots_functions.R") )
-source( file.path(pipelineDir, "annotateCNA.R") )
 		                 
 cat("reading \n\n")
 
