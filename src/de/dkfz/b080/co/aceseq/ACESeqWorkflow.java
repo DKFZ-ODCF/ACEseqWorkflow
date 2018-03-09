@@ -10,6 +10,8 @@ import de.dkfz.b080.co.common.*;
 import de.dkfz.b080.co.files.*;
 import de.dkfz.roddy.config.*;
 import de.dkfz.roddy.core.ExecutionContext;
+import de.dkfz.roddy.core.ExecutionContextError;
+import de.dkfz.roddy.execution.io.fs.FileSystemAccessProvider;
 import de.dkfz.roddy.knowledge.files.Tuple2;
 import de.dkfz.roddy.knowledge.files.Tuple3;
 import de.dkfz.roddy.knowledge.files.GenericFileGroup;
@@ -82,7 +84,7 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         } else if (runWithCrest) {
             mergedSvs = ACESeqMethods.mergeCrest(breakpoints.value0);
         } else {
-            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0);
+            ACESeqMethods.mergeNoSv(breakpoints.value0);
             return true;
         }
 
