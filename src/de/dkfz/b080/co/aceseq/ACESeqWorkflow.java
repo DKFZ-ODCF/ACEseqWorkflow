@@ -78,13 +78,13 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         Tuple2<TextFile, TextFile> mergedSvs = null;
 
         if (runWithSv) {
-            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0, runWithSv); // true is passed
+            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0);
         } else if (runWithCrest) {
             mergedSvs = ACESeqMethods.mergeCrest(breakpoints.value0);
-	} else {
-            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0, runWithSv); // false is passed
+        } else {
+            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0);
             return true;
-	}
+        }
 
         TextFile pscbsSegments = ACESeqMethods.getSegmentAndGetSnps(mergedSvs.value0, breakpoints.value1);
         TextFile homoDelSegments = ACESeqMethods.markSegsWithHomozygDel(pscbsSegments, mergedSvs.value1);
