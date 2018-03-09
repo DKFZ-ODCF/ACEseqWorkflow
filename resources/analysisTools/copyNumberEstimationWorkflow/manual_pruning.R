@@ -71,6 +71,8 @@ if ( libloc == "" | libloc == TRUE ){
 
 source(functions)
 
+mclust.options(hcUse = "VARS") # set hcUse to use VARS-method (method will be changed to SVD mith mclust>=5.4 which leads to different results)
+
 cat(paste0("reading ",segments,"...\n\n"))
 segAll = read.table(segments, sep = "\t", as.is = TRUE, header = TRUE)
 
@@ -124,7 +126,7 @@ sel = which(chrLength$V1 == "Y")
 chrLength$V1[sel] = 24
 
 
-colNamesData <-  c( "chromosome", "SNP", "start", "end", "crest", "copyT", "covT", "meanTCN", "betaT","betaN", "Atumor", "Btumor", "Anormal", "Bnormal", 'haplotype', "map" )
+colNamesData <-  c( "chromosome", "SNP", "start", "end", "SV.Type", "copyT", "covT", "meanTCN", "betaT","betaN", "Atumor", "Btumor", "Anormal", "Bnormal", 'haplotype', "map" )
 
 dataAll = lapply( seq_len(maxChr), function(chr){
 		cat( "Reading chr ", chr," from ", file, "...\n" )
@@ -313,8 +315,8 @@ if (clustering_YN == "yes") {
 	            cluster_matrix_norm[ ,1] == "-Inf" | 
 	            cluster_matrix_norm[ ,2] == "Inf" | 
 	            cluster_matrix_norm[,2] == "-Inf")
-	            
-	cat(qq("@{length(rem)} lines dropped.\n\n")) #
+
+	cat(paste0("",length(rem), " lines dropped.\n\n")) #
 	if ( length(rem) > 0) {
 		# +1 as pseudo count to account for segments of length 1bp
 		weights = log2(segAll$length[-rem] + 1) #specify your size vector here

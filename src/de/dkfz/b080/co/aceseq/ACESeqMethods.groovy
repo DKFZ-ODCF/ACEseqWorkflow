@@ -9,6 +9,7 @@ package de.dkfz.b080.co.aceseq;
 import de.dkfz.b080.co.common.ParallelizationHelper;
 import de.dkfz.b080.co.files.*;
 import de.dkfz.roddy.Roddy;
+import de.dkfz.roddy.config.Configuration;
 import de.dkfz.roddy.core.ExecutionContext;
 import de.dkfz.roddy.core.ExecutionContextError;
 import de.dkfz.roddy.execution.io.fs.FileSystemAccessProvider;

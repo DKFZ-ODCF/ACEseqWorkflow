@@ -1,3 +1,9 @@
+<!--
+  ~ Copyright (c) 2017 The ACEseq workflow developers.
+  ~
+  ~ Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+  -->
+
 <configuration name='copyNumberEstimationAnalysis' description='CNV Calling for NGS data.'
                configurationType='analysis' class='de.dkfz.roddy.core.Analysis' workflowClass='de.dkfz.b080.co.aceseq.ACESeqWorkflow'
                runtimeServiceClass='de.dkfz.b080.co.common.BasicCOProjectsRuntimeService'
@@ -6,18 +12,23 @@
                usedToolFolders="copyNumberEstimationWorkflow,tools">
     <configurationvalues>
 
-	<!--BINARIES-->
-	<cvalue name="JAVA_BINARY" value="java" type="filename"/>
-        <cvalue name="BGZIP_BINARY" value="bgzip" type="filename"/>
-        <cvalue name="TABIX_BINARY" value="tabix" type="filename"/>
-        <cvalue name="PERL_BINARY" value="perl" type="string"/>
-        <cvalue name="PYTHON_BINARY" value="python" type="path"/>
-        <cvalue name="RSCRIPT_BINARY" value="Rscript-3.3.1" type="string"/>
-        <cvalue name='INTERSECTBED_BINARY' value='intersectBed-2.16.2' type='filename'/>
 
-        <cvalue name="BCFTOOLS_BINARY" value="bcftools-0.1.19" type="filename"/>
-        <cvalue name="VCFTOOLS_SORT_BINARY" value="vcf-sort-0.1.10" type="filename"/>
-        <cvalue name="SAMTOOLS_BINARY" value="samtools-0.1.19" type="filename"/>
+        <!--BINARIES-->
+        <cvalue name="HTSLIB_VERSION" value="0.2.5" type="string"/>
+        <cvalue name="PERL_VERSION" value="5.20.2" type="string"/>
+        <cvalue name="PYTHON_VERSION" value="2.7.9" type="string"/>
+        <cvalue name="RSCRIPT_VERSION" value="3.3.1" type="string"/>
+        <cvalue name='BEDTOOLS_VERSION' value='2.16.2' type='string'/>
+        <cvalue name="VCFTOOLS_VERSION" value="0.1.10" type="string"/>
+        <cvalue name="SAMTOOLS_VERSION" value="0.1.19" type="string"/>
+
+        <!--ENVIRONMENT (see tools section below for possible values) -->
+        <cvalue name="workflowEnvironmentScript" value="workflowEnvironment_tbiLsf" type="string"
+                description="Use workflowEnvironment_conda for a generic Conda environment."/>
+        <!--<cvalue name="workflowEnvironmentScript" value="${TOOL_WORKFLOW_ENVIRONMENT_TBI_PBS}" type="string"/>-->
+        <!--<cvalue name="correctGcBiasEnvironmentScript" value="${TOOL_CORRECT_GC_BIAS_ENVIRONMENT_CONDA}" type="string"/>-->
+        <cvalue name="condaEnvironmentName" value="ACEseqWorkflow" type="string"
+                description="Name of the Conda environment on the execution hosts. Used by the environment setup script conda.sh defined as tool below."/>
 
 	<!--outputMask-->
         <cvalue name='outputUMask' value='007' type='string'/>
@@ -29,30 +40,31 @@
         <cvalue name='possibleTumorSampleNamePrefixes' value='( tumor TUMOR metastasis xenograft disease DISEASE relapse RELAPSE autopsy AUTOPSY metastasis METASTASIS )' type='bashArray'/>
 
 
-	<!-- Reference files -->
-        <cvalue name="referenceGenome_1KGRef" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/sequence/1KGRef/hs37d5.fa" type="path"/>
-        <cvalue name='REFERENCE_GENOME' value="${referenceGenome_1KGRef}" type="string" />
-        <cvalue name="dbSNP_FILE" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/dbSNP/dbSNP_135/00-All.SNV.vcf.gz" type="path"/>
-        <cvalue name="MAPPABILITY_FILE" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/UCSC/wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz" type="path"/>
-        <cvalue name="CHROMOSOME_LENGTH_FILE" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/stats/chrlengths.txt" type="path"/>
-        <cvalue name="REPLICATION_TIME_FILE" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/ENCODE/ReplicationTime_10cellines_mean_10KB.Rda" type="path"/>
-        <cvalue name="GC_CONTENT_FILE" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/stats/hg19_GRch37_100genomes_gc_content_10kb.txt" type="path"/>
+        <!-- Reference files -->
+        <cvalue name="baseDirectoryReference" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes" type="path"/>
+        <cvalue name="referenceGenome_1KGRef" value="${baseDirectoryReference}/sequence/1KGRef/hs37d5.fa" type="path"/>
+        <cvalue name='REFERENCE_GENOME' value="${referenceGenome_1KGRef}" type="string"/>
+        <cvalue name="dbSNP_FILE" value="${baseDirectoryReference}/databases/dbSNP/dbSNP_135/00-All.SNV.vcf.gz" type="path"/>
+        <cvalue name="MAPPABILITY_FILE" value="${baseDirectoryReference}/databases/UCSC/wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz" type="path"/>
+        <cvalue name="CHROMOSOME_LENGTH_FILE" value="${baseDirectoryReference}/stats/chrlengths.txt" type="path"/>
+        <cvalue name="REPLICATION_TIME_FILE" value="${baseDirectoryReference}/databases/ENCODE/ReplicationTime_10cellines_mean_10KB.Rda" type="path"/>
+        <cvalue name="GC_CONTENT_FILE" value="${baseDirectoryReference}/stats/hg19_GRch37_100genomes_gc_content_10kb.txt" type="path"/>
 
-	<!-- Impute -->
-        <cvalue name='imputeBaseDirectory' value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/1000genomes/IMPUTE/" type="path"/>
-        <cvalue name='GENETIC_MAP_FILE'               value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/genetic_map_chr${CHR_NAME}_combined_b37.txt" type="path"/>
-        <cvalue name='KNOWN_HAPLOTYPES_FILE'          value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/ALL.chr${CHR_NAME}.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.nomono.haplotypes.gz" type="path"/>
-        <cvalue name='KNOWN_HAPLOTYPES_LEGEND_FILE'   value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/ALL.chr${CHR_NAME}.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.nomono.legend.gz"
+        <!-- Impute -->
+        <cvalue name='imputeBaseDirectory' value="${baseDirectoryReference}/databases/1000genomes/IMPUTE/" type="path"/>
+        <cvalue name='GENETIC_MAP_FILE' value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/genetic_map_chr${CHR_NAME}_combined_b37.txt" type="path"/>
+        <cvalue name='KNOWN_HAPLOTYPES_FILE' value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/ALL.chr${CHR_NAME}.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.nomono.haplotypes.gz" type="path"/>
+        <cvalue name='KNOWN_HAPLOTYPES_LEGEND_FILE' value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/ALL.chr${CHR_NAME}.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.nomono.legend.gz"
                 type="path"/>
         <cvalue name='GENETIC_MAP_FILE_X'             value="${imputeBaseDirectory}/ALL_1000G_phase1integrated_v3_impute/genetic_map_chrX_nonPAR_combined_b37.txt" type="path"/>
         <cvalue name='KNOWN_HAPLOTYPES_FILE_X'        value="${imputeBaseDirectory}/ALL_1000G_phase1integrated_v3_impute/ALL_1000G_phase1integrated_v3_chrX_nonPAR_impute.hap.gz" type="path"/>
         <cvalue name='KNOWN_HAPLOTYPES_LEGEND_FILE_X' value="${imputeBaseDirectory}/ALL_1000G_phase1integrated_v3_impute/ALL_1000G_phase1integrated_v3_chrX_nonPAR_impute.legend.gz" type="path"/>
 
-	<!-- Input and output paths -->
-        <cvalue name='outputExecutionDirectory' value='${outputAnalysisBaseDirectory}/exec_${executionTimeString}' />
-        <cvalue name='mergedBamSuffix' value='merged.mdup.bam' type="string" description="A list of all known suffixes for merged bam files. I.e. merged.dupmark.bam, merged.mdup.bam..." />
-        <cvalue name='mergedBamSuffixList' value='${mergedBamSuffix}' type="string" description="A list of all known suffixes for merged bam files. I.e. merged.dupmark.bam, merged.mdup.bam..." />
-        <cvalue name='defaultMergedBamSuffix' value='${mergedBamSuffix}' type="string" description="The default suffix for merged bam files when they are created by Roddy." />
+        <!-- Input and output paths -->
+        <cvalue name='outputExecutionDirectory' value='${outputAnalysisBaseDirectory}/exec_${executionTimeString}'/>
+        <cvalue name='mergedBamSuffix' value='merged.mdup.bam' type="string" description="A list of all known suffixes for merged bam files. I.e. merged.dupmark.bam, merged.mdup.bam..."/>
+        <cvalue name='mergedBamSuffixList' value='${mergedBamSuffix}' type="string" description="A list of all known suffixes for merged bam files. I.e. merged.dupmark.bam, merged.mdup.bam..."/>
+        <cvalue name='defaultMergedBamSuffix' value='${mergedBamSuffix}' type="string" description="The default suffix for merged bam files when they are created by Roddy."/>
 
         <cvalue name='aceseqOutputDirectory' value='${outputAnalysisBaseDirectory}/ACEseq_${tumorSample}' type="path"/>
         <cvalue name='svOutputDirectory' value='${outputAnalysisBaseDirectory}/SOPHIA_${tumorSample}_${controlSample}' type="path"/>
@@ -73,7 +85,7 @@
 
         <cvalue name='CREST' value='yes' type='string' description='include SV breakpoints in analysis (yes|no)'/>
 
-        <cvalue name='runOnPancan' value='' type='boolean'/>
+        <cvalue name='runOnPancan' value='false' type='boolean'/>
 
         <cvalue name='libloc_PSCBS' value='' type='string' description="path to PSCBS library in R"/>
         <cvalue name='libloc_flexclust' value='' type='string' description="path to felxclust library in R"/>
