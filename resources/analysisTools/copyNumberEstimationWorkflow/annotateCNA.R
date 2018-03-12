@@ -9,8 +9,8 @@ annotateCNA <- function( seg.df, ploidy=fullPloidy, cut.off = 0.7, TCN.colname =
                          c1Mean.colname = "c1Mean", c2Mean.colname = "c2Mean", sex=sex ){
 
        seg.df$CNA.type <- NA
-       seg.df$chromosome <- gsub("^23", "X", seg.df$chromosome)
-       seg.df$chromosome <- gsub("^24", "Y", seg.df$chromosome)
+       seg.df$chromosome <- gsub("^23$", "X", seg.df$chromosome)
+       seg.df$chromosome <- gsub("^24$", "Y", seg.df$chromosome)
 
         selNeutral <- which( ( seg.df[,TCN.colname] >= (ploidy -(1 - cut.off)) &
                                 seg.df[,TCN.colname] <= (ploidy + (1 - cut.off)) ) |
