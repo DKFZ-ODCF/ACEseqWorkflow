@@ -215,10 +215,10 @@ public final class ACESeqMethods {
         return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_GENERATE_RESULTS_AND_PLOTS, segments, snpsFile, svPoints, purityPloidyFile, genderFile);
     }
 
-    @ScriptCallingMethod
-    static TextFile convertToVcf(TextFile purityPloidyFile, TextFile checkpointFile) {
-        return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_GENERATE_VCF_FROM_TAB, purityPloidyFile, checkpointFile);
-    }
+//    @ScriptCallingMethod
+//    static TextFile convertToVcf(TextFile purityPloidyFile, TextFile checkpointFile) {
+//        return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_GENERATE_VCF_FROM_TAB, purityPloidyFile, checkpointFile);
+//    }
 
     @ScriptCallingMethod
     static TextFile estimateHRD(TextFile genderFile, TextFile cnvParameterFile) {
