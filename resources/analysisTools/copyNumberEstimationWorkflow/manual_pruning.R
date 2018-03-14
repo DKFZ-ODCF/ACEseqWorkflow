@@ -430,9 +430,9 @@ if (clustering_YN == "yes") {
     dhMax <- NaN
     if(length(s)>4){
       tcnMean <- density(segAll.tmp$tcnMean[s] )
-      tcnMean <- tcnMean$x[which(tcnMean$y==max(tcnMean$y))]
+      tcnMean <- tcnMean$x[which(tcnMean$y==max(tcnMean$y))[1]] # [1]: bugfix, more than one value possible. always take the first one
       dhMax <- density(segAll.tmp$dhMax[s])
-      dhMax <- dhMax$x[which(dhMax$y==max(dhMax$y))]
+      dhMax <- dhMax$x[which(dhMax$y==max(dhMax$y))[1]] # [1]: bugfix, more than one value possible. always take the first one
     }
     c(tcnMean, dhMax)
   })))
