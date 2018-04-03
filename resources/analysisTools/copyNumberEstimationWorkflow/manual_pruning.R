@@ -344,13 +344,17 @@ if (clustering_YN == "yes") {
 	cluster_matrix = scale(cluster_matrix_norm)
 
 	#find optimal number of clusters using bayesian information criterion
+	cat("Calling Mclust...\n")
 	d_clust <- Mclust(cluster_matrix, G=min_num_cluster:20)
+	cat("finished Mclust...\n")
 	m.best  <- dim(d_clust$z)[2]
 
 	#cmeans to get clusters with m.best centers 
 	#resample clustering by jittering point B times)
-  
+
+	cat("Calling clusterboot...\n")
 	results = clusterboot(cbind(weights, cluster_matrix), B = 100, bootmethod = "jitter", clustermethod = cmeansCBI, k = m.best, seed = 15555, multipleboot = FALSE)
+	cat("finished clusterboot...\n")
 	CM <- results$result$result
 
     	massCenterX <- sapply(seq_along(CM$centers[,1]), function(i) {
