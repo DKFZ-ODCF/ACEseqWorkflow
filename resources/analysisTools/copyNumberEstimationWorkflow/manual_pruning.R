@@ -345,6 +345,9 @@ if (clustering_YN == "yes") {
 
 	#find optimal number of clusters using bayesian information criterion
 	cat("Calling Mclust...\n")
+	cat(paste0("cluster_matrix nrow: ",nrow(cluster_matrix),"\n"))
+	cat(paste0("cluster_matrix ncol: ",ncol(cluster_matrix),"\n"))
+	cat(paste0("min_num_cluster: ",min_num_cluster,"\n"))
 	d_clust <- Mclust(cluster_matrix, G=min_num_cluster:20)
 	cat("finished Mclust...\n")
 	m.best  <- dim(d_clust$z)[2]
