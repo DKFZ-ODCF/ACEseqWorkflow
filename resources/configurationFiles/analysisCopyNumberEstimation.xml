@@ -493,7 +493,7 @@
 
         <tool name="clusterAndPruneSegments" value="clusteredPrunedNormal.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="50" cores="1" nodes="1" walltime="40"/>
+                <rset size="l" memory="50" cores="1" nodes="1" walltime="120"/>
             </resourcesets>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEGMENTS_W_HOMDEL"/>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE1"/>
