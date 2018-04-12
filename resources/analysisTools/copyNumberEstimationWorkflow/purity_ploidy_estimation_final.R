@@ -56,7 +56,7 @@ getTCN = function(tcnMean, D, alpha) 	    (tcnMean * D - 2*(1-alpha)) / alpha
 getAF  = function(meanCovT, TCN, alpha)	    (meanCovT / 10000) / (alpha * as.numeric(TCN) + 2*(1-alpha))
 getBAF = function(meanCovB, TCN, AF, alpha) (meanCovB / AF - (1-alpha)) / (alpha * as.numeric(TCN))
 getDH  = function(BAF) 			    2 * (abs(BAF - 0.5))
-getC1  = function(DH, TCN) 		    0.5 * ( 1 - as.numeric(DH) ) * as.numeric(TCN)
+getC1  = function(DH, TCN) 		    {if (as.numeric(TCN)==0) {0} else {0.5 * ( 1 - as.numeric(DH) ) * as.numeric(TCN)}}
 
 
 segments = read.table(segments, sep = "\t", as.is = TRUE, header = TRUE)
