@@ -17,26 +17,26 @@ script_dir = dirname(get_Rscript_filename())
 wd = getwd()
 min_num_SNPs =15
 libloc=NULL
-spec <- matrix(c('file',                  'f', 1, "character",
-                 'segments',              's', 1, "character",
-		 'functions',		  'p', 1, "character",
-		 'blockPre',		  'b', 1, "character",     # prefix of file containing haplotype groups
-		 'blockSuf',		  'u', 1, "character",     # suffix of file containing haplotype groups
-		 'adjustAlleles',	  'a', 1, "character",     # function to swap alleles where necessary
-		 'sex',		  	  'g', 1, "character",     # sex of patient
-		 'newFile',		  'w', 1, "character",
-                 'out',                   'x', 1, "character",
-		 'segOut',		  'o', 1, "character",
-                 'min_seg_length',        'l', 1, "numeric",
-                 'clustering_YN',         'c', 1, "character",
-                 'min_num_cluster',       'n', 1, "numeric",
-                 'min_num_SNPs',          'i', 2, "numeric",
-		 'min_distance',	  'd', 1, "numeric",
-                 'min_membership',        'm', 1, "numeric",
-      		 'chrLengthFile',         'r', 1, "character",
-     		 'gcCovWidthFile',        'y', 1, "character",
-		 'pid',			  'v', 1, "character",
-		 'libloc',		  'z', 2, 'character'
+spec <- matrix(c('file',                'f', 1, "character",
+                 'segments',            's', 1, "character",
+				 'functions',		  	'p', 1, "character",
+				 'blockPre',		  	'b', 1, "character",     # prefix of file containing haplotype groups
+				 'blockSuf',		  	'u', 1, "character",     # suffix of file containing haplotype groups
+				 'adjustAlleles',	  	'a', 1, "character",     # function to swap alleles where necessary
+				 'sex',		  	  	  	'g', 1, "character",     # sex of patient
+				 'newFile',				'w', 1, "character",
+                 'out',                 'x', 1, "character",
+				 'segOut',		  		'o', 1, "character",
+                 'min_seg_length',      'l', 1, "numeric",
+                 'clustering_YN',       'c', 1, "character",
+                 'min_num_cluster',     'n', 1, "numeric",
+                 'min_num_SNPs',        'i', 2, "numeric",
+		 		 'min_distance',	  	'd', 1, "numeric",
+                 'min_membership',      'm', 1, "numeric",
+				 'chrLengthFile',       'r', 1, "character",
+				 'gcCovWidthFile',      'y', 1, "character",
+				 'pid',			  		'v', 1, "character",
+				 'libloc',		  		'z', 2, 'character'
                 ), ncol = 4, byrow = TRUE)
 
 opt = getopt(spec);
@@ -342,13 +342,20 @@ if (clustering_YN == "yes") {
 	cluster_matrix = scale(cluster_matrix_norm)
 
 	#find optimal number of clusters using bayesian information criterion
+	cat("Calling Mclust...\n")
+	cat(paste0("cluster_matrix nrow: ",nrow(cluster_matrix),"\n"))
+	cat(paste0("cluster_matrix ncol: ",ncol(cluster_matrix),"\n"))
+	cat(paste0("min_num_cluster: ",min_num_cluster,"\n"))
 	d_clust <- Mclust(cluster_matrix, G=min_num_cluster:20)
+	cat("finished Mclust...\n")
 	m.best  <- dim(d_clust$z)[2]
 
 	#cmeans to get clusters with m.best centers 
 	#resample clustering by jittering point B times)
-  
+
+	cat("Calling clusterboot...\n")
 	results = clusterboot(cbind(weights, cluster_matrix), B = 100, bootmethod = "jitter", clustermethod = cmeansCBI, k = m.best, seed = 15555, multipleboot = FALSE)
+	cat("finished clusterboot...\n")
 	CM <- results$result$result
 
     	massCenterX <- sapply(seq_along(CM$centers[,1]), function(i) {
