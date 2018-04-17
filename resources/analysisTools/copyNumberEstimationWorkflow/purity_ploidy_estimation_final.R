@@ -51,7 +51,7 @@ cat(paste0("pid: ",pid, "\n\n"))
 
 #functions
 getD   = function(alpha, P) 		    alpha * P + 2 * (1-alpha)  
-getTCN = function(tcnMean, D, alpha) 	    (tcnMean * D - 2*(1-alpha)) / alpha  
+getTCN = function(tcnMean, D, alpha) (tcnMean * D - 2*(1-alpha)) / alpha
 getAF  = function(meanCovT, TCN, alpha)	    (meanCovT / 10000) / (alpha * as.numeric(TCN) + 2*(1-alpha))
 getBAF = function(meanCovB, TCN, AF, alpha) (meanCovB / AF - (1-alpha)) / (alpha * as.numeric(TCN))
 getDH  = function(BAF) 			    2 * (abs(BAF - 0.5))
@@ -160,7 +160,9 @@ for (ploidy in posPloidies) {
 
 		pos1 = which((round(as.numeric(TCNmatrix[, i])) == round(ploidy)) & (TCNmatrix[, 1] == 2)) 
 		pos2 = which(round(as.numeric(TCNmatrix[, i])) != round(ploidy))
-		pos = union(pos1, pos2)
+		# TCN of 0 causes DH=inf and c1=NaN; so skip these cases
+		pos_forbidden = which(as.numeric(TCNmatrix[, i]) == 0)
+		pos = setdiff(union(pos1, pos2),pos_forbidden)
 
 		### Distance matrix for TCN & median distance matrix
 
@@ -432,6 +434,9 @@ for (ploidy in posPloidies) {
 		NDHmatrix[pos, i] = 0
 
 		pos = which(round(as.numeric(NTCNmatrix[, i])) == round(ploidy) & NTCNmatrix[, 1] == 1)
+		# TCN of 0 causes DH=inf and c1=NaN; so skip these cases
+		pos_forbidden = which(as.numeric(NTCNmatrix[, i]) == 0)
+		pos = setdiff(pos,pos_forbidden)
 
 		### Distance matrix for TCN & median distance matrix
 
