@@ -1,7 +1,7 @@
 QuickStart
 =============
 
-To start ACEseq download package from `here <https://LinkToGitHub.html/>`_ an install the reference files and conda package as described under requirements.
+To start ACEseq download package from `here <https://LinkToGitHub.html/>`_ and install the reference files and conda package as described under :ref:`installation`.
 
 ::
 
@@ -9,7 +9,7 @@ To start ACEseq download package from `here <https://LinkToGitHub.html/>`_ an in
     --useconfig=$PATH_TO_PLUGIN_DIRECTORY/applicationProperties.ini \
     --cvalues="bamfile_list:$pathToControlBamFile;$pathToTumorBamFile,sample_list:control;tumor,possibleControlSampleNamePrefixes:control,possibleTumorSampleNamePrefixes:tumor"
 
-Following parameters need to be changed in the project.xml:
+Following parameters should be changed in the project.xml:
 
 - baseDirectoryReference
 - outputBaseDirectory

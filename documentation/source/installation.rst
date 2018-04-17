@@ -1,15 +1,85 @@
+.. _installation
 Installation & Run instructions
-================================
+===============================
 
-Two strategies for the deployment of Roddy and the ACEseq workflow are described here. The files for both, the Roddy-based deployment for direct
-execution on HPC clusters as well as a Docker version of ACEseq can be found under http://bfg-nfs3.ipmb.uni-heidelberg.de. For both version an initial
-download of reference files is necessary.
+To run the ACEseq-workflow multiple components are needed:
 
-New versions of the ACEseq plugin can be obtained from https://github.com/eilslabs/ACEseqWorkflow and can be used in the Roddy-based version.
+  * ACEseq workflow plugin
+  * The `Roddy workflow management framework <https://github.com/TheRoddyWMS/Roddy>`
+  * Software stack
+  * Reference data
 
-Roddy-based Deployment
-^^^^^^^^^^^^^^^^^^^^^^^
-The workflow management tool Roddy supports the batch processing systems Torque/PBS and IBM LSF. Other systems are planned but currently not supported.
+The :ref:`standard way` to install the workflow is described below and involves the installation of each of these components. For the older 1.2.10 release we currently also provide prepackaged files and a Docker container. See :ref:`prepackaged-installation` below for instructions.
+
+.. _standard way
+The Standard Way
+----------------
+
+The standard way to install the workflow is the manual installation of all components.
+
+1. Download the ACEseq zip-archive from `Github-Releases <https://github.com/eilslabs/ACEseqWorkflow/releases>`. The archive already contains a Jar-archive with the compiled Java/Groovy code (JAR-file) for the given Roddy API version. No compilation of the plugin is therefore required.
+2. The file `buildinfo.txt` in the ACEseq zip shows you the Roddy API version that you need for the chosen ACEseq workflow version.
+3. Install Roddy. Please see the `Roddy repository <https://github.com/TheRoddyWMS/Roddy>` for installation instructions for Roddy.
+4. Install the software stack (see :ref:`install-software-stack` below)
+5. Install the reference files (see :ref:`install-reference-files` below)
+
+.. _install-software-stack
+Software Stack (Conda)
+^^^^^^^^^^^^^^^^^^^^^^
+
+The workflow contains a description of a `Conda <https://conda.io/docs/>` environment. A number of Conda packages from `BioConda <https://bioconda.github.io/index.html>` are required. You should set up the Conda environment at a centralized position available from all compute hosts.
+
+First install the BioConda channels:
+
+::
+
+    conda config --add channels r
+::
+
+    conda config --add channels defaults
+
+::
+
+    conda config --add channels conda-forge
+
+::
+
+    conda config --add channels bioconda
+
+Then install the environment
+
+::
+
+    conda env create -n ACEseqWorkflow -f $PATH_TO_PLUGIN_DIRECTORY/resources/analysisTools/copyNumberEstimationWorkflow/environments/conda.yml
+
+The name of the Conda environment is arbitrary but needs to be consistent with the `condaEnvironmentName` variable. You can set the `condaEnvironmentName` variable in any of the loaded configuration files (see `Roddy documentation <http://roddy-documentation.readthedocs.io/>`) or even directly in your Roddy call via `--cvalues="condaEnvironmentName:$value"`.
+
+If you do not want to use Conda, you can get a complete list of all packages and package versions Conda would install from the  `$PATH_TO_PLUGIN_DIRECTORY/resources/analysisTools/copyNumberEstimationWorkflow/environments/conda.yml`.
+
+.. _install-reference-files
+Reference files
+^^^^^^^^^^^^^^^
+
+The workflow uses various files as reference files, such as a reference genome or annotation files. Depending on the contents of these files also the outcome of your analysis may change. We provide installation scripts in the `installation/` directory (currently only in the `github` branch of the repository). To download and prepare the reference files please check out the ACEseq repository and do
+
+```bash
+bash $PATH_TO_PLUGIN_DIRECTORY/installation/downloadRefrences $targetDirectory
+```
+
+with `$targetDirectory` being the directory into which you want to install the files. The variable `baseDirectoryReference` in your configurations needs to be set to the `$targetDirectory` path.
+
+Note that the current plugin version is tuned to be run on the hg19 human assembly, but a liftover of all files should probably enable a run on GRch38.
+
+.. _prepackaged-installation
+Prepackaged files (ACEseq 1.2.10 only)
+--------------------------------------
+
+On http://bfg-nfs3.ipmb.uni-heidelberg.de you can find archives for the 1.2.10 plugin version. The prepackaged zip files contains a full Roddy / Plugin setup and include different scripts to install all necessary software and download the required reference files. Currently, we do not intent to update these prepackaged installation files or the Docker version. Note that the Roddy version packaged not capable of submitting to LSF.
+
+Please see the standard way to install recent workflow versions.
+
+Stand-alone Roddy for Execution on HTC Cluster
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To run the Roddy-based version of ACEseq please download the pre-packed zip file from http://bfg-nfs3.ipmb.uni-heidelberg.de. Three steps are required to ensure running of ACEseq.
 
@@ -86,7 +156,8 @@ To execute ACEseq run
 More information on Roddy can be found `here <https://roddy-documentation.readthedocs.io/>`_.
 
 Docker version
-^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^
+
 1. Download all reference files as specified in the section below.
 2. Download the Base and ACEseq Docker images from the website: http://bfg-nfs3.ipmb.uni-heidelberg.de
 3. Import both files with (names might differ based on supplied version):
@@ -124,46 +195,7 @@ An example call is:
 
 Here you tell roddy to run the ACEseq configuration using the config folder in the current directory with a control and tumor bam. Also you tell Roddy the samples for both files namely control and tumor. Finally, you supply the path to the reference files and the folder where you will store your output data.
 
-Software
-^^^^^^^^^
-The workflow contains a description of a [Conda](https://conda.io/docs/) environment. A number of Conda packages from [BioConda](https://bioconda.github.io/index.html) are required. You should set up the Conda environment at a centralized position available from all compute hosts. The full specification of the required packages is given in `$PATH_TO_PLUGIN_DIRECTORY/resources/analysisTools/copyNumberEstimationWorkflow/environments/conda.yml` (for the zipped Roddy version the $PATH_TO_PLUGIN_DIRECTORY is $PATH_TO_ACEseq_RODDY_VERSION/Roddy/dist/plugins/).
-
-Unless you have already done so, you should first install [Conda](https://conda.io/docs/). Then you need to set up the BioConda channel that contains many of the required software packages:
-
-::
-
-    conda config --add channels r
-
-::
-
-    conda config --add channels defaults
-
-::
-
-    conda config --add channels conda-forge
-
-::
-
-    conda config --add channels bioconda
 
 
-Eventually, you can import the conda environment with
-
-::
-
-	conda env create -n ACEseqWorkflow -f $PATH_TO_PLUGIN_DIRECTORY/resources/analysisTools/copyNumberEstimationWorkflow/environments/conda.yml
 
 
-Reference files
-^^^^^^^^^^^^^^^^
-To get all necessary reference files run the script $PATH_TO_PLUGIN_DIRECTORY/installation/downloadReferences.sh in the destination path for all files. The script will create directories directly beneath the path where it executed.
-
-Please convert the bigwig file in databases/UCSC to BedGraph format (https://genome.ucsc.edu/goldenpath/help/bigWig.html) and save it under wgEncodeCrgMapabilityAlign100mer_chr.bedGraph, compress it with bgzip and index it with tabix. Please use the tabix from htslib 0.2.5. We suggest you simply use the previously installed Conda environment to do that. This is more or less the code to do the conversion:
-
-::
-
-    bigWigToBedGraph wgEncodeCrgMapabilityAlign100mer.bigWig wgEncodeCrgMapabilityAlign100mer_chr.bedGraph
-    bgzip wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz
-    tabix -0 wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz
-
-Finally, set the variable baseDirectoryReference in the project.xml to the path from which the downloader script was run.
