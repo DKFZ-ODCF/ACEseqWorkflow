@@ -16,16 +16,17 @@ import de.dkfz.roddy.execution.io.fs.FileSystemAccessProvider;
 import de.dkfz.roddy.execution.jobs.*;
 import de.dkfz.roddy.knowledge.files.*;
 import de.dkfz.roddy.knowledge.methods.GenericMethod;
-
-
 import static de.dkfz.roddy.execution.io.fs.FileSystemAccessProvider.*;
+import de.dkfz.roddy.plugins.LibrariesFactory
+import java.util.logging.Level
+
 
 /**
  * Created by kleinhei on 6/16/14.
  */
 @groovy.transform.CompileStatic
 @StaticScriptProviderClass
-public final class ACESeqMethods {
+final class ACESeqMethods {
 
     static LinkedHashMap<String, String> getGlobalJobSpecificParameters(Configuration config) {
         return new LinkedHashMap<String, String>(
@@ -70,6 +71,7 @@ public final class ACESeqMethods {
                 getGlobalJobSpecificParameters(unphasedGenotypeFiles.executionContext.configuration))
         return new ImputeGenotypeByChromosome(indexedFileObjects, unphasedGenotypeFiles.getExecutionContext())
     }
+
 
     static Tuple2<PhasedGenotypeFile, HaploblockGroupFile> imputeGenotypeX(TextFile sexFile, BamFile controlBam) {
         return (Tuple2<PhasedGenotypeFile, HaploblockGroupFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_IMPUTE_GENOTYPEX, controlBam, sexFile);
@@ -141,42 +143,43 @@ public final class ACESeqMethods {
     }
 
     @ScriptCallingMethod
-    static Tuple2<TextFile, TextFile> mergeSv(TextFile knownSegmentsFile) {
-        TextFile svFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "svFileTag", null, null);
-        svFile.setAsSourceFile();
-        BEJobResult result = getFileExistedFakeJobResult()
-        svFile.setCreatingJobsResult(result);
+    static Tuple2<SVFile, TextFile> mergeSv(TextFile knownSegmentsFile, boolean runWithSv) {
+        if (runWithSv) {
+            BaseFile svFile = getSVFile(knownSegmentsFile)
+            boolean b = FileSystemAccessProvider.getInstance().checkBaseFiles(svFile);
+            if (b)
+                return (Tuple2<SVFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_AND_SV, knownSegmentsFile, svFile);
 
-        // TODO: The following checks should be done by ACEseqWorkflow.checkExecutability(). Unfortunately currently it is not trivial to get the name of the file whose existence to check.
-        boolean b = FileSystemAccessProvider.getInstance().checkBaseFiles(svFile);
-        if (b)
-            return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_AND_SV, knownSegmentsFile, svFile);
+            knownSegmentsFile.getExecutionContext().addErrorEntry(ExecutionContextError.EXECUTION_NOINPUTDATA.expand("SV files were not found in input path.", Level.WARNING));
+            return null;
+        } else {
+            return (Tuple2<SVFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_WITHOUT_SV, knownSegmentsFile);
+        }
+    }
 
-        knownSegmentsFile.getExecutionContext().addErrorEntry(ExecutionContextError.EXECUTION_NOINPUTDATA.expand("SV files were not found in input path."));
-        return null;
+
+    static BaseFile getSVFile(BaseFile anyFile) {
+        BaseFile svFile = BaseFile.deriveFrom(anyFile, SVFile.class.name)
+        svFile.setAsSourceFile()
+        return svFile
     }
 
     @ScriptCallingMethod
-    static Tuple2<TextFile, TextFile> mergeNoSv(TextFile knownSegmentsFile) {
-        return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_WITHOUT_SV, knownSegmentsFile)
-    }
+    public static Tuple2<SVFile, TextFile> mergeCrest(TextFile knownSegmentsFile) {
+        TextFile svFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "crestDelDupInvFileTag", null, null);
+        TextFile translocFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "crestTranslocFileTag", null, null);
 
-    @ScriptCallingMethod
-    static Tuple2<TextFile, TextFile> mergeCrest(TextFile knownSegmentsFile) {
-        TextFile svFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "crestDelDupInvFileTag", null, null)
-        TextFile translocFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "crestTranslocFileTag", null, null)
 
         boolean b = FileSystemAccessProvider.getInstance().checkBaseFiles(svFile, translocFile)
         if (!b) {
             knownSegmentsFile.getExecutionContext().addErrorEntry(ExecutionContextError.EXECUTION_NOINPUTDATA.expand("Crest files were not found in input path."))
             return null
         }
-
-        return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_AND_SV_CREST, knownSegmentsFile, svFile, translocFile)
+        return (Tuple2<SVFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_AND_SV_CREST, knownSegmentsFile, svFile, translocFile);
     }
 
     @ScriptCallingMethod
-    static TextFile getSegmentAndGetSnps(TextFile breaks, TextFile pscbsSnps) {
+    public static TextFile getSegmentAndGetSnps(BaseFile breaks, TextFile pscbsSnps) {
         return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_GET_SEGMENTS_AND_SNPS, breaks, pscbsSnps);
     }
 

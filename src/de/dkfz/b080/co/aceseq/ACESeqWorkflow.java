@@ -12,6 +12,7 @@ import de.dkfz.roddy.config.*;
 import de.dkfz.roddy.core.ExecutionContext;
 import de.dkfz.roddy.core.ExecutionContextError;
 import de.dkfz.roddy.execution.io.fs.FileSystemAccessProvider;
+import de.dkfz.roddy.knowledge.files.BaseFile;
 import de.dkfz.roddy.knowledge.files.Tuple2;
 import de.dkfz.roddy.knowledge.files.Tuple3;
 import de.dkfz.roddy.knowledge.files.GenericFileGroup;
@@ -21,17 +22,26 @@ import de.dkfz.roddy.knowledge.methods.GenericMethod;
  */
 public class ACESeqWorkflow extends WorkflowUsingMergedBams {
 
+
+    private boolean allowMissingSVFile(ExecutionContext context) {
+        return getflag(context, "allowMissingSVFile", false);
+    }
+
+    private boolean runWithSV(ExecutionContext context) {
+        return getflag(context, "runWithSv", true);
+    }
+
     @Override
     public boolean execute(ExecutionContext context, BasicBamFile _bamControlMerged, BasicBamFile _bamTumorMerged) {
 
         BamFile bamControlMerged = new BamFile(_bamControlMerged);
         BamFile bamTumorMerged = new BamFile(_bamTumorMerged);
 
-        boolean runWithSv = context.getConfiguration().getConfigurationValues().getBoolean("runWithSv", true);
-        boolean runWithCrest = context.getConfiguration().getConfigurationValues().getBoolean("runWithCrest", false);
-        boolean runQualityCheckOnly = context.getConfiguration().getConfigurationValues().getBoolean("runQualityCheckOnly", false);
-        boolean runWithFakeControl = context.getConfiguration().getConfigurationValues().getBoolean("runWithFakeControl", false);
-        boolean runWithoutControl = context.getConfiguration().getConfigurationValues().getBoolean("runWithoutControl", false);
+        boolean runWithSV = runWithSV(context);
+        boolean runWithCrest = getflag(context, "runWithCrest", false);
+        boolean runQualityCheckOnly = getflag(context, "runQualityCheckOnly", false);
+        boolean runWithFakeControl = getflag(context, "runWithFakeControl", false);
+        boolean runWithoutControl = getflag(context, "runWithoutControl", false);
 
         context.getConfigurationValues().add(new ConfigurationValue("tumorSample", ((COFileStageSettings) _bamTumorMerged.getFileStage()).getSample().getName()));
         context.getConfigurationValues().add(new ConfigurationValue("controlSample", ((COFileStageSettings) _bamControlMerged.getFileStage()).getSample().getName()));
@@ -77,12 +87,18 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
 
 
         Tuple2<TextFile, TextFile> breakpoints = ACESeqMethods.pscbsGaps(haplotypedSNPFile, correctedWindowFile.value0, annotationResult.getGenderFile());
-        Tuple2<TextFile, TextFile> mergedSvs = null;
+        Tuple2<SVFile, TextFile> mergedSvs = null;
+
 
         if (runWithSv) {
             mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0);
+            if (mergedSvs == null) {
+                return allowMissingSVFile(context); // Here, exit with error (false) is possible
+            }
         } else if (runWithCrest) {
             mergedSvs = ACESeqMethods.mergeCrest(breakpoints.value0);
+            if (mergedSvs == null)
+                return false;  // Getting no merged SVs from the Crest step is always wrong.
         } else {
             ACESeqMethods.mergeNoSv(breakpoints.value0);
             return true;
@@ -96,8 +112,27 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         TextFile peakSegments = ACESeqMethods.estimatePeaks(clusteredSegments.value0, clusteredSnps, annotationResult.getGenderFile());
         TextFile purityPloidy = ACESeqMethods.estimatePurityPloidy(peakSegments, annotationResult.getGenderFile());
         Tuple2<TextFile, TextFile> results = ACESeqMethods.generatePlots(peakSegments, clusteredSnps, mergedSvs.value1, purityPloidy, annotationResult.getGenderFile());
-        TextFile finalVcf = ACESeqMethods.estimateHRD(annotationResult.getGenderFile(),results.value1);
+        TextFile finalVcf = ACESeqMethods.estimateHRD(annotationResult.getGenderFile(), results.value1);
 
         return true;
+    }
+
+    private boolean checkSvFileIfNecessary(ExecutionContext context) {
+        // Just return true, if the file is not used.
+        if (!runWithSV(context))
+            return true;
+
+        // Check, if the file exists
+        boolean fileIsAccessible = context.fileIsAccessible(ACESeqMethods.getSVFile(getInitialBamFiles(context)[0]).getPath());
+
+        // It is either allowed to run with the file or we see, if the file really exists.
+        return allowMissingSVFile(context) || fileIsAccessible;
+    }
+
+    @Override
+    public boolean checkExecutability(ExecutionContext context) {
+        boolean executable = super.checkExecutability(context);
+        executable &= checkSvFileIfNecessary(context);
+        return executable;
     }
 }

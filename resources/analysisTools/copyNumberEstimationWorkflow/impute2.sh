@@ -8,7 +8,7 @@
 source ${TOOL_ANALYZE_BAM_HEADER}
 getRefGenomeAndChrPrefixFromHeader ${FILE_CONTROL_BAM} # Sets CHR_PREFIX and REFERENCE_GENOME
 
-CHR_NR=${CHR_PREFIX}${CHR_NAME}
+CHR_NR=${CHR_PREFIX}${CHR_NAME:?CHR_NAME is not set}
 
 #DEFINE FILE NAMES
 
@@ -90,7 +90,7 @@ fi
 		    -g "${UNPHASED_GENOTYPE}" \
 		    -int $[5000000*${SEGMENT}] $[5000000*${SEGMENT} + 4999999] \
 		    -Ne 20000 \
-		    -o "${PHASED_GENOTYPE_PART}"
+		    -o "${PHASED_GENOTYPE_PART}" 2>&1 /dev/stderr
 
 		if [[ "$?" != 0 ]]
 			then
