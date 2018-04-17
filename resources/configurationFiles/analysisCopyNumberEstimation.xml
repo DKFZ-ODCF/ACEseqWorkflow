@@ -12,7 +12,7 @@
                usedToolFolders="copyNumberEstimationWorkflow,cobasetools">
     <configurationvalues>
 
-    <!--BINARIES-->
+        <!--BINARIES-->
         <cvalue name="HTSLIB_VERSION" value="0.2.5" type="string"/>
         <cvalue name="PERL_VERSION" value="5.20.2" type="string"/>
         <cvalue name="PYTHON_VERSION" value="2.7.9" type="string"/>
@@ -21,15 +21,14 @@
         <cvalue name="VCFTOOLS_VERSION" value="0.1.10" type="string"/>
         <cvalue name="SAMTOOLS_VERSION" value="0.1.19" type="string"/>
 
-    <!--ENVIRONMENT (see tools section below for possible values) -->
-        <cvalue name="workflowEnvironmentScript" value="${TOOL_WORKFLOW_ENVIRONMENT_CONDA_TBI_TEST}" type="string"
-                description="Use ${TOOL_WORKFLOW_ENVIRONMENT_CONDA} for a generic Conda environment."/>
+        <!--ENVIRONMENT (see tools section below for possible values) -->
+        <cvalue name="workflowEnvironmentScript" value="workflowEnvironment_conda" type="string"
+                description="Use 'workflowEnvironment_conda' for a generic Conda environment."/>
         <!--<cvalue name="workflowEnvironmentScript" value="${TOOL_WORKFLOW_ENVIRONMENT_TBI_PBS}" type="string"/>-->
-        <!--<cvalue name="correctGcBiasEnvironmentScript" value="${TOOL_CORRECT_GC_BIAS_ENVIRONMENT_CONDA}" type="string"/>-->
         <cvalue name="condaEnvironmentName" value="ACEseqWorkflow" type="string"
                 description="Name of the Conda environment on the execution hosts. Used by the environment setup script conda.sh defined as tool below."/>
 
-	<!--outputMask-->
+        <!--outputMask-->
         <cvalue name='outputUMask' value='007' type='string'/>
         <cvalue name='outputFileGroup' value='B080'/>
         <cvalue name='outputAccessRights' value='u+rw,g+rw,o-rwx'/>
@@ -39,31 +38,31 @@
         <cvalue name='possibleTumorSampleNamePrefixes' value='( tumor TUMOR metastasis xenograft disease DISEASE relapse RELAPSE autopsy AUTOPSY metastasis METASTASIS )' type='bashArray'/>
 
 
-	<!-- Reference files -->
-        <cvalue name="baseDirectoryReference" value="/icgc/ngs_share/assemblies/" type="path"/>
-        <cvalue name="referenceGenome_1KGRef" value="${baseDirectoryReference}/hg19_GRCh37_1000genomes/sequence/1KGRef/hs37d5.fa" type="path"/>
-        <cvalue name='REFERENCE_GENOME' value="${referenceGenome_1KGRef}" type="string" />
-        <cvalue name="dbSNP_FILE" value="${baseDirectoryReference}/hg19_GRCh37_1000genomes/databases/dbSNP/dbSNP_135/00-All.SNV.vcf.gz" type="path"/>
-        <cvalue name="MAPPABILITY_FILE" value="${baseDirectoryReference}/hg19_GRCh37_1000genomes/databases/UCSC/wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz" type="path"/>
-        <cvalue name="CHROMOSOME_LENGTH_FILE" value="${baseDirectoryReference}/hg19_GRCh37_1000genomes/stats/chrlengths.txt" type="path"/>
-        <cvalue name="REPLICATION_TIME_FILE" value="${baseDirectoryReference}/hg19_GRCh37_1000genomes/databases/ENCODE/ReplicationTime_10cellines_mean_10KB.Rda" type="path"/>
-        <cvalue name="GC_CONTENT_FILE" value="${baseDirectoryReference}/hg19_GRCh37_1000genomes/stats/hg19_GRch37_100genomes_gc_content_10kb.txt" type="path"/>
+        <!-- Reference files -->
+        <cvalue name="baseDirectoryReference" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes" type="path"/>
+        <cvalue name="referenceGenome_1KGRef" value="${baseDirectoryReference}/sequence/1KGRef/hs37d5.fa" type="path"/>
+        <cvalue name='REFERENCE_GENOME' value="${referenceGenome_1KGRef}" type="string"/>
+        <cvalue name="dbSNP_FILE" value="${baseDirectoryReference}/databases/dbSNP/dbSNP_135/00-All.SNV.vcf.gz" type="path"/>
+        <cvalue name="MAPPABILITY_FILE" value="${baseDirectoryReference}/databases/UCSC/wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz" type="path"/>
+        <cvalue name="CHROMOSOME_LENGTH_FILE" value="${baseDirectoryReference}/stats/chrlengths.txt" type="path"/>
+        <cvalue name="REPLICATION_TIME_FILE" value="${baseDirectoryReference}/databases/ENCODE/ReplicationTime_10cellines_mean_10KB.Rda" type="path"/>
+        <cvalue name="GC_CONTENT_FILE" value="${baseDirectoryReference}/stats/hg19_GRch37_100genomes_gc_content_10kb.txt" type="path"/>
 
-	<!-- Impute -->
-        <cvalue name='imputeBaseDirectory' value="${baseDirectoryReference}/hg19_GRCh37_1000genomes/databases/1000genomes/IMPUTE/" type="path"/>
-        <cvalue name='GENETIC_MAP_FILE'               value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/genetic_map_chr${CHR_NAME}_combined_b37.txt" type="path"/>
-        <cvalue name='KNOWN_HAPLOTYPES_FILE'          value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/ALL.chr${CHR_NAME}.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.nomono.haplotypes.gz" type="path"/>
-        <cvalue name='KNOWN_HAPLOTYPES_LEGEND_FILE'   value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/ALL.chr${CHR_NAME}.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.nomono.legend.gz"
+        <!-- Impute -->
+        <cvalue name='imputeBaseDirectory' value="${baseDirectoryReference}/databases/1000genomes/IMPUTE/" type="path"/>
+        <cvalue name='GENETIC_MAP_FILE' value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/genetic_map_chr${CHR_NAME}_combined_b37.txt" type="path"/>
+        <cvalue name='KNOWN_HAPLOTYPES_FILE' value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/ALL.chr${CHR_NAME}.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.nomono.haplotypes.gz" type="path"/>
+        <cvalue name='KNOWN_HAPLOTYPES_LEGEND_FILE' value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/ALL.chr${CHR_NAME}.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.nomono.legend.gz"
                 type="path"/>
-        <cvalue name='GENETIC_MAP_FILE_X'             value="${imputeBaseDirectory}/ALL_1000G_phase1integrated_v3_impute/genetic_map_chrX_nonPAR_combined_b37.txt" type="path"/>
-        <cvalue name='KNOWN_HAPLOTYPES_FILE_X'        value="${imputeBaseDirectory}/ALL_1000G_phase1integrated_v3_impute/ALL_1000G_phase1integrated_v3_chrX_nonPAR_impute.hap.gz" type="path"/>
+        <cvalue name='GENETIC_MAP_FILE_X' value="${imputeBaseDirectory}/ALL_1000G_phase1integrated_v3_impute/genetic_map_chrX_nonPAR_combined_b37.txt" type="path"/>
+        <cvalue name='KNOWN_HAPLOTYPES_FILE_X' value="${imputeBaseDirectory}/ALL_1000G_phase1integrated_v3_impute/ALL_1000G_phase1integrated_v3_chrX_nonPAR_impute.hap.gz" type="path"/>
         <cvalue name='KNOWN_HAPLOTYPES_LEGEND_FILE_X' value="${imputeBaseDirectory}/ALL_1000G_phase1integrated_v3_impute/ALL_1000G_phase1integrated_v3_chrX_nonPAR_impute.legend.gz" type="path"/>
 
-	<!-- Input and output paths -->
-        <cvalue name='outputExecutionDirectory' value='${outputAnalysisBaseDirectory}/exec_${executionTimeString}' />
-        <cvalue name='mergedBamSuffix' value='merged.mdup.bam' type="string" description="A list of all known suffixes for merged bam files. I.e. merged.dupmark.bam, merged.mdup.bam..." />
-        <cvalue name='mergedBamSuffixList' value='${mergedBamSuffix}' type="string" description="A list of all known suffixes for merged bam files. I.e. merged.dupmark.bam, merged.mdup.bam..." />
-        <cvalue name='defaultMergedBamSuffix' value='${mergedBamSuffix}' type="string" description="The default suffix for merged bam files when they are created by Roddy." />
+        <!-- Input and output paths -->
+        <cvalue name='outputExecutionDirectory' value='${outputAnalysisBaseDirectory}/exec_${executionTimeString}'/>
+        <cvalue name='mergedBamSuffix' value='merged.mdup.bam' type="string" description="A list of all known suffixes for merged bam files. I.e. merged.dupmark.bam, merged.mdup.bam..."/>
+        <cvalue name='mergedBamSuffixList' value='${mergedBamSuffix}' type="string" description="A list of all known suffixes for merged bam files. I.e. merged.dupmark.bam, merged.mdup.bam..."/>
+        <cvalue name='defaultMergedBamSuffix' value='${mergedBamSuffix}' type="string" description="The default suffix for merged bam files when they are created by Roddy."/>
 
         <cvalue name='aceseqOutputDirectory' value='${outputAnalysisBaseDirectory}/ACEseq_${tumorSample}' type="path"/>
         <cvalue name='svOutputDirectory' value='${outputAnalysisBaseDirectory}/SOPHIA_${tumorSample}_${controlSample}' type="path"/>
@@ -73,9 +72,9 @@
         <cvalue name='plotOutputDirectory' value='${aceseqOutputDirectory}/plots' type="path"/>
 
 
-	<!-- ACEseq parameters-->
+        <!-- ACEseq parameters-->
         <cvalue name="test" value="" type="string" description="value to be set to 'test' in case this is run on a smaller not WGS bamfile to speed up testing, required for impute2"/>
-	<cvalue name='runWithoutControl' value='false' type='boolean' description="use control for analysis (false|true)"/>
+        <cvalue name='runWithoutControl' value='false' type='boolean' description="use control for analysis (false|true)"/>
 
         <cvalue name='CHR_NR' value='${CHR_PREFIX}${PARM_CHR_INDEX}${CHR_SUFFIX}' type="string"/>
         <cvalue name='CHR_NAME' value='${PARM_CHR_INDEX}' type="string"/>
@@ -94,16 +93,16 @@
         <cvalue name="mpileup_qual" value="0" type="integer" description="quality used for parameter 'Q' in samtools mpileup"/>
         <cvalue name='CNV_MPILEUP_OPTS' value='"-A -R -B -Q ${mpileup_qual} -q 1 -I "' type="string" description="options for mpileup to determine which bases/reads to use"/>
 
-	<!--addHaplotypes Opts-->
+        <!--addHaplotypes Opts-->
         <cvalue name="FILE_VCF_SUF" value="vcf" type="string" description="suffix for vcf files"/>
         <cvalue name="FILE_TXT_SUF" value="txt" type="string" description="suffix for txt files"/>
-        <cvalue name='phasedGenotypesFilePrefix' value='phased_chr' type="string" description="prefix for phased genotypes file" />
+        <cvalue name='phasedGenotypesFilePrefix' value='phased_chr' type="string" description="prefix for phased genotypes file"/>
         <cvalue name='unphasedGenotypesFilePrefix' value='unphased_chr' type="string" description="prefix for unphased genotypes file"/>
-        <cvalue name='phasedGenotypesFileSuffix' value='${FILE_VCF_SUF}' type="string" description="suffix for phased genotypes file" />
-        <cvalue name='unphasedGenotypesFileSuffix' value='${FILE_VCF_SUF}' type="string" description="suffix for unphased genotypes file" />
+        <cvalue name='phasedGenotypesFileSuffix' value='${FILE_VCF_SUF}' type="string" description="suffix for phased genotypes file"/>
+        <cvalue name='unphasedGenotypesFileSuffix' value='${FILE_VCF_SUF}' type="string" description="suffix for unphased genotypes file"/>
 
         <!--impute2 opts-->
-        <cvalue name='BCFTOOLS_OPTS' value='"-vgN "' type="string" description="bcftools options for imputation" />
+        <cvalue name='BCFTOOLS_OPTS' value='"-vgN "' type="string" description="bcftools options for imputation"/>
         <cvalue name="FILE_UNPHASED_PRE" value="${imputeOutputDirectory}/${unphasedGenotypesFilePrefix}" type="path"/>
         <cvalue name="FILE_UNPHASED_GENOTYPE" value="${imputeOutputDirectory}/unphased_genotype_chr" type="path"/>
         <cvalue name="FILE_PHASED_PRE" value="${imputeOutputDirectory}/${phasedGenotypesFilePrefix}" type="path"/>
@@ -124,37 +123,37 @@
         <cvalue name='SNP_SUFFIX' value='snp.tab.gz' type="string"/>
         <cvalue name='snp_min_coverage' value='5' type="integer"/>
 
-	<cvalue name='MALE_FAKE_CONTROL_PRE' value="pathToPID/${pid}/ACEseq/cnv_snp/${pid}.chr" type='path' 
-		description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for male patients" /> 
-	<cvalue name='FEMALE_FAKE_CONTROL_PRE' value="pathToPID/${pid}/ACEseq/cnv_snp/${pid}.chr" type='path'
-		description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for female patients" /> 
-	<cvalue name='FAKE_CONTROL_POST' value=".cnv.anno.tab.gz" type='string' description="suffix for chromosome wise 1kb coverage files used for fake control workflow"/> 
-	<cvalue name='PATIENTSEX' value="male" type='string' description="patient sex used in case of no control workflow (male|female|klinefelter)" /> 
+        <cvalue name='MALE_FAKE_CONTROL_PRE' value="pathToPID/${pid}/ACEseq/cnv_snp/${pid}.chr" type='path'
+                description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for male patients"/>
+        <cvalue name='FEMALE_FAKE_CONTROL_PRE' value="pathToPID/${pid}/ACEseq/cnv_snp/${pid}.chr" type='path'
+                description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for female patients"/>
+        <cvalue name='FAKE_CONTROL_POST' value=".cnv.anno.tab.gz" type='string' description="suffix for chromosome wise 1kb coverage files used for fake control workflow"/>
+        <cvalue name='PATIENTSEX' value="male" type='string' description="patient sex used in case of no control workflow (male|female|klinefelter)"/>
 
         <!--annotateCnvFiles Opts-->
         <cvalue name='CNV_ANNO_SUFFIX' value='cnv.anno.tab.gz' type="string"
-		description="suffix for mappability annotated chromosome-wise 1kb coverage files" /> 
+                description="suffix for mappability annotated chromosome-wise 1kb coverage files"/>
         <cvalue name='CNV_SUFFIX' value='cnv.tab.gz' type="string"
-		description="suffix chromosome-wise 1kb coverage files" /> 
-        <cvalue name='min_X_ratio' value='0.8' type="float" 
-		description="minimum ratio for number of reads on chrY per base over number of reads per base over whole genome to be considered as female" />
+                description="suffix chromosome-wise 1kb coverage files"/>
+        <cvalue name='min_X_ratio' value='0.8' type="float"
+                description="minimum ratio for number of reads on chrY per base over number of reads per base over whole genome to be considered as female"/>
         <cvalue name='min_Y_ratio' value='0.12' type="float"
-		description="minimum ratio for number of reads on chrY per base over number of reads per base over whole genome to be considered as male" />
+                description="minimum ratio for number of reads on chrY per base over number of reads per base over whole genome to be considered as male"/>
 
         <!--cnvMergeFilter Opts-->
         <cvalue name='cnv_min_coverage' value='5000' type="integer"
-		description="minimum coverage for 1kb windows to be considered for merging in 10kb windows"/>
+                description="minimum coverage for 1kb windows to be considered for merging in 10kb windows"/>
         <cvalue name='mapping_quality' value='1000' type="integer"
-		description="minimum mapping quality for 1kb windows to be considered for merging in 10kb windows (maximum mappability)"/>
+                description="minimum mapping quality for 1kb windows to be considered for merging in 10kb windows (maximum mappability)"/>
         <cvalue name='min_windows' value='5' type="integer"
-		description="minimum number of 1kb windows fullfilling cnv_min_coverage and mapping_quality to obtain merged 10kb windows"/>
+                description="minimum number of 1kb windows fullfilling cnv_min_coverage and mapping_quality to obtain merged 10kb windows"/>
 
         <!--correctGC Opts-->
         <cvalue name='LOWESS_F' value='0.1' type="float" description="f parameter for R lowess function"/>
         <cvalue name='SCALE_FACTOR' value='0.9' type="float" description="scale_factor for R lowess function"/>
         <cvalue name='COVERAGEPLOT_YLIMS' value='4' type="float" description="ylims for Rplots in GC-bias plots"/>
         <cvalue name='FILENAME_GC_CORRECT_PLOT' value='${plotOutputDirectory}/${pid}_gc_corrected.png' type="path"
-		description="gc-bias plot, before/during/after correction"/>
+                description="gc-bias plot, before/during/after correction"/>
         <cvalue name='GC_bias_json_key' value='gc-bias' type="string" description="key in GC-bias json"/>
 
         <!--getBreakpointsAndMergeCrest/datatablePSCBSgaps Opts-->
@@ -171,30 +170,30 @@
         <cvalue name='min_segment_map' value='0.6' type="float" description="minimum average mappability over segment to be kept after segmentation"/>
 
         <!--clusterAndPruneSegments Opts-->
-        <cvalue name='min_seg_length_prune' value='9000' type="integer" 
-		description="maximum of segment to be considered for merging to neighbouring segment prior to clustering"/>
+        <cvalue name='min_seg_length_prune' value='9000' type="integer"
+                description="maximum of segment to be considered for merging to neighbouring segment prior to clustering"/>
         <cvalue name='min_num_SNPs' value='15' type="integer"
-		description="maximum number of SNPs in segment to be considered for merging to neighbouring segment prior to clustering"/>
+                description="maximum number of SNPs in segment to be considered for merging to neighbouring segment prior to clustering"/>
         <cvalue name='clustering' value='yes' type="string"
-		description="should segments be clustered (yes|no), coerage and BAF will be estimated and assigned clusterwide"/>
+                description="should segments be clustered (yes|no), coerage and BAF will be estimated and assigned clusterwide"/>
         <cvalue name='min_cluster_number' value='1' type="integer"
-		description="minimum number of clusters to be tried with BIC"/>
-        <cvalue name='min_membership' value='0.8' type="float" description="obsolete" />
+                description="minimum number of clusters to be tried with BIC"/>
+        <cvalue name='min_membership' value='0.8' type="float" description="obsolete"/>
         <cvalue name='min_distance' value='0.05' type="float" description="min_distance"/>
         <cvalue name='haplogroupFilePrefix' value='haploblocks_chr' type="string" description="prefix for file with haplogroups per chromosome"/>
         <cvalue name='haplogroupFileSuffix' value='txt' type="string" description="suffix for file with haplogroups per chromosome"/>
         <cvalue name='haplogroupFilePath' value='${imputeOutputDirectory}/${haplogroupFilePrefix}' type="path"/>
 
         <!--estimatePurityPloidy Opts-->
-        <cvalue name='minLim' value='0.47' type="float" 
-		description="obsolete"/>
+        <cvalue name='minLim' value='0.47' type="float"
+                description="obsolete"/>
         <cvalue name='maxLim' value='0.53' type="float"
-		description="obsolete"/>
+                description="obsolete"/>
 
         <!--estimatePurityPloidy Opts-->
         <cvalue name='min_length_purity' value='1000000' type="integer" description="minimum length of segments to be considered for tumor cell content and ploidy estimation"/>
         <cvalue name='min_hetSNPs_purity' value='500' type="integer"
-		description="minimum number of control heterozygous SNPs in segments to be considered for tumor cell content and ploidy estimation"/>
+                description="minimum number of control heterozygous SNPs in segments to be considered for tumor cell content and ploidy estimation"/>
         <cvalue name='dh_stop' value='max' type="string"/>
         <cvalue name='min_length_dh_stop' value='1000000' type="integer"/>
         <cvalue name='dh_zero' value='no' type="string"/>
@@ -207,8 +206,8 @@
         <cvalue name='PLOT_PRE' value="${aceseqOutputDirectory}/${pid}_plot" type="path"/>
 
         <!--generateVCF opts-->
-	<cvalue name="blacklistFileName" value='artifact.homoDels.potentialArtifacts.txt' type="string"/>
-	<cvalue name="centromerFilename" value='centromers.hg19.txt' type="string"/>
+        <cvalue name="blacklistFileName" value='artifact.homoDels.potentialArtifacts.txt' type="string"/>
+        <cvalue name="centromerFilename" value='centromers.hg19.txt' type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_PRE' value="${pid}_most_important_info" type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_POST' value=".txt" type="string"/>
 
@@ -217,10 +216,9 @@
         <!-- Environment Setup Scripts -->
         <!-- Workflow environment. The tool name for the complete workflow environment is "workflowEnvironment_${environmentTool}" or
              "workflow_environment_${environmentTool}". -->
-        <tool name="workflowEnvironment_condaTbiTest" value="conda_tbi-pbs-cluster.sh" basepath="copyNumberEstimationWorkflow/environments"/>
+        <tool name="workflowEnvironment_condaTbiPbs" value="conda_tbi-pbs-cluster.sh" basepath="copyNumberEstimationWorkflow/environments"/>
         <tool name="workflowEnvironment_conda" value="conda.sh" basepath="copyNumberEstimationWorkflow/environments"/>
-        <tool name="workflowEnvironment_modules" value="tbi-lsf-cluster.sh" basepath="copyNumberEstimationWorkflow/environments"/>
-        <tool name="workflowEnvironment_tbiPbs" value="tbi-pbs-cluster.sh" basepath="copyNumberEstimationWorkflow/environments"/>
+        <tool name="workflowEnvironment_tbiCluster" value="tbi-cluster.sh" basepath="copyNumberEstimationWorkflow/environments"/>
 
         <!-- Cluster-job specific environments.
              Tool-specific environments override the global workflows environment. You can reference the tool name
@@ -300,11 +298,11 @@
             <resourcesets>
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="5"/>
             </resourcesets>
-	     <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEX"/>
-             <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_FAKECONTROL"/>
+            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEX"/>
+            <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_FAKECONTROL"/>
         </tool>
 
-         <tool name="mergeAndFilterCnvFiles" value="cnvMergeFilter.sh" basepath="copyNumberEstimationWorkflow">
+        <tool name="mergeAndFilterCnvFiles" value="cnvMergeFilter.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="5"/>
             </resourcesets>
@@ -317,11 +315,11 @@
             <resourcesets>
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="5"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_FAKE_CONTROL" />
+            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_FAKE_CONTROL"/>
             <input type="filegroup" typeof="de.dkfz.roddy.knowledge.files.GenericFileGroup" scriptparameter="COV_WIN_FILES" passas="array"/>
             <output type="file" typeof="de.dkfz.b080.co.files.TextFile" fnpatternselectiontag="covWinFileWithBadControl" scriptparameter="FILENAME_COV_WINDOWS_WG"/>
         </tool>
-  
+
         <tool name="mergeAndFilterSnpFiles" value="snvMergeFilter.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="5"/>
@@ -331,7 +329,7 @@
             <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SNP_POSITIONS_WG"/>
         </tool>
 
-	<tool name="getGenotypes" value="estimateGenotypes.sh" basepath="copyNumberEstimationWorkflow">
+        <tool name="getGenotypes" value="estimateGenotypes.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="1" cores="1" nodes="1" walltime="3"/>
             </resourcesets>
@@ -339,18 +337,18 @@
             <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SNP_POSITIONS_WG_FAKE"/>
         </tool>
 
-	<tool name="createUnphasedGenotype" value="createUnphasedFiles.sh" basepath="copyNumberEstimationWorkflow">
+        <tool name="createUnphasedGenotype" value="createUnphasedFiles.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="0.2" cores="1" nodes="1" walltime="5"/>
             </resourcesets>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SNP_POSITIONS_WG_FAKE"/>
             <output type="filegroup" typeof="UnphasedGenotypeFileGroupByChromosome" fileclass="UnphasedGenotypeFile" scriptparameter="FILENAME_UNPHASED_GENOTYPE" passas="array"/>
-    </tool>
+        </tool>
 
         <!--<tool name="imputeGenotypesMeta" value="impute2_MetaScript.sh" basepath="copyNumberEstimationWorkflow">-->
-            <!--<resourcesets>-->
-                <!--<rset size="l" memory="48" cores="12" nodes="1" walltime="16"/>-->
-            <!--</resourcesets>-->
+        <!--<resourcesets>-->
+        <!--<rset size="l" memory="48" cores="12" nodes="1" walltime="16"/>-->
+        <!--</resourcesets>-->
         <!--</tool>-->
 
         <tool name="imputeGenotypes_noMpileup" value="impute2.sh" basepath="copyNumberEstimationWorkflow">
@@ -376,7 +374,7 @@
             </output>
         </tool>
 
-	<tool name="imputeGenotypes" value="impute2.sh" basepath="copyNumberEstimationWorkflow">
+        <tool name="imputeGenotypes" value="impute2.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="10" cores="1" nodes="1" walltime="10"/>
             </resourcesets>
@@ -427,7 +425,7 @@
             <output type="tuple">
                 <output type="file" fnpatternselectiontag="correctedWindows" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_GC_CORRECTED_WINDOWS"/>
                 <output type="file" fnpatternselectiontag="tab" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_GC_CORRECTED_QUALITY"/>
-                <output type="file" fnpatternselectiontag="tabSlim" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_QC_GC_CORRECTION_JSON" />
+                <output type="file" fnpatternselectiontag="tabSlim" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_QC_GC_CORRECTION_JSON"/>
             </output>
 
         </tool>
@@ -452,7 +450,7 @@
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SV"/>
             <output type="tuple">
-                <output type="file" fnpatternselectiontag="breakpointsSvs" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_BREAKPOINTS"/>
+                <output type="file" fnpatternselectiontag="breakpointsSvs" typeof="SVFile" scriptparameter="FILENAME_BREAKPOINTS"/>
                 <output type="file" fnpatternselectiontag="svPoints" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SV_POINTS"/>
             </output>
         </tool>
@@ -463,7 +461,7 @@
             </resourcesets>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
             <output type="tuple">
-                <output type="file" fnpatternselectiontag="breakpointsSvs" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_BREAKPOINTS"/>
+                <output type="file" fnpatternselectiontag="breakpointsSvs" typeof="SVFile" scriptparameter="FILENAME_BREAKPOINTS"/>
                 <output type="file" fnpatternselectiontag="svPoints" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SV_POINTS"/>
             </output>
         </tool>
@@ -476,7 +474,7 @@
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CREST_DELDUPINV"/>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CREST_TRANSLOC"/>
             <output type="tuple">
-                <output type="file" fnpatternselectiontag="breakpointsSvs" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_BREAKPOINTS"/>
+                <output type="file" fnpatternselectiontag="breakpointsSvs" typeof="SVFile" scriptparameter="FILENAME_BREAKPOINTS"/>
                 <output type="file" fnpatternselectiontag="svPoints" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SV_POINTS"/>
             </output>
         </tool>
@@ -485,7 +483,7 @@
             <resourcesets>
                 <rset size="l" memory="50" cores="2" nodes="1" walltime="20"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_BREAKPOINTS"/>
+            <input type="file" typeof="SVFile" scriptparameter="FILENAME_BREAKPOINTS"/>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILE_PSCBS_DATA"/>
             <output type="file" fnpatternselectiontag="segments" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEGMENTS"/>
         </tool>
@@ -560,8 +558,8 @@
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_PURITY_PLOIDY"/>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEX"/>
             <output type="tuple">
-        	    <output type="file" fnpatternselectiontag="checkpoint" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_PLOTS"/>
-	            <output type="file" fnpatternselectiontag="json" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_PARAMETER_JSON"/>
+                <output type="file" fnpatternselectiontag="checkpoint" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_PLOTS"/>
+                <output type="file" fnpatternselectiontag="json" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_PARAMETER_JSON"/>
             </output>
         </tool>
 
@@ -576,46 +574,37 @@
 
     </processingTools>
     <filenames package='de.dkfz.b080.co.files' filestagesbase='de.dkfz.b080.co.files.COFileStage'>
-        <filename class='SNPPositionFile' derivedFrom="de.dkfz.b080.co.files.BamFile" pattern='${cnvSnpOutputDirectory}/${pid}.chr${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="SNP_SUFFIX"}'/>
-        <!--<filename class='SNPPositionFile' derivedFrom="de.dkfz.b080.co.files.BamFile" pattern='${outputAnalysisBaseDirectory}/${aceseqOutputDirectory}/${cnvSnpOutputDirectory}/${pid}.chr${jobParameter,name="PARM_CHR_INDEX"}.snp.tab.gz' />-->
-        <filename class='CoverageWindowsFile' derivedFrom="de.dkfz.b080.co.files.BamFile" pattern='${cnvSnpOutputDirectory}/${pid}.chr${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="CNV_SUFFIX"}'/>
-<!--      <filename class="PhasedGenotypeFile" onScriptParameter="FILENAME_PHASED_GENOTYPES" selectiontag="withChromosomeIndex"
-                  pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
-        <filename class="HaploblockGroupFile" onScriptParameter="FILENAME_HAPLOBLOCK_GROUPS" selectiontag="withChromosomeIndex"
-                  pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
-        <filename class="PhasedGenotypeFile" onScriptParameter="FILENAME_PHASED_GENOTYPES" selectiontag="forChromosomeX"
-                  pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}23.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
-        <filename class="HaploblockGroupFile" onScriptParameter="FILENAME_HAPLOBLOCK_GROUPS" selectiontag="forChromosomeX"
-                  pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}23.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
--->
+        <filename class='SNPPositionFile' derivedFrom="de.dkfz.b080.co.files.BamFile" pattern='${cnvSnpOutputDirectory}/${pid}.chr${PARM_CHR_INDEX}.${SNP_SUFFIX}'/>
+        <filename class='CoverageWindowsFile' derivedFrom="de.dkfz.b080.co.files.BamFile" pattern='${cnvSnpOutputDirectory}/${pid}.chr${PARM_CHR_INDEX}.${CNV_SUFFIX}'/>
+
         <filename class="TextFile" onMethod="de.dkfz.b080.co.files.SNPPositionFileGroupByChromosome.mergeAndFilter" pattern='${aceseqOutputDirectory}/${pid}_all.snp.tab.gz'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.getGenotypes" pattern='${aceseqOutputDirectory}/${pid}_all.snp.fakeBAF.tab.gz'/>
 
-	<filename class="PhasedGenotypeFile" onTool="imputeGenotypes_noMpileup" selectiontag="withChromosomeIndex"
-		  pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
-	<filename class="HaploblockGroupFile" onTool="imputeGenotypes_noMpileup" selectiontag="withChromosomeIndex"
-		  pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
-	<filename class="PhasedGenotypeFile" onTool="imputeGenotypes_X_noMpileup" selectiontag="forChromosomeX"
-		  pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}23.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
-	<filename class="HaploblockGroupFile" onTool="imputeGenotypes_X_noMpileup" selectiontag="forChromosomeX"
-		  pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}23.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
+        <filename class="PhasedGenotypeFile" onTool="imputeGenotypes_noMpileup" selectiontag="withChromosomeIndex"
+                  pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
+        <filename class="HaploblockGroupFile" onTool="imputeGenotypes_noMpileup" selectiontag="withChromosomeIndex"
+                  pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
+        <filename class="PhasedGenotypeFile" onTool="imputeGenotypes_X_noMpileup" selectiontag="forChromosomeX"
+                  pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}23.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
+        <filename class="HaploblockGroupFile" onTool="imputeGenotypes_X_noMpileup" selectiontag="forChromosomeX"
+                  pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}23.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
 
-	<filename class="PhasedGenotypeFile" onTool="imputeGenotypes" selectiontag="withChromosomeIndex"
-		  pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
-	<filename class="HaploblockGroupFile" onTool="imputeGenotypes" selectiontag="withChromosomeIndex"
-		  pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
-	<filename class="PhasedGenotypeFile" onTool="imputeGenotypes_X" selectiontag="forChromosomeX"
-		  pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}23.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
-	<filename class="HaploblockGroupFile" onTool="imputeGenotypes_X" selectiontag="forChromosomeX"
-		  pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}23.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
+        <filename class="PhasedGenotypeFile" onTool="imputeGenotypes" selectiontag="withChromosomeIndex"
+                  pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
+        <filename class="HaploblockGroupFile" onTool="imputeGenotypes" selectiontag="withChromosomeIndex"
+                  pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
+        <filename class="PhasedGenotypeFile" onTool="imputeGenotypes_X" selectiontag="forChromosomeX"
+                  pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}23.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
+        <filename class="HaploblockGroupFile" onTool="imputeGenotypes_X" selectiontag="forChromosomeX"
+                  pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}23.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
 
 
-        <filename class="UnphasedGenotypeFile" derivedFrom="TextFile" 
+        <filename class="UnphasedGenotypeFile" derivedFrom="TextFile"
                   pattern='${imputeOutputDirectory}/${cvalue, name="unphasedGenotypesPrefix", default="unphased_chr"}#CHROMOSOME_INDEX#.${cvalue,name="unphasedGenotypesSuffix",default="vcf"}'/>
-<!--
-        <filename class="TextFile" derivedFrom="TextFile" selectiontag="unphasedGenotypeChrXFile" 
-                  pattern='${imputeOutputDirectory}/${cvalue, name="unphasedGenotypesPrefix", default="unphased_chr"}X.${cvalue,name="unphasedGenotypesSuffix",default="vcf"}'/>
--->
+        <!--
+                <filename class="TextFile" derivedFrom="TextFile" selectiontag="unphasedGenotypeChrXFile"
+                          pattern='${imputeOutputDirectory}/${cvalue, name="unphasedGenotypesPrefix", default="unphased_chr"}X.${cvalue,name="unphasedGenotypesSuffix",default="vcf"}'/>
+        -->
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.addHaploTypes" pattern='${aceseqOutputDirectory}/${pid}_all.snp.haplo.tab.gz'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.createControlBafPlot" pattern='${plotOutputDirectory}/checkpointBaf.txt'/>
         <filename class="TextFile" onMethod="CoverageWindowsFileGroupByChromosome.annotate" selectiontag="annotatedCoverage" pattern='${cnvSnpOutputDirectory}/${pid}.chr#CHROMOSOME_INDEX#.${cvalue,name="CNV_ANNO_SUFFIX"}'/>
@@ -633,7 +622,6 @@
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="crestTranslocFileTag" pattern='${crestOutputDirectory}/tumor_${pid}.${cvalue,name="crestTransSuffix",default="TX"}'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="svPoints" pattern='${aceseqOutputDirectory}/${pid}_sv_points.txt'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeSv" selectiontag="svFileTag" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeSv" selectiontag="svPoints" pattern='${aceseqOutputDirectory}/${pid}_sv_points.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.getSegmentAndGetSnps" selectiontag="segments" pattern='${aceseqOutputDirectory}/${pid}_fit.txt'/>
@@ -648,6 +636,9 @@
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.generatePlots" selectiontag="json" pattern='${aceseqOutputDirectory}/cnv_${pid}_parameter.json'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.estimateHRD" pattern='${aceseqOutputDirectory}/checkpointHRD.txt'/>
 
+        <!-- SV file used with the runSV flag. Always the same name, derives from any file type. -->
+        <!--<filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeSv" selectiontag="svFileTag" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>-->
+        <filename class="SVFile" derivedFrom="BaseFile" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>
     </filenames>
 
 </configuration>

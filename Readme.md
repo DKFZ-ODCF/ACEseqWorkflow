@@ -15,7 +15,10 @@ ACEseq (Allele-specific copy number estimation with whole genome sequencing) is 
 * HRD/TAI/LST score estimation
 * with/without matched control processing
 
-## Installation
+## Prepackaged files
 
 The complete installation instructions can be found in the [documentation](http://aceseq.readthedocs.io/en/latest/installation.html).
+
+
+
 
