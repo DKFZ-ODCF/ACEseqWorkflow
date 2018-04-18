@@ -20,12 +20,12 @@ The Standard Way
 
 The standard way to install the workflow is the manual installation of all components.
 
-1. Download the COWorkflowBasePlugin zip-archive from `github-releases`_. The version to download can be found in the `ACEseq buildinfo.txt <https://github.com/eilslabs/ACEseqWorkflow/blob/github/buildinfo.txt>`_.
-1. Download the ACEseq zip-archive from `github-releases`_. The archive already contains a Jar-archive with the compiled Java/Groovy code (JAR-file) for the given Roddy API version. No compilation of the plugin is therefore required.
-2. The file `ACEseq buildinfo.txt <https://github.com/eilslabs/ACEseqWorkflow/blob/github/buildinfo.txt>`_ in also shows you the Roddy API version that you need for the chosen ACEseq workflow version.
-3. Install the required Roddy version. Please see the `Roddy repository <https://github.com/TheRoddyWMS/Roddy>`_ for installation instructions for Roddy.
-4. Install the software stack (see :ref:`install-software-stack` below) via Conda
-5. Install the reference files (see :ref:`install-reference-files` below) via the preparation script.
+1. Download the COWorkflowBasePlugin zip-archive from `Github-Releases`_. The version to download can be found in the `ACEseq buildinfo.txt <https://github.com/eilslabs/ACEseqWorkflow/blob/github/buildinfo.txt>`_.
+2. Download the ACEseq zip-archive from `Github-Releases`_. The archive already contains a Jar-archive with the compiled Java/Groovy code (JAR-file) for the given Roddy API version. No compilation of the plugin is therefore required.
+3. The file `ACEseq buildinfo.txt <https://github.com/eilslabs/ACEseqWorkflow/blob/github/buildinfo.txt>`_ in also shows you the Roddy API version that you need for the chosen ACEseq workflow version.
+4. Install the required Roddy version. Please see the `Roddy repository <https://github.com/TheRoddyWMS/Roddy>`_ for installation instructions for Roddy.
+5. Install the software stack (see :ref:`install-software-stack` below) via Conda
+6. Install the reference files (see :ref:`install-reference-files` below) via the preparation script.
 
 .. _install-software-stack:
 
@@ -58,7 +58,7 @@ Then install the environment
 
     conda env create -n ACEseqWorkflow -f $PATH_TO_PLUGIN_DIRECTORY/resources/analysisTools/copyNumberEstimationWorkflow/environments/conda.yml
 
-The name of the Conda environment is arbitrary but needs to be consistent with the `condaEnvironmentName` variable. You can set the `condaEnvironmentName` variable in any of the loaded configuration files (see `Roddy documentation <http://roddy-documentation.readthedocs.io/>`) or even directly in your Roddy call via `--cvalues="condaEnvironmentName:$value"`.
+The name of the Conda environment is arbitrary but needs to be consistent with the `condaEnvironmentName` variable. You can set the `condaEnvironmentName` variable in any of the loaded configuration files (see `Roddy documentation <http://roddy-documentation.readthedocs.io/>`_) or even directly in your Roddy call via `--cvalues="condaEnvironmentName:$value"`.
 
 If you do not want to use Conda, you can get a complete list of all packages and package versions Conda would install from the  `$PATH_TO_PLUGIN_DIRECTORY/resources/analysisTools/copyNumberEstimationWorkflow/environments/conda.yml`.
 
@@ -69,9 +69,9 @@ Reference files
 
 The workflow uses various files as reference files, such as a reference genome or annotation files. Depending on the contents of these files also the outcome of your analysis may change. We provide installation scripts in the `installation/` directory (currently only in the `github` branch of the repository). To download and prepare the reference files please check out the ACEseq repository and do
 
-```bash
-bash $PATH_TO_PLUGIN_DIRECTORY/installation/downloadRefrences $targetDirectory
-```
+::
+
+   bash $PATH_TO_PLUGIN_DIRECTORY/installation/downloadRefrences $targetDirectory
 
 with `$targetDirectory` being the directory into which you want to install the files. The variable `baseDirectoryReference` in your configurations needs to be set to the `$targetDirectory` path.
 
@@ -205,5 +205,5 @@ Here you tell roddy to run the ACEseq configuration using the config folder in t
 
 
 
-.. _github-releases: https://github.com/eilslabs/ACEseqWorkflow/releases
+.. _Github-Releases: https://github.com/eilslabs/ACEseqWorkflow/releases
 
