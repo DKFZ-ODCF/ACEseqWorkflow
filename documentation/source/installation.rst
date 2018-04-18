@@ -8,6 +8,7 @@ To run the ACEseq-workflow multiple components are needed:
   * The `Roddy workflow management framework <https://github.com/TheRoddyWMS/Roddy>`
   * Software stack
   * Reference data
+  * `COWorkflowsBasePlugin <https://github.com/TheRoddyWMS/COWorkflowsBasePlugin>`
 
 The :ref:`standard way` to install the workflow is described below and involves the installation of each of these components. For the older 1.2.10 release we currently also provide prepackaged files and a Docker container. See :ref:`prepackaged-installation` below for instructions.
 
@@ -17,11 +18,12 @@ The Standard Way
 
 The standard way to install the workflow is the manual installation of all components.
 
+1. Download the COWorkflowBasePlugin zip-archive from `Github-Releases <https://github.com/TheRoddyWMS/COWorkflowsBasePlugin/releases>`. The version to download can be found in the `ACEseq buildinfo.txt <https://github.com/eilslabs/ACEseqWorkflow/blob/github/buildinfo.txt>`
 1. Download the ACEseq zip-archive from `Github-Releases <https://github.com/eilslabs/ACEseqWorkflow/releases>`. The archive already contains a Jar-archive with the compiled Java/Groovy code (JAR-file) for the given Roddy API version. No compilation of the plugin is therefore required.
-2. The file `buildinfo.txt` in the ACEseq zip shows you the Roddy API version that you need for the chosen ACEseq workflow version.
-3. Install Roddy. Please see the `Roddy repository <https://github.com/TheRoddyWMS/Roddy>` for installation instructions for Roddy.
-4. Install the software stack (see :ref:`install-software-stack` below)
-5. Install the reference files (see :ref:`install-reference-files` below)
+2. The file `ACEseq buildinfo.txt <https://github.com/eilslabs/ACEseqWorkflow/blob/github/buildinfo.txt>` in also shows you the Roddy API version that you need for the chosen ACEseq workflow version.
+3. Install the required Roddy version. Please see the `Roddy repository <https://github.com/TheRoddyWMS/Roddy>` for installation instructions for Roddy.
+4. Install the software stack (see :ref:`install-software-stack` below) via Conda
+5. Install the reference files (see :ref:`install-reference-files` below) via the preparation script.
 
 .. _install-software-stack
 Software Stack (Conda)

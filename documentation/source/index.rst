@@ -20,6 +20,5 @@ ACEseq - Allele-specific copy numbers from sequencing
    HRD_LST
    methods
 
-   :caption: Contents:
 
 
