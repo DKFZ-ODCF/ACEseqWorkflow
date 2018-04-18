@@ -1,5 +1,5 @@
 Methods - Theory
-=======
+================
 
 
 | ACEseq can be used to estimate copy-numbers from WGS data using a tumor vs. control approach. Thus a pre-requesite is WGS data from healthy tissue and tumor tissue of the same patient with at least 30x coverage. Samtools [] mpileup is used to determine the coverage for tumor and control sample - position specific for each single nucleotide polymorphism (SNP) position recorded in dbSNP and per 1 kb window. To get chromosome specific allele frequencies, the genotypes of SNP positions are phased with Impute2 [] and A and B allele are assigned accordingly. Haploblocks are defined as regions with consecutively phased SNPs. Subsequently, B-allele frequencies (BAFs) are estimated for all SNP positions in tumor and control with sufficient coverage in the control: 
@@ -17,7 +17,7 @@ Methods - Theory
      DH=2\times \vert BAF-0.5\vert
 
 Pre-processing
--------------
+--------------
 
 | To estimate the coverage of each SNP position a general coverage of 10 kb windows was determined. 1 kb coverage windows are merged into 10 kb windows in case enough contributing windows with sufficient coverage and mappability are found in the corresponding region. The resulting coverage values are normalized with the sum of all 10 kb coverage windows for tumor and control respectively. These normalized estimates are subsequently corrected for a possible GC- and replication-timing bias. 
 
@@ -28,6 +28,7 @@ Correction for GC bias
 ~~~~~~~~~~~~~~~~~~~~~~
 
 | Correction for GC bias
+
 As described in detail by Benjamini and Speed (REF) genomic regions with varying GC content may be sequenced at different depth due to selection bias or sequencing efficiency. Differing raw read counts in these regions even in the absence of copy number alterations can could lead to false positive calls.
 A GC-bias plot (Figure XY) can be used to visually inspect the bias of a sample. ACEseq first fits a curve to the data using LOWESS (locally weighted scatterplot smoothing, implemented in R) to identify the main copy number state first, which will be used to for a second fit. The second fit to the main copy number state is used for parameter assessment and correction of the data. This two-step fitting is necessary to compensate for large copy number changes that could lead to a misfit. The LOWESS fit as described above interpolates over all 10 kb windows. It thus averages over all different copy number states. If two states have their respective center of mass at different GC content, this first LOWESS fit might be distorted and not well suited for the correction. The full width half maximum (FWHM) of the density over all windows of the main copy number state is estimated for control and tumor. An usual large value here indicates quality issues with the sample.
 
@@ -36,10 +37,10 @@ Correction for replication time
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 | Once the data is corrected for GC-bias the replication timing bias is considered. In general, if a fraction of the cells in the analyzed sample is cycling, early replicating regions would be expected to display higher coverage than late replicating regions, as a higher percentage of these would already have undergone replication in the S-phase [Zitat Koren et al.]. For a subtle analysis of copy number alterations, it would be beneficial to correct for this replication timing bias. Large fractions of the genome have common replication timing in different cell types or tissues, but there are regions of tissue or organ specificity [] [Zitat RepliSeq]. In the present work, a consensus replication timing score, the RepliSeq score as described by [] [Zitat RepliSeq], is attributed to every 10 kb window of the genome by averaging over the RepliSeq information from different cell lines. Replication timing bias plots can be generated analogously to the GC bias plots. A LOWESS fit on the already identified main cluster is carried out to correct for this bias (Figure?). This correction is performed on the GC-corrected data to obtain the final corrected coverage data, which will be used in the following.
+
 The two bias correction steps described above are done sequentially. A simultaneous 2D LOWESS or LOESS correction would be desirable, but fails due to computational load (the clusters to be fitted have 106 points). Different parameters such as slope and curvature of the both LOWESS correction curves used are extracted. The GC curve parameters is used as quality measures to determine the suitability of the sample for further analysis whereas the replication timing curve parameters is used to infer the proliferation activity of the tumor. We could show a strong correlation between Ki-67 estimates and the slope of the fitted curve (Figure).
  
-| Once corrected a coverage ratio is calculated as the ratio of normalized
-tumor coverage over normalized control coverage:
+| Once corrected a coverage ratio is calculated as the ratio of normalized tumor coverage over normalized control coverage:
 
 .. math::
    \label{eq:covR}
@@ -73,6 +74,7 @@ Segment clustering and merging
   clustering :raw-latex:`\cite{}`. The number is used to cluster the
   points with cmeans subsequently (with the R fpc package clusterboot
   function).
+
 | To avoid over-fitting a further downstream processing is applied.
   Firstly, the minimal accuracy defined by the FWHM is taken into
   account. Cluster with more than 85% of all points within these
@@ -95,6 +97,7 @@ Segment clustering and merging
      errorDH         & =\frac{1}{\sqrt{ number of heterozygous SNPs} } \\
      errorCoverage   & =\frac{1}{log2(length)  }
      \end{aligned}
+
 | If the SNP error of a selected segment exceeds the distance in DH and
   the length error exceeds the coverage difference it is appointed to
   the main cluster. Again neighboring segments with identical clusters
@@ -157,7 +160,7 @@ Calling of Allelic Balance and Imbalance
   imbalanced. Segments below the cut-off are classified as balanced.
 
 Copy Number Estimation
--------------
+----------------------
 
 | Once the allelic state of a segment is determined it can be used for
   the computation of tumor cell content and ploidy of the main tumor

@@ -1,41 +1,45 @@
-.. _installation
+.. _installation:
+
 Installation & Run instructions
 ===============================
 
 To run the ACEseq-workflow multiple components are needed:
 
   * ACEseq workflow plugin
-  * The `Roddy workflow management framework <https://github.com/TheRoddyWMS/Roddy>`
+  * The `Roddy workflow management framework <https://github.com/TheRoddyWMS/Roddy>`_
   * Software stack
   * Reference data
-  * `COWorkflowsBasePlugin <https://github.com/TheRoddyWMS/COWorkflowsBasePlugin>`
+  * `COWorkflowsBasePlugin <https://github.com/TheRoddyWMS/COWorkflowsBasePlugin>`_
 
 The :ref:`standard way` to install the workflow is described below and involves the installation of each of these components. For the older 1.2.10 release we currently also provide prepackaged files and a Docker container. See :ref:`prepackaged-installation` below for instructions.
 
-.. _standard way
+.. _standard way:
+
 The Standard Way
 ----------------
 
 The standard way to install the workflow is the manual installation of all components.
 
-1. Download the COWorkflowBasePlugin zip-archive from `Github-Releases <https://github.com/TheRoddyWMS/COWorkflowsBasePlugin/releases>`. The version to download can be found in the `ACEseq buildinfo.txt <https://github.com/eilslabs/ACEseqWorkflow/blob/github/buildinfo.txt>`
-1. Download the ACEseq zip-archive from `Github-Releases <https://github.com/eilslabs/ACEseqWorkflow/releases>`. The archive already contains a Jar-archive with the compiled Java/Groovy code (JAR-file) for the given Roddy API version. No compilation of the plugin is therefore required.
-2. The file `ACEseq buildinfo.txt <https://github.com/eilslabs/ACEseqWorkflow/blob/github/buildinfo.txt>` in also shows you the Roddy API version that you need for the chosen ACEseq workflow version.
-3. Install the required Roddy version. Please see the `Roddy repository <https://github.com/TheRoddyWMS/Roddy>` for installation instructions for Roddy.
+1. Download the COWorkflowBasePlugin zip-archive from `github-releases`_. The version to download can be found in the `ACEseq buildinfo.txt <https://github.com/eilslabs/ACEseqWorkflow/blob/github/buildinfo.txt>`_.
+1. Download the ACEseq zip-archive from `github-releases`_. The archive already contains a Jar-archive with the compiled Java/Groovy code (JAR-file) for the given Roddy API version. No compilation of the plugin is therefore required.
+2. The file `ACEseq buildinfo.txt <https://github.com/eilslabs/ACEseqWorkflow/blob/github/buildinfo.txt>`_ in also shows you the Roddy API version that you need for the chosen ACEseq workflow version.
+3. Install the required Roddy version. Please see the `Roddy repository <https://github.com/TheRoddyWMS/Roddy>`_ for installation instructions for Roddy.
 4. Install the software stack (see :ref:`install-software-stack` below) via Conda
 5. Install the reference files (see :ref:`install-reference-files` below) via the preparation script.
 
-.. _install-software-stack
+.. _install-software-stack:
+
 Software Stack (Conda)
 ^^^^^^^^^^^^^^^^^^^^^^
 
-The workflow contains a description of a `Conda <https://conda.io/docs/>` environment. A number of Conda packages from `BioConda <https://bioconda.github.io/index.html>` are required. You should set up the Conda environment at a centralized position available from all compute hosts.
+The workflow contains a description of a `Conda <https://conda.io/docs/>`_ environment. A number of Conda packages from `BioConda <https://bioconda.github.io/index.html>`_ are required. You should set up the Conda environment at a centralized position available from all compute hosts.
 
 First install the BioConda channels:
 
 ::
 
     conda config --add channels r
+
 ::
 
     conda config --add channels defaults
@@ -58,7 +62,8 @@ The name of the Conda environment is arbitrary but needs to be consistent with t
 
 If you do not want to use Conda, you can get a complete list of all packages and package versions Conda would install from the  `$PATH_TO_PLUGIN_DIRECTORY/resources/analysisTools/copyNumberEstimationWorkflow/environments/conda.yml`.
 
-.. _install-reference-files
+.. _install-reference-files:
+
 Reference files
 ^^^^^^^^^^^^^^^
 
@@ -72,7 +77,8 @@ with `$targetDirectory` being the directory into which you want to install the f
 
 Note that the current plugin version is tuned to be run on the hg19 human assembly, but a liftover of all files should probably enable a run on GRch38.
 
-.. _prepackaged-installation
+.. _prepackaged-installation:
+
 Prepackaged files (ACEseq 1.2.10 only)
 --------------------------------------
 
@@ -199,5 +205,5 @@ Here you tell roddy to run the ACEseq configuration using the config folder in t
 
 
 
-
+.. _github-releases: https://github.com/eilslabs/ACEseqWorkflow/releases
 
