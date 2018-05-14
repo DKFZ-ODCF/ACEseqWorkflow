@@ -75,6 +75,7 @@
         <!-- ACEseq parameters-->
         <cvalue name="test" value="" type="string" description="value to be set to 'test' in case this is run on a smaller not WGS bamfile to speed up testing, required for impute2"/>
         <cvalue name='runWithoutControl' value='false' type='boolean' description="use control for analysis (false|true)"/>
+        <cvalue name='runWithFakeControl' value='false' type='boolean' description="use fake control for analysis (false|true)"/>
 
         <cvalue name='CHR_NR' value='${CHR_PREFIX}${PARM_CHR_INDEX}${CHR_SUFFIX}' type="string"/>
         <cvalue name='CHR_NAME' value='${PARM_CHR_INDEX}' type="string"/>
