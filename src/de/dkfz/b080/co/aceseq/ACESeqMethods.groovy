@@ -143,20 +143,20 @@ final class ACESeqMethods {
     }
 
     @ScriptCallingMethod
-    static Tuple2<SVFile, TextFile> mergeSv(TextFile knownSegmentsFile, boolean runWithSv) {
-        if (runWithSv) {
-            BaseFile svFile = getSVFile(knownSegmentsFile)
-            boolean b = FileSystemAccessProvider.getInstance().checkBaseFiles(svFile);
-            if (b)
-                return (Tuple2<SVFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_AND_SV, knownSegmentsFile, svFile);
+    static Tuple2<SVFile, TextFile> mergeSv(TextFile knownSegmentsFile) {
+        TextFile svFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "svFileTag", null, null);
+        svFile.setAsSourceFile();
+        BEJobResult result = getFileExistedFakeJobResult()
+        svFile.setCreatingJobsResult(result);
 
-            knownSegmentsFile.getExecutionContext().addErrorEntry(ExecutionContextError.EXECUTION_NOINPUTDATA.expand("SV files were not found in input path.", Level.WARNING));
-            return null;
-        } else {
-            return (Tuple2<SVFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_WITHOUT_SV, knownSegmentsFile);
-        }
+        // TODO: The following checks should be done by ACEseqWorkflow.checkExecutability(). Unfortunately currently it is not trivial to get the name of the file whose existence to check.
+        boolean b = FileSystemAccessProvider.getInstance().checkBaseFiles(svFile);
+        if (b)
+            return (Tuple2<SVFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_AND_SV, knownSegmentsFile, svFile);
+
+        knownSegmentsFile.getExecutionContext().addErrorEntry(ExecutionContextError.EXECUTION_NOINPUTDATA.expand("SV files were not found in input path."));
+        return null;
     }
-
 
     static BaseFile getSVFile(BaseFile anyFile) {
         BaseFile svFile = BaseFile.deriveFrom(anyFile, SVFile.class.name)
@@ -165,10 +165,15 @@ final class ACESeqMethods {
     }
 
     @ScriptCallingMethod
-    public static Tuple2<SVFile, TextFile> mergeCrest(TextFile knownSegmentsFile) {
-        TextFile svFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "crestDelDupInvFileTag", null, null);
-        TextFile translocFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "crestTranslocFileTag", null, null);
+    static Tuple2<TextFile, TextFile> mergeNoSv(TextFile knownSegmentsFile) {
+        return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_WITHOUT_SV, knownSegmentsFile)
+    }
 
+
+    @ScriptCallingMethod
+    static Tuple2<SVFile, TextFile> mergeCrest(TextFile knownSegmentsFile) {
+        TextFile svFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "crestDelDupInvFileTag", null, null)
+        TextFile translocFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "crestTranslocFileTag", null, null)
 
         boolean b = FileSystemAccessProvider.getInstance().checkBaseFiles(svFile, translocFile)
         if (!b) {
