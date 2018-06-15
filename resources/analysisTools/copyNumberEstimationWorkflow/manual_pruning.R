@@ -14,39 +14,37 @@ library(gridExtra)
 
 script_dir = dirname(get_Rscript_filename())
 
-#source(paste0(script_dir, "/getopt.R"))
-
 wd = getwd()
 min_num_SNPs =15
 libloc=NULL
-spec <- matrix(c('file',                  'f', 1, "character", 
-                 'segments',              's', 1, "character", 
-		 'functions',		  'p', 1, "character", 
-		 'blockPre',		  'b', 1, "character",     # prefix of file containing haplotype groups
-		 'blockSuf',		  'u', 1, "character",     # suffix of file containing haplotype groups
-		 'adjustAlleles',	  'a', 1, "character",     # function to swap alleles where necessary
-		 'sex',		  	  'g', 1, "character",     # sex of patient
-		 'newFile',		  'w', 1, "character", 
-                 'out',                   'x', 1, "character", 
-		 'segOut',		  'o', 1, "character", 
-                 'min_seg_length',        'l', 1, "numeric",   
-                 'clustering_YN',         'c', 1, "character", 
-                 'min_num_cluster',       'n', 1, "numeric",   
-                 'min_num_SNPs',          'i', 2, "numeric",   
-		 'min_distance',	  'd', 1, "numeric",   
-                 'min_membership',        'm', 1, "numeric",   
-      		 'chrLengthFile',         'r', 1, "character", 
-     		 'gcCovWidthFile',        'y', 1, "character", 
-		 'pid',			  'v', 1, "character", 
-		 'libloc',		  'z', 2, 'character' 
+spec <- matrix(c('file',                'f', 1, "character",
+                 'segments',            's', 1, "character",
+				 'functions',		  	'p', 1, "character",
+				 'blockPre',		  	'b', 1, "character",     # prefix of file containing haplotype groups
+				 'blockSuf',		  	'u', 1, "character",     # suffix of file containing haplotype groups
+				 'adjustAlleles',	  	'a', 1, "character",     # function to swap alleles where necessary
+				 'sex',		  	  	  	'g', 1, "character",     # sex of patient
+				 'newFile',				'w', 1, "character",
+                 'out',                 'x', 1, "character",
+				 'segOut',		  		'o', 1, "character",
+                 'min_seg_length',      'l', 1, "numeric",
+                 'clustering_YN',       'c', 1, "character",
+                 'min_num_cluster',     'n', 1, "numeric",
+                 'min_num_SNPs',        'i', 2, "numeric",
+		 		 'min_distance',	  	'd', 1, "numeric",
+                 'min_membership',      'm', 1, "numeric",
+				 'chrLengthFile',       'r', 1, "character",
+				 'gcCovWidthFile',      'y', 1, "character",
+				 'pid',			  		'v', 1, "character",
+				 'libloc',		  		'z', 2, 'character'
                 ), ncol = 4, byrow = TRUE)
 
 opt = getopt(spec);
 for(item in names(opt)){
        assign( item, opt[[item]])
 }
-    
- 
+
+
 cat(paste0("file: ",file, "\n\n"))
 cat(paste0("segments: ",segments, "\n\n"))
 cat(paste0("functions: ",functions, "\n\n" ))
@@ -72,6 +70,8 @@ if ( libloc == "" | libloc == TRUE ){
 }
 
 source(functions)
+
+mclust.options(hcUse = "VARS") # set hcUse to use VARS-method (method will be changed to SVD mith mclust>=5.4 which leads to different results)
 
 cat(paste0("reading ",segments,"...\n\n"))
 segAll = read.table(segments, sep = "\t", as.is = TRUE, header = TRUE)
@@ -299,7 +299,7 @@ write.table(segAll, file = paste0("",out, "/minus_short_w_dh_BIC.txt"), sep = "\
 tcnMean = segAll$tcnMean
 dhMax = segAll$dhMax
 
-png(paste0("",out, "/",pid, "_tcn_dh.png"), width=1200, height=1200, type='cairo')           
+png(paste0("",out, "/",pid, "_tcn_dh.png"), width=1200, height=1200, type='cairo')
 plot(tcnMean,dhMax)
 dev.off()
   
@@ -315,38 +315,47 @@ if (clustering_YN == "yes") {
 	            cluster_matrix_norm[ ,1] == "-Inf" | 
 	            cluster_matrix_norm[ ,2] == "Inf" | 
 	            cluster_matrix_norm[,2] == "-Inf")
-	            
+
 	cat(paste0("",length(rem), " lines dropped.\n\n")) #
-	if ( length(rem) > 0){
-	        weights = log2(segAll$length[-rem] + 0.00001) #sepcify your size vector here
-                                                     #weights <- 1
-          cluster_matrix_norm = cluster_matrix_norm[-rem, ]
-      	  #convert limits to scaled coordinates
-      	  covLeftNorm  <- ( log2(covLeft)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
-      	  covRightNorm <- ( log2(covRight)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
-      	  covLeftFullNorm <- ( log2(covLeft-covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
-          covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
-          
-  }else{
-      	   weights = log2(segAll$length + 0.00001)
-      	   cluster_matrix_norm = cluster_matrix_norm
-      	   #convert limits to scaled coordinates
-      	   covLeftNorm  <- (log2(covLeft)-mean(log2(tcnMean)) )/sd(log2(tcnMean))
-      	   covRightNorm <- (log2(covRight)-mean(log2(tcnMean)) )/sd(log2(tcnMean))  
-           covLeftFullNorm <- ( log2(covLeft-covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
-           covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+	if ( length(rem) > 0) {
+		# +1 as pseudo count to account for segments of length 1bp
+		weights = log2(segAll$length[-rem] + 1) #specify your size vector here
+												 #weights <- 1
+		cluster_matrix_norm = cluster_matrix_norm[-rem, ]
+		#convert limits to scaled coordinates
+		covLeftNorm  <- ( log2(covLeft)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+		covRightNorm <- ( log2(covRight)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+		covLeftFullNorm <- ( log2(covLeft-covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+		covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+
+  } else {
+		# +1 as pseudo count to account for segments of length 1bp
+		weights = log2(segAll$length + 1)
+		cluster_matrix_norm = cluster_matrix_norm
+		#convert limits to scaled coordinates
+		covLeftNorm  <- (log2(covLeft)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
+		covRightNorm <- (log2(covRight)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
+		covLeftFullNorm <- ( log2(covLeft-covWidth/2)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
+		covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
   }
   
 	cluster_matrix = scale(cluster_matrix_norm)
 
 	#find optimal number of clusters using bayesian information criterion
+	cat("Calling Mclust...\n")
+	cat(paste0("cluster_matrix nrow: ",nrow(cluster_matrix),"\n"))
+	cat(paste0("cluster_matrix ncol: ",ncol(cluster_matrix),"\n"))
+	cat(paste0("min_num_cluster: ",min_num_cluster,"\n"))
 	d_clust <- Mclust(cluster_matrix, G=min_num_cluster:20)
+	cat("finished Mclust...\n")
 	m.best  <- dim(d_clust$z)[2]
 
 	#cmeans to get clusters with m.best centers 
 	#resample clustering by jittering point B times)
-  
+
+	cat("Calling clusterboot...\n")
 	results = clusterboot(cbind(weights, cluster_matrix), B = 100, bootmethod = "jitter", clustermethod = cmeansCBI, k = m.best, seed = 15555, multipleboot = FALSE)
+	cat("finished clusterboot...\n")
 	CM <- results$result$result
 
     	massCenterX <- sapply(seq_along(CM$centers[,1]), function(i) {
@@ -369,17 +378,15 @@ if (clustering_YN == "yes") {
 	  maxCluster <- as.numeric(maxCluster)
 	  centerMain <- CM$centers[maxCluster,]
   }
-	col = c("#000000","#800000","#008000","#000080","#800080","#808080","#FF0000","#00FF00","#FFFF00","#0000FF","#FF00FF","#00FFFF","#DC143C","#FF8C00","#FF69B4","#FF4500", "#EE82EE", "#FFD700", "grey")
-   	names(col) <- c(1:(length(col)-1), "NA")
+	col = c("#000000","#800000","#008000","#000080","#800080","#808080","#FF0000","#00FF00","#FFFF00","#0000FF","#FF00FF","#00FFFF","#DC143C","#FF8C00","#FF69B4","#FF4500", "#EE82EE", "#FFD700")
+
 	clusterPlot <- ggplot( data.frame(cluster_matrix), aes(log2.tcnMean, dhMax, col=as.character(CM$cluster) ) )  +
 	  geom_point(size=1.7, alpha=0.8) +
 	  geom_point(data=data.frame(CM[['centers']]), aes(log2.tcnMean, dhMax), col='red', pch=3) +
 	  geom_vline(xintercept=c(covRightNorm, covLeftNorm),size=0.4, col="black", alpha=0.8) +
 	  geom_vline(xintercept=c(covRightFullNorm, covLeftFullNorm),size=0.4, col="red", alpha=0.8) +
-	  scale_color_manual(values=col[sort(unique(as.character(CM$cluster)))],
-                               labels=names(col[sort(unique(as.character(CM$cluster)))]),
-                               name="cluster" )
-	ggplot2::ggsave(paste0("",out, "/",pid, "_cluster_cmeans.png"), clusterPlot, width = 5, height = 5, type='cairo')
+	  scale_color_manual(values=c(col[1:length(unique(CM$cluster))], "grey"), name="cluster" )
+	ggplot2::ggsave(paste0("",out, "/",pid, "_cluster_cmeans.png"), clusterPlot, width = 10, height = 10, type='cairo')
 
 	minTcnMean <- covLeftNorm
 	maxTCNmean <- covRightNorm
@@ -430,9 +437,9 @@ if (clustering_YN == "yes") {
     dhMax <- NaN
     if(length(s)>4){
       tcnMean <- density(segAll.tmp$tcnMean[s] )
-      tcnMean <- tcnMean$x[which(tcnMean$y==max(tcnMean$y))]
+      tcnMean <- tcnMean$x[which(tcnMean$y==max(tcnMean$y))[1]] # [1]: bugfix, more than one value possible. always take the first one
       dhMax <- density(segAll.tmp$dhMax[s])
-      dhMax <- dhMax$x[which(dhMax$y==max(dhMax$y))]
+      dhMax <- dhMax$x[which(dhMax$y==max(dhMax$y))[1]] # [1]: bugfix, more than one value possible. always take the first one
     }
     c(tcnMean, dhMax)
   })))
@@ -440,19 +447,17 @@ if (clustering_YN == "yes") {
   colnames(newCenters) <- c("tcnMean", "dhMax")
   segAll.tmp[keep,] <- removeOutlierPoints_cmean_alt( segAll.tmp[keep,],  newCenters, deviationFactor = 2)
   
-  clusterPlotRmOutlier  <- ggplot( data.frame(segAll.tmp), aes(log2(tcnMean), dhMax, col=as.character(cluster)) )  +
+  clusterPlotRmOutlier  <- ggplot( data.frame(segAll.tmp), aes(log2(tcnMean), dhMax, col=as.factor(cluster) ) )  +
     geom_point(size=1.7, alpha=0.8) +
     geom_vline(xintercept=c(log2( covLeft) , log2(covRight) ), size=0.4, col="black", alpha=0.8) +
-    geom_vline(xintercept=c(log2( covLeft -  covWidth), log2(covRight + covWidth) ),size=0.4, col="red", alpha=0.8) + 
-    scale_color_manual(values=col[sort(unique(as.character(segAll.tmp$cluster)))],
-                         labels=names(col[sort(unique(as.character(segAll.tmp$cluster)))]), name="cluster" ) +
-    #scale_color_manual(values=c(col[1:(length(unique(segAll.tmp$cluster))-1)]),name="cluster" ) +
+    geom_vline(xintercept=c(log2( covLeft -  covWidth), log2(covRight + covWidth) ),size=0.4, col="red", alpha=0.8) +
+    scale_color_manual(values=c(col[1:(length(unique(segAll.tmp$cluster))-1)]),name="cluster" ) +
     geom_point(data=data.frame(segAll.tmp[is.na(segAll.tmp$cluster),]), aes(log2(tcnMean), dhMax), col='grey')
-	ggplot2::ggsave(paste0("",out, "/",pid, "_cluster_cmeans_wo_outlier.png"), clusterPlotRmOutlier, width=5, height=5, type='cairo')
+	ggplot2::ggsave(paste0("",out, "/",pid, "_cluster_cmeans_wo_outlier.png"), clusterPlotRmOutlier, width=10, height=10, type='cairo')
   
   segAll.tmp[keep,]$cluster[is.na(segAll.tmp[keep,]$cluster)] <- "NA"  #seem redundant and uneccesary
  
-  freqs <- sapply( as.numeric(rownames(newCenters)), 
+  freqs <- sapply( as.numeric(rownames(newCenters)),
                function(i) sum(segAll.tmp$cluster==i, na.rm=T) )
   names(freqs) <- rownames(newCenters)                     
   minimalClusters <- names(which(freqs <5 ))
@@ -515,12 +520,9 @@ if (clustering_YN == "yes") {
     geom_point(data=data.frame(test_new[is.na(test_new$cluster),]), aes(log2(tcnMean), dhMax), col='grey') +
     geom_vline(xintercept=c(log2( covLeft) , log2(covRight) ), size=0.4, col="black", alpha=0.8) +
     geom_vline(xintercept=c(log2( covLeft -  covWidth), log2(covRight + covWidth) ),size=0.4, col="red", alpha=0.8) +
-    scale_color_manual(values=col[c( sort(unique(as.character(test_new$cluster))), "NA") ],
-                         labels=c( names(col[sort(unique(as.character(test_new$cluster)))]), "NA"),
-                         name="cluster" )
-    #scale_color_manual(values=c(col[1:(length(unique(test_new$cluster))-1)]),name="cluster" )
-  ggplot2::ggsave( paste0("",out, "/",pid, "_cluster_cmeans_merged_log2.png"), clusterPlotNewlog2, width=5, height=5, type='cairo' )
-#	write.table(test, file = paste0("",out}/clustered_and_pruned_BIC.txt"), sep = "\t", row.names = FALSE, quote = FALSE )
+    scale_color_manual(values=c(col[1:(length(unique(test_new$cluster))-1)]),name="cluster" )
+	ggplot2::ggsave( paste0("",out, "/",pid, "_cluster_cmeans_merged_log2.png"), clusterPlotNewlog2, width=10, height=10, type='cairo' )
+#	write.table(test, file = paste0("",out,"/clustered_and_pruned_BIC.txt"), sep = "\t", row.names = FALSE, quote = FALSE )
 
   combi <- test_new
 

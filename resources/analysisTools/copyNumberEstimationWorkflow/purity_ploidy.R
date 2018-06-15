@@ -9,7 +9,6 @@ library(getopt)
 
 script_dir = dirname(get_Rscript_filename())
 
-#source(paste0(script_dir, "/getopt.R"))
 source(paste0("",script_dir, "/functions.R"))
 
 minLim=0.47
@@ -24,12 +23,12 @@ spec <- matrix(c('file',     	'f', 1, "character", #"", # input
 		 'maxLim',	'a', 2, "numeric" ,  #"maximum peak value to be within balanced range",
 		 'minCoverage',	'm', 2, "numeric"   #"minimum coverage in control for a SNP to be considered"
                 ), ncol = 4, byrow = TRUE)
- 
+
 opt = getopt(spec);
 for(item in names(opt)){
        assign( item, opt[[item]])
 }
- 
+
 cat(paste0("file: ", file, "\n\n"))
 cat(paste0("gender_file: ", gender, "\n\n"))
 cat(paste0("segments: ", segments, "\n\n"))
@@ -82,7 +81,7 @@ averageCoverage <- sum(as.numeric(totalCoverage$totalReads))/sum(as.numeric(tota
 cat("average SNP coverage observed in control: ", averageCoverage, "\n")
 
 #get area under the curve for each segment's BAF distribution
-segAll$area = runTheStuff(segments, chromosomes = chromosomes, minLim=minLim, maxLim=maxLim, averageCoverage, minCov=minCoverage)
+segAll$area = runTheStuff(segments, chromosomes = chromosomes, minLim=minLim, maxLim=maxLim, averageCov = averageCoverage, minCov=minCoverage)
 cat(segAll$area[1:10],"\n")
 #estimate cut off for classification  into imbalanced and balanced
 densDiff <- density(segAll$area,from=0.25,to=0.35, na.rm=T)
@@ -110,7 +109,7 @@ selImbalanced <- which(segAll$area > densDiff$x[minDiffIndex])
 if(length(selImbalanced)>1){
   segAll$peaks[selImbalanced] <- 2
 }
-#write.table(segAll, file = paste0("",out, "/peaks.txt"), sep = "\t", row.names = FALSE, quote = FALSE) 
+#write.table(segAll, file = paste0("",out, "/peaks.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
 
 ## it may affect, they were in `for (fac in facts)` loop
 #table = subset(table, !is.na(Btumor) & !is.na(Atumor))

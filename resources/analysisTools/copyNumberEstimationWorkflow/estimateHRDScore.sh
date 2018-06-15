@@ -3,7 +3,6 @@
 # Copyright (c) 2017 The ACEseq workflow developers.
 # Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 
-source ${CONFIG_FILE}
 
 PIPELINE_DIR=`dirname ${TOOL_HRD_ESTIMATION}`
 	if [[ "$?" != 0 ]]
@@ -65,8 +64,6 @@ do
 		echo "There was a non-zero exit code while smoothing segments" 
 		exit 2
 	fi
-
-	patientsex=`cat ${FILENAME_SEX:-iDoNotExist.txt}`
 
 	if [[ "$?" != 0 ]]
 	then

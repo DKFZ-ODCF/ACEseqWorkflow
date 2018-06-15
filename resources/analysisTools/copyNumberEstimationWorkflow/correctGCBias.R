@@ -12,8 +12,6 @@ library(getopt)
 
 script_dir = dirname(get_Rscript_filename())
 
-#source(paste0(script_dir, "/getopt.R"))
-
 #default Parameter
 functionPath <- paste0(script_dir, "/correctGCBias_functions.R")
 scale_factor <- 0.9

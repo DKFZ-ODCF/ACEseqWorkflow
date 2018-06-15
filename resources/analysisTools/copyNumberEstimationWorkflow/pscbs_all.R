@@ -7,8 +7,6 @@ library(getopt)
 
 script_dir = dirname(get_Rscript_filename())
 
-#source(paste0(script_dir, "/getopt.R"))
-
 wd = getwd()
 libloc=NULL
 # set default values 
@@ -114,7 +112,9 @@ colnames(knownSegments) = c("chromosome", "start", "end", "length")
     
 # start pscbs
 cat("start pscbs\n")
-#remove a line in `DNAcopy::segment`
+#library(PSCBS, lib.loc="/home/bludau/R/x86_64-unknown-linux-gnu-library/2.13")
+# lib.loc needs to be specified since source code has been modified
+# remove a line in `DNAcopy::segment`
 #body(segment)[[4]] = substitute(print("hack")) # minimum width 
 
 

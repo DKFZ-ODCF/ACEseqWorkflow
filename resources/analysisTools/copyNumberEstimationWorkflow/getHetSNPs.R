@@ -11,9 +11,6 @@ library(data.table)
 
 script_dir = dirname(get_Rscript_filename())
 
-#source(paste0(script_dir, "/getopt.R"))
-
-
 readfile <- function(filename, chrom){
 		colNamesAllele <- c("CHROM", "POS", "An", "Bn", "At", "Bt", "haplo")
 		write( paste("Reading ", chrom," from ", file_snp, "...\n" ), stderr())

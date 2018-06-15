@@ -399,7 +399,7 @@ completeSeg = function( comb, Ploidy, tcc, id, solutionPossible=NA, sex=sex) {
 	colnames(comb_out)[1] <- "#chromosome"
 
 
-	write.table(comb_out, paste0("",outDir, "/",id, "_comb_pro_extra",round(Ploidy, digits = 3), "_",tcc, ".txt"), sep = "\t", row.names = FALSE, quote = FALSE) 
+	write.table(comb_out, paste0("",outDir, "/",id, "_comb_pro_extra",round(Ploidy, digits = 3), "_",tcc, ".txt"), sep = "\t", row.names = FALSE, quote = FALSE)
 
 	important_cols <- c('#chromosome', 'start', 'end', 'length', 'tcnMeanRaw', 'tcnMean', 'SV.Type', 'c1Mean', 'c2Mean', 'dhMean', 'dhMax', 'genotype', 'CNA.type', 'tcnNbrOfHets','minStart', 'maxStart', 'minStop', 'maxStop')
   	important_sub  <- comb_out[,important_cols]

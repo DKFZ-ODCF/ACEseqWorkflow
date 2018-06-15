@@ -8,8 +8,6 @@ library(getopt)
 
 script_dir = dirname(get_Rscript_filename())
 
-#source(paste0(script_dir, "/getopt.R"))
-
 ################################################################################
 ## I wrap getopt into a function, which can check options, default values
 ## and export options to global environment

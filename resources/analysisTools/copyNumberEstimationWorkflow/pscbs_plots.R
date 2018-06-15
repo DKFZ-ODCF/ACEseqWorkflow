@@ -7,10 +7,9 @@
 library(getopt)
 script_dir = dirname(get_Rscript_filename())
 
-#source(paste0(script_dir, "/getopt.R"))
 
 spec <- matrix(c('SNPfile',       'f', 1, "character", 
-                 'svFile',     'c', 1, "character", 
+                 'svFile',     	  'c', 1, "character",
                  'segments',      's', 1, "character", 
                  'outfile',       'o', 1, "character", 
                  'chrLengthFile', 'l', 1, "character", 
@@ -19,7 +18,7 @@ spec <- matrix(c('SNPfile',       'f', 1, "character",
                  'file_sex',      'g', 1, "character", 
                  'sv_YN',         'y', 1, "character", 
                  'ID',            'i', 1, "character", 
-		 'pipelineDir',	  'd', 1, "character" 
+				 'pipelineDir',	  'd', 1, "character"
                 ), ncol = 4, byrow = TRUE)
                
  
@@ -42,7 +41,7 @@ cat("\n")
 
 source( file.path(pipelineDir, "pscbs_plots_functions.R") )
 source( file.path(pipelineDir, "annotateCNA.R") )
-		                 
+
 cat("reading \n\n")
 
 #read data and set variables

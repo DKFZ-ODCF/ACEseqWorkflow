@@ -3,7 +3,7 @@
 # Copyright (c) 2017 The ACEseq workflow developers.
 # Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 
-set -p pipefail
+set -o pipefail
 
 tmp_breakpoints=${FILENAME_BREAKPOINTS}.tmp
 svPoints_tmp=${FILENAME_SV_POINTS}.tmp

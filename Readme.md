@@ -1,7 +1,7 @@
 # ACEseq Workflow 
 
 Author: Kortine Kleinheinz
-k.kleinhein@dkfz-heidelberg.de
+k.kleinheinz@dkfz-heidelberg.de
 
 ## Description
 ACEseq (Allele-specific copy number estimation with whole genome sequencing) is a tool to estimate allele-specific copy numbers from WGS data and comes along with a variety of features:
@@ -12,11 +12,15 @@ ACEseq (Allele-specific copy number estimation with whole genome sequencing) is 
 * HRD/TAI/LST score estimation 
 * with/without matched control processing 
 
-The algorithm is further documented under aceseq.readthedocs.io
+## Prepackaged files
 
-## Installation
+ACEseq is available as Docker version and as Roddy-based version for execution in hpc clusters.
+Both versions can be downloaded from http://bfg-nfs3.ipmb.uni-heidelberg.de. 
 
-### High-Throughput Cluster with Shared Storage
+The prepackaged zip file contains a full Roddy / Plugin setup and includes different scripts to 
+install all necessary software and download the required reference files.
+
+Further information about the usage and installation of both versions can be found at our Read The Docs website: (http://aceseq.readthedocs.io).
 
 #### Conda
 
@@ -33,7 +37,7 @@ conda config --add channels bioconda
 Then install the environment
 
 ```
-conda env create -n ACEseqWorkflow -f $PATH_TO_PLUGIN_DIRECTORY/resources/copyNumberEstimationWorkflow/environments/conda.yml
+conda env create -n ACEseqWorkflow -f $PATH_TO_PLUGIN_DIRECTORY/resources/analysisTools/copyNumberEstimationWorkflow/environments/conda.yml
 ```
 
 The name of the Conda environment is arbitrary but needs to be consistent with the `condaEnvironmentName` variable in `resources/configurationFiles/analysisCopyNumberEstimation.xml`.
@@ -41,4 +45,7 @@ The name of the Conda environment is arbitrary but needs to be consistent with t
 #### Other
 
 If you do not want to use Conda, you can get a complete list of all packages and package versions Conda would install from the `resources/configurationFiles/conda.yaml`.
+
+
+
 

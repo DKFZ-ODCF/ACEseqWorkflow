@@ -376,7 +376,7 @@ mergePointsByError <- function( segments, clusterCenter, mainCluster ){
   #merge tose points in with less than minNumHets heterozygous SNPs in segment and that lie within 2 FWHM around center 
   sel <- which(segments$neighbour=="identical" & 
     ( segments$errorLength > segments$distTcn & segments$errorSNP > segments$distDH ) &
-    is.na(segments$SV.Type) & ! is.na(segments$cluster)) 
+    is.na(segments$SV.Type) & ! is.na(segments$cluster))
   
   if (length(sel)>0)
     segments$cluster[sel] <- mainCluster
