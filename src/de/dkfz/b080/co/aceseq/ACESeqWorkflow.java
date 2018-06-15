@@ -37,7 +37,6 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         BamFile bamControlMerged = new BamFile(_bamControlMerged);
         BamFile bamTumorMerged = new BamFile(_bamTumorMerged);
 
-        boolean runWithSV = runWithSV(context);
         boolean runWithCrest = getflag(context, "runWithCrest", false);
         boolean runQualityCheckOnly = getflag(context, "runQualityCheckOnly", false);
         boolean runWithFakeControl = getflag(context, "runWithFakeControl", false);
@@ -90,7 +89,7 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         Tuple2<SVFile, TextFile> mergedSvs = null;
 
 
-        if (runWithSv) {
+        if (runWithSV(context)) {
             mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0);
             if (mergedSvs == null) {
                 return allowMissingSVFile(context); // Here, exit with error (false) is possible
