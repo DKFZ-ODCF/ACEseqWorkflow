@@ -17,10 +17,13 @@ runWithoutControl	        false   Run analysis with matching control and estimat
 == Changelist
 
 
+* Version update to 2.0.0
+- add contours in 2D plots
+- add 1.0 (instead of 0.00001) to lengths when getting log2 for weights to consider segments with length=1
 - Add flags and checks for handling the sv file and remove null pointer exceptions
 - fix bug in tcc ploidy estimation
 
-* Version update to 1.2.10?
+* Version update to 1.2.10
 - add bioconda dependencies
 - replace all occurences of qq.R and getopt2 by getopt
 - replace all occurenced of name delly and crest, also in final output 
