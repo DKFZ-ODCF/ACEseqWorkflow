@@ -64,7 +64,7 @@
         <cvalue name='mergedBamSuffixList' value='${mergedBamSuffix}' type="string" description="A list of all known suffixes for merged bam files. I.e. merged.dupmark.bam, merged.mdup.bam..."/>
         <cvalue name='defaultMergedBamSuffix' value='${mergedBamSuffix}' type="string" description="The default suffix for merged bam files when they are created by Roddy."/>
 
-        <cvalue name='aceseqOutputDirectory' value='${outputAnalysisBaseDirectory}/ACEseq_${tumorSample}' type="path"/>
+        <cvalue name='aceseqOutputDirectory' value='${outputAnalysisBaseDirectory}/ACEseq_${tumorSample}_vs_${controlSample}' type="path"/>
         <cvalue name='svOutputDirectory' value='${outputAnalysisBaseDirectory}/SOPHIA_${tumorSample}_${controlSample}' type="path"/>
         <cvalue name='crestOutputDirectory' value='${outputAnalysisBaseDirectory}/crest' type="path"/>
         <cvalue name='cnvSnpOutputDirectory' value='${aceseqOutputDirectory}/cnv_snp' type="path"/>
@@ -451,9 +451,9 @@
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="1"/>
             </resourcesets>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SV"/>
+            <input type="file" typeof="SVFile" scriptparameter="FILENAME_SV"/>
             <output type="tuple">
-                <output type="file" fnpatternselectiontag="breakpointsSvs" typeof="SVFile" scriptparameter="FILENAME_BREAKPOINTS"/>
+                <output type="file" fnpatternselectiontag="breakpointsSvs" typeof="de.dkfz.b080.co.files.BreakpointsFile" scriptparameter="FILENAME_BREAKPOINTS"/>
                 <output type="file" fnpatternselectiontag="svPoints" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SV_POINTS"/>
             </output>
         </tool>
@@ -464,7 +464,7 @@
             </resourcesets>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
             <output type="tuple">
-                <output type="file" fnpatternselectiontag="breakpointsSvs" typeof="SVFile" scriptparameter="FILENAME_BREAKPOINTS"/>
+                <output type="file" fnpatternselectiontag="breakpointsSvs" typeof="de.dkfz.b080.co.files.BreakpointsFile" scriptparameter="FILENAME_BREAKPOINTS"/>
                 <output type="file" fnpatternselectiontag="svPoints" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SV_POINTS"/>
             </output>
         </tool>
@@ -477,7 +477,7 @@
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CREST_DELDUPINV"/>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CREST_TRANSLOC"/>
             <output type="tuple">
-                <output type="file" fnpatternselectiontag="breakpointsSvs" typeof="SVFile" scriptparameter="FILENAME_BREAKPOINTS"/>
+                <output type="file" fnpatternselectiontag="breakpointsSvs" typeof="de.dkfz.b080.co.files.BreakpointsFile" scriptparameter="FILENAME_BREAKPOINTS"/>
                 <output type="file" fnpatternselectiontag="svPoints" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SV_POINTS"/>
             </output>
         </tool>
@@ -486,7 +486,7 @@
             <resourcesets>
                 <rset size="l" memory="50" cores="2" nodes="1" walltime="20"/>
             </resourcesets>
-            <input type="file" typeof="SVFile" scriptparameter="FILENAME_BREAKPOINTS"/>
+            <input type="file" typeof="de.dkfz.b080.co.files.BreakpointsFile" scriptparameter="FILENAME_BREAKPOINTS"/>
             <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILE_PSCBS_DATA"/>
             <output type="file" fnpatternselectiontag="segments" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEGMENTS"/>
         </tool>
@@ -649,9 +649,17 @@
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.pscbsGaps" selectiontag="snpPositions" pattern='${aceseqOutputDirectory}/${pid}_pscbs_data.txt.gz'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="crestDelDupInvFileTag" pattern='${crestOutputDirectory}/tumor_${pid}.${cvalue,name="crestDelDupInvSuffix",default="DELDUPINV"}'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="crestTranslocFileTag" pattern='${crestOutputDirectory}/tumor_${pid}.${cvalue,name="crestTransSuffix",default="TX"}'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
+        <!--<filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
+        <!--<filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
+        <filename class="mergedSVFile" onTool="mergeBreakpointsAndSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
+        <filename class="mergedSVFile" onTool="mergeBreakpointsWithoutSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
+        <filename class="mergedSVFile" onTool="mergeBreakpointsAndSvCrest" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
+
+        <!--<filename class="TextFile" onScriptParameter="FILENAME_BREAKPOINTS" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
+
+
+
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="svPoints" pattern='${aceseqOutputDirectory}/${pid}_sv_points.txt'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeSv" selectiontag="svPoints" pattern='${aceseqOutputDirectory}/${pid}_sv_points.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.getSegmentAndGetSnps" selectiontag="segments" pattern='${aceseqOutputDirectory}/${pid}_fit.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.markSegsWithHomozygDel" pattern='${aceseqOutputDirectory}/${pid}_homozygous_deletion.txt.gz'/>
@@ -665,10 +673,13 @@
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.generatePlots" selectiontag="json" pattern='${aceseqOutputDirectory}/cnv_${pid}_parameter.json'/>
 	<filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.estimateHRD" pattern='${aceseqOutputDirectory}/checkpointHRD.txt'/>
 
-
         <!-- SV file used with the runSV flag. Always the same name, derives from any file type. -->
         <!--<filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeSv" selectiontag="svFileTag" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>-->
-        <filename class="SVFile" derivedFrom="BaseFile" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>
+        <!--<filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.getSVFile" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>-->
+
+        <!--<filename class="SVFile" derivedFrom="BaseFile" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>-->
+        <filename class="SVFile" derivedFrom="BasicBamFile" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>
+        <!--<filename class="SVFile" derivedFrom="BasicBamFile" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>-->
     </filenames>
 
 </configuration>

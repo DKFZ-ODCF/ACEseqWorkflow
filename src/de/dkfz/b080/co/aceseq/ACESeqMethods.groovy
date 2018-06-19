@@ -6,7 +6,7 @@
 
 package de.dkfz.b080.co.aceseq;
 
-import de.dkfz.b080.co.common.ParallelizationHelper;
+import de.dkfz.b080.co.common.ParallelizationHelper
 import de.dkfz.b080.co.files.*;
 import de.dkfz.roddy.Roddy;
 import de.dkfz.roddy.config.Configuration;
@@ -15,11 +15,7 @@ import de.dkfz.roddy.core.ExecutionContextError;
 import de.dkfz.roddy.execution.io.fs.FileSystemAccessProvider;
 import de.dkfz.roddy.execution.jobs.*;
 import de.dkfz.roddy.knowledge.files.*;
-import de.dkfz.roddy.knowledge.methods.GenericMethod;
-import static de.dkfz.roddy.execution.io.fs.FileSystemAccessProvider.*;
-import de.dkfz.roddy.plugins.LibrariesFactory
-import java.util.logging.Level
-
+import de.dkfz.roddy.knowledge.methods.GenericMethod
 
 /**
  * Created by kleinhei on 6/16/14.
@@ -138,40 +134,45 @@ final class ACESeqMethods {
         return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_GET_BREAKPOINTS, haplotypedSNPFile, correctedCovWinFile, genderFile);
     }
 
-    static BEJobResult getFileExistedFakeJobResult() {
-        return new BEJobResult(null, new FakeBEJob(new BEFakeJobID(BEFakeJobID.FakeJobReason.FILE_EXISTED)), null, null, null, null)
-    }
+//    static BEJobResult getFileExistedFakeJobResult() {
+//        return new BEJobResult(null, new FakeBEJob(new BEFakeJobID(BEFakeJobID.FakeJobReason.FILE_EXISTED)), null, null, null, null)
+//    }
 
     @ScriptCallingMethod
-    static Tuple2<SVFile, TextFile> mergeSv(TextFile knownSegmentsFile) {
-        TextFile svFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "svFileTag", null, null);
-        svFile.setAsSourceFile();
-        BEJobResult result = getFileExistedFakeJobResult()
-        svFile.setCreatingJobsResult(result);
+    static Tuple2<BreakpointsFile, TextFile> mergeSv(TextFile knownSegmentsFile, BasicBamFile bamfile) {
+//        TextFile svFile_old = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "svFileTag", null, null);
 
-        // TODO: The following checks should be done by ACEseqWorkflow.checkExecutability(). Unfortunately currently it is not trivial to get the name of the file whose existence to check.
-        boolean b = FileSystemAccessProvider.getInstance().checkBaseFiles(svFile);
-        if (b)
-            return (Tuple2<SVFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_AND_SV, knownSegmentsFile, svFile);
+//        final WorkflowUsingMergedBams workflow = (WorkflowUsingMergedBams) knownSegmentsFile.getExecutionContext().getWorkflow()
+//        final BasicBamFile bamfile = workflow.loadInitialBamFilesForDataset(knownSegmentsFile.getExecutionContext())[0]
+//        SVFile svFile_new = (SVFile) SVFile.constructManual(SVFile.class, bamfile, null, null, null, null, "svFileTag", null, null);
+        final SVFile svFile = getSVFile(bamfile);
+//        svFile.setAsSourceFile();
+//        final BEJobResult result = getFileExistedFakeJobResult()
+//        svFile.setCreatingJobsResult(result);
 
-        knownSegmentsFile.getExecutionContext().addErrorEntry(ExecutionContextError.EXECUTION_NOINPUTDATA.expand("SV files were not found in input path."));
-        return null;
+//        // TODO: The following checks should be done by ACEseqWorkflow.checkExecutability(). Unfortunately currently it is not trivial to get the name of the file whose existence to check.
+//        boolean b = FileSystemAccessProvider.getInstance().checkBaseFiles(svFile);
+//        if (b)
+        return (Tuple2<BreakpointsFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_AND_SV, knownSegmentsFile, svFile);
+
+//        knownSegmentsFile.getExecutionContext().addErrorEntry(ExecutionContextError.EXECUTION_NOINPUTDATA.expand("SV files were not found in input path."));
+//        return null;
     }
 
-    static BaseFile getSVFile(BaseFile anyFile) {
-        BaseFile svFile = BaseFile.deriveFrom(anyFile, SVFile.class.name)
+    static SVFile getSVFile(BaseFile anyFile) {
+        SVFile svFile = BaseFile.getFile(anyFile, SVFile.class.name) as SVFile
         svFile.setAsSourceFile()
         return svFile
     }
 
     @ScriptCallingMethod
-    static Tuple2<TextFile, TextFile> mergeNoSv(TextFile knownSegmentsFile) {
-        return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_WITHOUT_SV, knownSegmentsFile)
+    static Tuple2<BreakpointsFile, TextFile> mergeNoSv(TextFile knownSegmentsFile) {
+        return (Tuple2<BreakpointsFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_WITHOUT_SV, knownSegmentsFile)
     }
 
 
     @ScriptCallingMethod
-    static Tuple2<SVFile, TextFile> mergeCrest(TextFile knownSegmentsFile) {
+    static Tuple2<BreakpointsFile, TextFile> mergeCrest(TextFile knownSegmentsFile) {
         TextFile svFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "crestDelDupInvFileTag", null, null)
         TextFile translocFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "crestTranslocFileTag", null, null)
 
@@ -180,11 +181,11 @@ final class ACESeqMethods {
             knownSegmentsFile.getExecutionContext().addErrorEntry(ExecutionContextError.EXECUTION_NOINPUTDATA.expand("Crest files were not found in input path."))
             return null
         }
-        return (Tuple2<SVFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_AND_SV_CREST, knownSegmentsFile, svFile, translocFile);
+        return (Tuple2<BreakpointsFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_AND_SV_CREST, knownSegmentsFile, svFile, translocFile);
     }
 
     @ScriptCallingMethod
-    public static TextFile getSegmentAndGetSnps(BaseFile breaks, TextFile pscbsSnps) {
+    public static TextFile getSegmentAndGetSnps(BreakpointsFile breaks, TextFile pscbsSnps) {
         return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_GET_SEGMENTS_AND_SNPS, breaks, pscbsSnps);
     }
 

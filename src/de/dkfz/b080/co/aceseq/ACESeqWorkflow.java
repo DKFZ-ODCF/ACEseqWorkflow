@@ -10,9 +10,6 @@ import de.dkfz.b080.co.common.*;
 import de.dkfz.b080.co.files.*;
 import de.dkfz.roddy.config.*;
 import de.dkfz.roddy.core.ExecutionContext;
-import de.dkfz.roddy.core.ExecutionContextError;
-import de.dkfz.roddy.execution.io.fs.FileSystemAccessProvider;
-import de.dkfz.roddy.knowledge.files.BaseFile;
 import de.dkfz.roddy.knowledge.files.Tuple2;
 import de.dkfz.roddy.knowledge.files.Tuple3;
 import de.dkfz.roddy.knowledge.files.GenericFileGroup;
@@ -34,14 +31,14 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
     @Override
     public boolean execute(ExecutionContext context, BasicBamFile _bamControlMerged, BasicBamFile _bamTumorMerged) {
 
+
+        boolean runWithCrest = getFlag("runWithCrest", false);
+        boolean runQualityCheckOnly = getFlag("runQualityCheckOnly", false);
+        boolean runWithFakeControl = getFlag("runWithFakeControl", false);
+        boolean runWithoutControl = getFlag("runWithoutControl", false);
+
         BamFile bamControlMerged = new BamFile(_bamControlMerged);
         BamFile bamTumorMerged = new BamFile(_bamTumorMerged);
-
-        boolean runWithCrest = getflag(context, "runWithCrest", false);
-        boolean runQualityCheckOnly = getflag(context, "runQualityCheckOnly", false);
-        boolean runWithFakeControl = getflag(context, "runWithFakeControl", false);
-        boolean runWithoutControl = getflag(context, "runWithoutControl", false);
-
         context.getConfigurationValues().add(new ConfigurationValue("tumorSample", ((COFileStageSettings) _bamTumorMerged.getFileStage()).getSample().getName()));
         context.getConfigurationValues().add(new ConfigurationValue("controlSample", ((COFileStageSettings) _bamControlMerged.getFileStage()).getSample().getName()));
 
@@ -86,11 +83,11 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
 
 
         Tuple2<TextFile, TextFile> breakpoints = ACESeqMethods.pscbsGaps(haplotypedSNPFile, correctedWindowFile.value0, annotationResult.getGenderFile());
-        Tuple2<SVFile, TextFile> mergedSvs = null;
+        Tuple2<BreakpointsFile, TextFile> mergedSvs = null;
 
 
         if (runWithSV(context)) {
-            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0);
+            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0, _bamTumorMerged);
             if (mergedSvs == null) {
                 return allowMissingSVFile(context); // Here, exit with error (false) is possible
             }
@@ -121,12 +118,24 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         if (!runWithSV(context))
             return true;
 
+
+        BasicBamFile bamControlMerged = new BasicBamFile(loadInitialBamFilesForDataset(context)[0]);
+        BasicBamFile bamTumorMerged = new BasicBamFile(loadInitialBamFilesForDataset(context)[1]);
+        context.getConfigurationValues().add(new ConfigurationValue("tumorSample", ((COFileStageSettings) bamTumorMerged.getFileStage()).getSample().getName()));
+        context.getConfigurationValues().add(new ConfigurationValue("controlSample", ((COFileStageSettings) bamControlMerged.getFileStage()).getSample().getName()));
+
+
         // Check, if the file exists
-        boolean fileIsAccessible = context.fileIsAccessible(ACESeqMethods.getSVFile(getInitialBamFiles(context)[0]).getPath());
+        boolean fileIsAccessible = context.fileIsAccessible(ACESeqMethods.getSVFile(bamTumorMerged).getPath());
 
         // It is either allowed to run with the file or we see, if the file really exists.
         return allowMissingSVFile(context) || fileIsAccessible;
     }
+
+//    @Override
+//    public boolean setupExecution(ExecutionContext context) {
+//        return super.setupExecution(context);
+//    }
 
     @Override
     public boolean checkExecutability(ExecutionContext context) {
