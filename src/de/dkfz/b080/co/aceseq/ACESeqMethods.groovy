@@ -84,6 +84,7 @@ final class ACESeqMethods {
     static UnphasedGenotypeFileGroupByChromosome createUnphased(TextFile genotypeSNPFile) {
         Map<String, UnphasedGenotypeFile> listOfFiles = new LinkedHashMap<>();
         List<BaseFile> filesToCheck = new LinkedList<>();
+
         List<String> keyset = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "X");
         for (String chrIndex : keyset) {
             UnphasedGenotypeFile unphasedGenotypeFile = (UnphasedGenotypeFile) BaseFile.constructManual(UnphasedGenotypeFile.class, genotypeSNPFile);
@@ -92,10 +93,6 @@ final class ACESeqMethods {
             listOfFiles.put(chrIndex, unphasedGenotypeFile);
             filesToCheck.add(unphasedGenotypeFile);
         }
-
-//        TextFile unphasedGenotypeChrXFile = (TextFile)BaseFile.constructManual(TextFile.class, files.get("1"));
-//        UnphasedGenotypeChrXFile.overrideFilenameUsingSelectionTag("unphasedGenotypeChrXFile");
-//        filesToCheck.add(unphasedGenotypeFile);
 
         ExecutionContext context = filesToCheck[0].getExecutionContext();
         Map<String, Object> parameters = context.getDefaultJobParameters(ACEseqConstants.TOOL_CREATE_UNPHASED_GENOTYPE);
@@ -131,47 +128,23 @@ final class ACESeqMethods {
     }
 
     static Tuple2<TextFile, TextFile> pscbsGaps(TextFile haplotypedSNPFile, TextFile correctedCovWinFile, TextFile genderFile) {
-        return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_GET_BREAKPOINTS, haplotypedSNPFile, correctedCovWinFile, genderFile);
+        return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_GET_BREAKPOINTS, haplotypedSNPFile, correctedCovWinFile, genderFile)
     }
 
-//    static BEJobResult getFileExistedFakeJobResult() {
-//        return new BEJobResult(null, new FakeBEJob(new BEFakeJobID(BEFakeJobID.FakeJobReason.FILE_EXISTED)), null, null, null, null)
-//    }
-
-    @ScriptCallingMethod
     static Tuple2<BreakpointsFile, TextFile> mergeSv(TextFile knownSegmentsFile, BasicBamFile bamfile) {
-//        TextFile svFile_old = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "svFileTag", null, null);
-
-//        final WorkflowUsingMergedBams workflow = (WorkflowUsingMergedBams) knownSegmentsFile.getExecutionContext().getWorkflow()
-//        final BasicBamFile bamfile = workflow.loadInitialBamFilesForDataset(knownSegmentsFile.getExecutionContext())[0]
-//        SVFile svFile_new = (SVFile) SVFile.constructManual(SVFile.class, bamfile, null, null, null, null, "svFileTag", null, null);
-        final SVFile svFile = getSVFile(bamfile);
-//        svFile.setAsSourceFile();
-//        final BEJobResult result = getFileExistedFakeJobResult()
-//        svFile.setCreatingJobsResult(result);
-
-//        // TODO: The following checks should be done by ACEseqWorkflow.checkExecutability(). Unfortunately currently it is not trivial to get the name of the file whose existence to check.
-//        boolean b = FileSystemAccessProvider.getInstance().checkBaseFiles(svFile);
-//        if (b)
-        return (Tuple2<BreakpointsFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_AND_SV, knownSegmentsFile, svFile);
-
-//        knownSegmentsFile.getExecutionContext().addErrorEntry(ExecutionContextError.EXECUTION_NOINPUTDATA.expand("SV files were not found in input path."));
-//        return null;
+        return (Tuple2<BreakpointsFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_AND_SV, knownSegmentsFile, getSVFile(bamfile))
     }
 
-    static SVFile getSVFile(BaseFile anyFile) {
+    static SVFile getSVFile(BasicBamFile anyFile) {
         SVFile svFile = BaseFile.getFile(anyFile, SVFile.class.name) as SVFile
         svFile.setAsSourceFile()
         return svFile
     }
 
-    @ScriptCallingMethod
     static Tuple2<BreakpointsFile, TextFile> mergeNoSv(TextFile knownSegmentsFile) {
         return (Tuple2<BreakpointsFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_WITHOUT_SV, knownSegmentsFile)
     }
 
-
-    @ScriptCallingMethod
     static Tuple2<BreakpointsFile, TextFile> mergeCrest(TextFile knownSegmentsFile) {
         TextFile svFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "crestDelDupInvFileTag", null, null)
         TextFile translocFile = (TextFile) BaseFile.constructManual(TextFile.class, knownSegmentsFile, null, null, null, null, "crestTranslocFileTag", null, null)

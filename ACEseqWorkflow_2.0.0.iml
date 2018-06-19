@@ -19,39 +19,19 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="R User Library" level="project" />
     <orderEntry type="library" name="R Skeletons" level="application" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="file://$MODULE_DIR$/../../Roddy/dist/bin/3.0.8/lib" />
-          <root url="jar://$MODULE_DIR$/../../Roddy/dist/bin/3.0.8/Roddy.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/../../Roddy/dist/bin/3.0.8/lib" />
-          <root url="file://$MODULE_DIR$/../../Roddy/RoddyCore/src" />
-        </SOURCES>
-        <jarDirectory url="file://$MODULE_DIR$/../../Roddy/dist/bin/3.0.8/lib" recursive="false" />
-        <jarDirectory url="file://$MODULE_DIR$/../../Roddy/dist/bin/3.0.8/lib" recursive="false" type="SOURCES" />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../PluginBase_1.2.1/PluginBase.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
+    <orderEntry type="module" module-name="PluginBase" />
+    <orderEntry type="library" name="Gradle: org.codehaus.groovy:groovy-all:2.4.9" level="project" />
+    <orderEntry type="module" module-name="RoddyToolLib" />
+    <orderEntry type="module" module-name="BatchEuphoria" />
+    <orderEntry type="module" module-name="Roddy_main" />
+    <orderEntry type="module" module-name="BatchEuphoria_main" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../COWorkflowsBasePlugin_1.0.3/COWorkflowsBasePlugin.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/../COWorkflowsBasePlugin_1.0.3/src" />
-        </SOURCES>
+        <SOURCES />
       </library>
     </orderEntry>
   </component>

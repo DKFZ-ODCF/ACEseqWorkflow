@@ -630,14 +630,14 @@
 
 
         <filename class="UnphasedGenotypeFile" derivedFrom="TextFile"
-                  pattern='${imputeOutputDirectory}/${cvalue, name="unphasedGenotypesPrefix", default="unphased_chr"}#CHROMOSOME_INDEX#.${cvalue,name="unphasedGenotypesSuffix",default="vcf"}'/>
+                  pattern='${imputeOutputDirectory}/${cvalue, name="unphasedGenotypesPrefix", default="unphased_chr"}${fgindex}.${cvalue,name="unphasedGenotypesSuffix",default="vcf"}'/>
         <!--
                 <filename class="TextFile" derivedFrom="TextFile" selectiontag="unphasedGenotypeChrXFile"
                           pattern='${imputeOutputDirectory}/${cvalue, name="unphasedGenotypesPrefix", default="unphased_chr"}X.${cvalue,name="unphasedGenotypesSuffix",default="vcf"}'/>
         -->
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.addHaploTypes" pattern='${aceseqOutputDirectory}/${pid}_all.snp.haplo.tab.gz'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.createControlBafPlot" pattern='${plotOutputDirectory}/checkpointBaf.txt'/>
-        <filename class="TextFile" onMethod="CoverageWindowsFileGroupByChromosome.annotate" selectiontag="annotatedCoverage" pattern='${cnvSnpOutputDirectory}/${pid}.chr#CHROMOSOME_INDEX#.${cvalue,name="CNV_ANNO_SUFFIX"}'/>
+        <filename class="TextFile" onMethod="CoverageWindowsFileGroupByChromosome.annotate" selectiontag="annotatedCoverage" pattern='${cnvSnpOutputDirectory}/${pid}.chr${fgindex}.${CNV_ANNO_SUFFIX}'/>
         <filename class="TextFile" onMethod="CoverageWindowsFileGroupByChromosome.annotate" selectiontag="genderFile" pattern='${aceseqOutputDirectory}/${pid}_sex.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.replaceControl" pattern='${aceseqOutputDirectory}/checkpointFakeControl.txt'/>
         <filename class="TextFile" onMethod="CoverageWindowsFileAnnotationResult.mergeAndFilterCoverageWindowFiles" pattern='${aceseqOutputDirectory}/${pid}_all.cnv.tab.gz'/>
@@ -649,14 +649,12 @@
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.pscbsGaps" selectiontag="snpPositions" pattern='${aceseqOutputDirectory}/${pid}_pscbs_data.txt.gz'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="crestDelDupInvFileTag" pattern='${crestOutputDirectory}/tumor_${pid}.${cvalue,name="crestDelDupInvSuffix",default="DELDUPINV"}'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="crestTranslocFileTag" pattern='${crestOutputDirectory}/tumor_${pid}.${cvalue,name="crestTransSuffix",default="TX"}'/>
-        <!--<filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
-        <!--<filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
-        <filename class="mergedSVFile" onTool="mergeBreakpointsAndSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
-        <filename class="mergedSVFile" onTool="mergeBreakpointsWithoutSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
-        <filename class="mergedSVFile" onTool="mergeBreakpointsAndSvCrest" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
 
-        <!--<filename class="TextFile" onScriptParameter="FILENAME_BREAKPOINTS" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
 
+        <filename class="BreakpointsFile" onScriptParameter="FILENAME_BREAKPOINTS" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
+        <!--<filename class="MergedSVFile" onTool="mergeBreakpointsAndSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
+        <!--<filename class="MergedSVFile" onTool="mergeBreakpointsWithoutSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
+        <!--<filename class="MergedSVFile" onTool="mergeBreakpointsAndSvCrest" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
 
 
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="svPoints" pattern='${aceseqOutputDirectory}/${pid}_sv_points.txt'/>
@@ -671,15 +669,10 @@
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.estimatePurityPloidy" pattern='${aceseqOutputDirectory}/${pid}_ploidy_purity_2D.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.generatePlots" selectiontag="checkpoint" pattern='${aceseqOutputDirectory}/checkpointPlots.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.generatePlots" selectiontag="json" pattern='${aceseqOutputDirectory}/cnv_${pid}_parameter.json'/>
-	<filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.estimateHRD" pattern='${aceseqOutputDirectory}/checkpointHRD.txt'/>
+	    <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.estimateHRD" pattern='${aceseqOutputDirectory}/checkpointHRD.txt'/>
 
         <!-- SV file used with the runSV flag. Always the same name, derives from any file type. -->
-        <!--<filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeSv" selectiontag="svFileTag" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>-->
-        <!--<filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.getSVFile" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>-->
-
-        <!--<filename class="SVFile" derivedFrom="BaseFile" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>-->
         <filename class="SVFile" derivedFrom="BasicBamFile" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>
-        <!--<filename class="SVFile" derivedFrom="BasicBamFile" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>-->
     </filenames>
 
 </configuration>
