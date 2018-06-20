@@ -37,15 +37,22 @@ public class CoverageWindowsFileGroupByChromosome extends FileGroup {
     public CoverageWindowsFileAnnotationResult annotate() {
         List<TextFile> listOfFiles = new LinkedList<>();
         List<BaseFile> filesToCheck = new LinkedList<>();
+
         for (String chrIndex : files.keySet()) {
-            TextFile tf = (TextFile)BaseFile.constructManual(TextFile.class, files.get(chrIndex));
-            tf.overrideFilenameUsingSelectionTag("annotatedCoverage");
-            String path = tf.getAbsolutePath();
-            tf.setPath(new File(path.replace("#CHROMOSOME_INDEX#", chrIndex)));
+            BaseFile src = files.get(chrIndex);
+            TextFile tf = (TextFile) BaseFile.constructGeneric(TextFile.class,
+                    src, null, null, null,
+                    "FILENAME_BREAKPOINTS",
+                    "annotatedCoverage",
+                    chrIndex, src.getFileStage(), null);
             listOfFiles.add(tf);
             filesToCheck.add(tf);
         }
-        TextFile genderFile = (TextFile)BaseFile.constructManual(TextFile.class, files.get("1"));
+        TextFile genderFile = (TextFile) BaseFile.constructGeneric(TextFile.class,
+                files.get("1"), null, null, null,
+                "FILENAME_BREAKPOINTS",
+                "genderFile",
+                files.get("1").getFileStage(), null);
         genderFile.overrideFilenameUsingSelectionTag("genderFile");
         filesToCheck.add(genderFile);
 
@@ -53,7 +60,7 @@ public class CoverageWindowsFileGroupByChromosome extends FileGroup {
         Map<String, Object> parameters = run.getDefaultJobParameters(ACEseqConstants.TOOL_ANNOTATE_COV_WIN);
         parameters.put("FILENAME_SEX", genderFile.getAbsolutePath());
 
-        Job job = new Job(run, run.createJobName((BaseFile)getFilesInGroup().get(0), ACEseqConstants.TOOL_ANNOTATE_COV_WIN, true), ACEseqConstants.TOOL_ANNOTATE_COV_WIN, null, parameters, (List<BaseFile>)getFilesInGroup(), filesToCheck);
+        Job job = new Job(run, run.createJobName((BaseFile) getFilesInGroup().get(0), ACEseqConstants.TOOL_ANNOTATE_COV_WIN, true), ACEseqConstants.TOOL_ANNOTATE_COV_WIN, null, parameters, (List<BaseFile>) getFilesInGroup(), filesToCheck);
         BEJobResult jobResult = job.run();
         for (BaseFile baseFile : filesToCheck) {
             baseFile.setCreatingJobsResult(jobResult);
