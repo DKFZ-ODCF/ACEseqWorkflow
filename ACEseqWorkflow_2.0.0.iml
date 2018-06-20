@@ -23,7 +23,6 @@
     <orderEntry type="library" name="Gradle: org.codehaus.groovy:groovy-all:2.4.9" level="project" />
     <orderEntry type="module" module-name="RoddyToolLib" />
     <orderEntry type="module" module-name="BatchEuphoria" />
-    <orderEntry type="module" module-name="Roddy_main" />
     <orderEntry type="module" module-name="BatchEuphoria_main" />
     <orderEntry type="module-library">
       <library>
@@ -31,9 +30,34 @@
           <root url="jar://$MODULE_DIR$/../COWorkflowsBasePlugin_1.0.3/COWorkflowsBasePlugin.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/../COWorkflowsBasePlugin_1.0.3/src" />
+        </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="RoddyCore" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../Roddy/dist/bin/develop/Roddy.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/../../Roddy/RoddyCore/src" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../../Roddy/dist/bin/develop/lib" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/../../Roddy/dist/bin/develop/lib" />
+        </SOURCES>
+        <jarDirectory url="file://$MODULE_DIR$/../../Roddy/dist/bin/develop/lib" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/../../Roddy/dist/bin/develop/lib" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
   </component>
 </module>
