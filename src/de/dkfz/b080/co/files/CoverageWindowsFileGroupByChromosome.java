@@ -48,11 +48,8 @@ public class CoverageWindowsFileGroupByChromosome extends FileGroup {
             listOfFiles.add(tf);
             filesToCheck.add(tf);
         }
-        TextFile genderFile = (TextFile) BaseFile.constructGeneric(TextFile.class,
-                files.get("1"), null, null, null,
-                "FILENAME_BREAKPOINTS",
-                "genderFile",
-                files.get("1").getFileStage(), null);
+
+        TextFile genderFile = (TextFile)BaseFile.constructManual(TextFile.class, files.get("1"));
         genderFile.overrideFilenameUsingSelectionTag("genderFile");
         filesToCheck.add(genderFile);
 
