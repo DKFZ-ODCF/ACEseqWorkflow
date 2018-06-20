@@ -65,6 +65,9 @@ do
 		exit 2
 	fi
 
+
+    patientsex=`cat ${FILENAME_SEX:-iDoNotExist.txt}`
+
 	if [[ "$?" != 0 ]]
 	then
 		echo "There was a non-zero exit code getting patient sex" 
