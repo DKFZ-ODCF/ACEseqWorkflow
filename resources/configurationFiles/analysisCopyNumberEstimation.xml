@@ -651,9 +651,9 @@
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="crestTranslocFileTag" pattern='${crestOutputDirectory}/tumor_${pid}.${cvalue,name="crestTransSuffix",default="TX"}'/>
         <!--<filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
         <!--<filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
-        <filename class="mergedSVFile" onTool="mergeBreakpointsAndSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
-        <filename class="mergedSVFile" onTool="mergeBreakpointsWithoutSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
-        <filename class="mergedSVFile" onTool="mergeBreakpointsAndSvCrest" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
+        <filename class="BreakpointsFile" onTool="mergeBreakpointsAndSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
+        <filename class="BreakpointsFile" onTool="mergeBreakpointsWithoutSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
+        <filename class="BreakpointsFile" onTool="mergeBreakpointsAndSvCrest" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
 
         <!--<filename class="TextFile" onScriptParameter="FILENAME_BREAKPOINTS" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
 
