@@ -49,7 +49,7 @@ public class CoverageWindowsFileGroupByChromosome extends FileGroup {
             filesToCheck.add(tf);
         }
 
-        TextFile genderFile = (TextFile)BaseFile.constructManual(TextFile.class, files.get("1"));
+        GenderFile genderFile = (GenderFile)BaseFile.constructManual(GenderFile.class, files.get("1"));
         genderFile.overrideFilenameUsingSelectionTag("genderFile");
         filesToCheck.add(genderFile);
 

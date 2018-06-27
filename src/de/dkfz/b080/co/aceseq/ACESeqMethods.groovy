@@ -69,11 +69,11 @@ final class ACESeqMethods {
     }
 
 
-    static Tuple2<PhasedGenotypeFile, HaploblockGroupFile> imputeGenotypeX(TextFile sexFile, BamFile controlBam) {
+    static Tuple2<PhasedGenotypeFile, HaploblockGroupFile> imputeGenotypeX(GenderFile sexFile, BamFile controlBam) {
         return (Tuple2<PhasedGenotypeFile, HaploblockGroupFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_IMPUTE_GENOTYPEX, controlBam, sexFile);
     }
 
-    static Tuple2<PhasedGenotypeFile, HaploblockGroupFile> imputeGenotypeX(TextFile sexFile, UnphasedGenotypeFileGroupByChromosome unphasedGenotypeFiles) {
+    static Tuple2<PhasedGenotypeFile, HaploblockGroupFile> imputeGenotypeX(GenderFile sexFile, UnphasedGenotypeFileGroupByChromosome unphasedGenotypeFiles) {
         return (Tuple2<PhasedGenotypeFile, HaploblockGroupFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_IMPUTE_GENOTYPEX_NOMPILEUP, unphasedGenotypeFiles.getFiles().get("X"), sexFile);
     }
 
@@ -115,11 +115,11 @@ final class ACESeqMethods {
         return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_ADD_HAPLOTYPES_TO_SNP_FILE, mergedAndFilteredSNPFile, phasedGenotypes, phasedGenotypeX);
     }
 
-    static TextFile createControlBafPlot(TextFile haplotypedSNPFile, TextFile genderFile) {
+    static TextFile createControlBafPlot(TextFile haplotypedSNPFile, GenderFile genderFile) {
         return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_CREATE_CONTROL_BAF_PLOTS, haplotypedSNPFile, genderFile);
     }
 
-    static TextFile replaceControl(TextFile genderFile) {
+    static TextFile replaceControl(GenderFile genderFile) {
         return (TextFile) GenericMethod.callGenericTool("replaceBadControl", genderFile);
     }
 
@@ -127,7 +127,7 @@ final class ACESeqMethods {
         return (Tuple3<TextFile, TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_CORRECT_GC_BIAS, mergedAndFilteredCovWinFile);
     }
 
-    static Tuple2<TextFile, TextFile> pscbsGaps(TextFile haplotypedSNPFile, TextFile correctedCovWinFile, TextFile genderFile) {
+    static Tuple2<TextFile, TextFile> pscbsGaps(TextFile haplotypedSNPFile, TextFile correctedCovWinFile, GenderFile genderFile) {
         return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_GET_BREAKPOINTS, haplotypedSNPFile, correctedCovWinFile, genderFile)
     }
 
@@ -173,7 +173,7 @@ final class ACESeqMethods {
     }
 
     @ScriptCallingMethod
-    static Tuple2<TextFile, TextFile> clusterPruneSegments(TextFile segmentsFile, TextFile snpsFile, TextFile genderFile, TextFile correctParams) {
+    static Tuple2<TextFile, TextFile> clusterPruneSegments(TextFile segmentsFile, TextFile snpsFile, GenderFile genderFile, TextFile correctParams) {
         return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_CLUSTER_AND_PRUNE_SEGMENTS, segmentsFile, snpsFile, genderFile, correctParams);
     }
 
@@ -183,17 +183,17 @@ final class ACESeqMethods {
     }
 
     @ScriptCallingMethod
-    static TextFile estimatePeaks(TextFile segments, TextFile snpsFile, TextFile genderFile) {
+    static TextFile estimatePeaks(TextFile segments, TextFile snpsFile, GenderFile genderFile) {
         return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_ESTIMATE_PEAKS_FOR_PURITY, segments, snpsFile, genderFile);
     }
 
     @ScriptCallingMethod
-    static TextFile estimatePurityPloidy(TextFile segments, TextFile genderFile) {
+    static TextFile estimatePurityPloidy(TextFile segments, GenderFile genderFile) {
         return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_ESTIMATE_PURITY_AND_PLOIDY, segments, genderFile);
     }
 
     @ScriptCallingMethod
-    static Tuple2<TextFile, TextFile> generatePlots(TextFile segments, TextFile snpsFile, TextFile svPoints, TextFile purityPloidyFile, TextFile genderFile) {
+    static Tuple2<TextFile, TextFile> generatePlots(TextFile segments, TextFile snpsFile, TextFile svPoints, TextFile purityPloidyFile, GenderFile genderFile) {
         return (Tuple2<TextFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_GENERATE_RESULTS_AND_PLOTS, segments, snpsFile, svPoints, purityPloidyFile, genderFile);
     }
 
@@ -203,7 +203,7 @@ final class ACESeqMethods {
 //    }
 
     @ScriptCallingMethod
-    static TextFile estimateHRD(TextFile genderFile, TextFile cnvParameterFile) {
+    static TextFile estimateHRD(GenderFile genderFile, TextFile cnvParameterFile) {
         return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_ESTIMATE_HRD_SCORE, genderFile, cnvParameterFile);
     }
 

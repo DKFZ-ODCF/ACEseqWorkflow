@@ -19,9 +19,9 @@ import static de.dkfz.b080.co.aceseq.ACEseqConstants.TOOL_MERGE_AND_FILTER_CNV_F
  */
 public class CoverageWindowsFileAnnotationResult extends FileGroup {
     private final List<TextFile> listOfFiles;
-    private final TextFile genderFile;
+    private final GenderFile genderFile;
 
-    public CoverageWindowsFileAnnotationResult(List<TextFile> listOfFiles, TextFile genderFile) {
+    public CoverageWindowsFileAnnotationResult(List<TextFile> listOfFiles, GenderFile genderFile) {
         super(listOfFiles);
         super.addFile(genderFile);
         this.listOfFiles = listOfFiles;
@@ -37,7 +37,7 @@ public class CoverageWindowsFileAnnotationResult extends FileGroup {
         return file;
      }
 
-    public TextFile getGenderFile() {
+    public GenderFile getGenderFile() {
         return genderFile;
     }
 }

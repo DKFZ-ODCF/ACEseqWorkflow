@@ -638,7 +638,7 @@
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.addHaploTypes" pattern='${aceseqOutputDirectory}/${pid}_all.snp.haplo.tab.gz'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.createControlBafPlot" pattern='${plotOutputDirectory}/checkpointBaf.txt'/>
         <filename class="TextFile" onMethod="CoverageWindowsFileGroupByChromosome.annotate" selectiontag="annotatedCoverage" pattern='${cnvSnpOutputDirectory}/${pid}.chr${fgindex}.${CNV_ANNO_SUFFIX}'/>
-        <filename class="TextFile" onMethod="CoverageWindowsFileGroupByChromosome.annotate" selectiontag="genderFile" pattern='${aceseqOutputDirectory}/${pid}_sex.txt'/>
+        <filename class="GenderFile" onMethod="CoverageWindowsFileGroupByChromosome.annotate" selectiontag="genderFile" pattern='${aceseqOutputDirectory}/${pid}_sex.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.replaceControl" pattern='${aceseqOutputDirectory}/checkpointFakeControl.txt'/>
         <filename class="TextFile" onMethod="CoverageWindowsFileAnnotationResult.mergeAndFilterCoverageWindowFiles" pattern='${aceseqOutputDirectory}/${pid}_all.cnv.tab.gz'/>
         <filename class="TextFile" derivedFrom='TextFile' selectiontag='covWinFileWithBadControl' pattern='${aceseqOutputDirectory}/${pid}_all.cnv.tab.gz'/>
