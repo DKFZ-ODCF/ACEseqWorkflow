@@ -5,7 +5,7 @@
   -->
 
 <configuration name='copyNumberEstimationAnalysis' description='CNV Calling for NGS data.'
-               configurationType='analysis' class='de.dkfz.roddy.core.Analysis' workflowClass='de.dkfz.b080.co.aceseq.ACESeqWorkflow'
+               configurationType='analysis' class='de.dkfz.roddy.core.Analysis' workflowClass='ACESeqWorkflow'
                runtimeServiceClass='de.dkfz.b080.co.common.BasicCOProjectsRuntimeService'
                imports="commonCOWorkflowsSettings"
                listOfUsedTools="mergeAndFilterSnpFiles,cnvSnpGeneration,annotateCnvFiles,imputeGenotypes,imputeGenotypes_X,addHaplotypesToSnpFile,getBreakpoints,mergeBreakpointsAndSv,getSegmentsAndSnps,markHomozygousDeletions"
@@ -282,12 +282,12 @@
             <resourcesets>
                 <rset size="l" memory="2" cores="2" nodes="1" walltime="15"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.BamFile" scriptparameter="FILE_TUMOR_BAM"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.BamFile" scriptparameter="FILE_CONTROL_BAM"/>
+            <input type="file" typeof="BamFile" scriptparameter="FILE_TUMOR_BAM"/>
+            <input type="file" typeof="BamFile" scriptparameter="FILE_CONTROL_BAM"/>
             <input type="string" setby="callingCode" scriptparameter="PARM_CHR_INDEX"/>
-            <output type="filegroup" typeof="de.dkfz.b080.co.files.CnvSnpGeneratorResultFileGroup">
-                <output type="file" typeof="de.dkfz.b080.co.files.SNPPositionFile" scriptparameter="FILENAME_SNP_POS"/>
-                <output type="file" typeof="de.dkfz.b080.co.files.CoverageWindowsFile" scriptparameter="FILENAME_COV_WIN"/>
+            <output type="filegroup" typeof="CnvSnpGeneratorResultFileGroup">
+                <output type="file" typeof="SNPPositionFile" scriptparameter="FILENAME_SNP_POS"/>
+                <output type="file" typeof="CoverageWindowsFile" scriptparameter="FILENAME_COV_WIN"/>
             </output>
         </tool>
 
@@ -295,64 +295,61 @@
             <resourcesets>
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="4"/>
             </resourcesets>
+            <input type="file" typeof="GenderFile" scriptparameter="FILENAME_SEX"/>
+            <input type="filegroup" typeof="GenericFileGroup" scriptparameter="COV_WIN_FILES" passas="array"/>
+            <output type="filegroup" typeof="GenericFileGroup" fileclass="TextFile" selectiontag="annotatedCoverage" scriptparameter="OUTFILES"/>
         </tool>
 
         <tool name="replaceBadControl" value="replaceControl.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="5"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEX"/>
-            <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_FAKECONTROL"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEX"/>
+            <output type="file" typeof="TextFile" scriptparameter="FILENAME_CHECKPOINT_FAKECONTROL"/>
         </tool>
 
         <tool name="mergeAndFilterCnvFiles" value="cnvMergeFilter.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="5"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="IGNORETHIS" passas="array"/>
+            <input type="file" typeof="TextFile" scriptparameter="IGNORETHIS" passas="array"/>
             <input type="filegroup" typeof="de.dkfz.roddy.knowledge.files.GenericFileGroup" scriptparameter="COV_WIN_FILES" passas="array"/>
-            <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_COV_WINDOWS_WG"/>
+            <output type="file" typeof="TextFile" scriptparameter="FILENAME_COV_WINDOWS_WG"/>
         </tool>
 
         <tool name="mergeAndFilterCnvFiles_withReplaceBadControl" value="cnvMergeFilter.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="5"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_FAKE_CONTROL"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_CHECKPOINT_FAKE_CONTROL"/>
             <input type="filegroup" typeof="de.dkfz.roddy.knowledge.files.GenericFileGroup" scriptparameter="COV_WIN_FILES" passas="array"/>
-            <output type="file" typeof="de.dkfz.b080.co.files.TextFile" fnpatternselectiontag="covWinFileWithBadControl" scriptparameter="FILENAME_COV_WINDOWS_WG"/>
+            <output type="file" typeof="TextFile" selectiontag="covWinFileWithBadControl" scriptparameter="FILENAME_COV_WINDOWS_WG"/>
         </tool>
 
         <tool name="mergeAndFilterSnpFiles" value="snvMergeFilter.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="5"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.BamFile" scriptparameter="FILE_TUMOR_BAM"/>
-            <input type="filegroup" typeof="de.dkfz.b080.co.files.SNPPositionFileGroupByChromosome" scriptparameter="SNP_POS_FILES" passas="array"/>
-            <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SNP_POSITIONS_WG"/>
+            <input type="file" typeof="BamFile" scriptparameter="FILE_TUMOR_BAM"/>
+            <input type="filegroup" typeof="SNPPositionFileGroupByChromosome" scriptparameter="SNP_POS_FILES" passas="array"/>
+            <output type="file" typeof="TextFile" scriptparameter="FILENAME_SNP_POSITIONS_WG"/>
         </tool>
 
         <tool name="getGenotypes" value="estimateGenotypes.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="1" cores="1" nodes="1" walltime="3"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SNP_POSITIONS_WG"/>
-            <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SNP_POSITIONS_WG_FAKE"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SNP_POSITIONS_WG"/>
+            <output type="file" typeof="TextFile" scriptparameter="FILENAME_SNP_POSITIONS_WG_FAKE"/>
         </tool>
 
         <tool name="createUnphasedGenotype" value="createUnphasedFiles.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="0.2" cores="1" nodes="1" walltime="5"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SNP_POSITIONS_WG_FAKE"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SNP_POSITIONS_WG_FAKE"/>
             <output type="filegroup" typeof="UnphasedGenotypeFileGroupByChromosome" fileclass="UnphasedGenotypeFile" scriptparameter="FILENAME_UNPHASED_GENOTYPE" passas="array"/>
         </tool>
-
-        <!--<tool name="imputeGenotypesMeta" value="impute2_MetaScript.sh" basepath="copyNumberEstimationWorkflow">-->
-        <!--<resourcesets>-->
-        <!--<rset size="l" memory="48" cores="12" nodes="1" walltime="16"/>-->
-        <!--</resourcesets>-->
-        <!--</tool>-->
 
         <tool name="imputeGenotypes_noMpileup" value="impute2.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
@@ -360,8 +357,8 @@
             </resourcesets>
             <input type="filegroup" typeof="UnphasedGenotypeFileGroupByChromosome" scriptparameter="FILENAME_UNPHASED_GENOTYPE" passas="array"/>
             <output type="tuple">
-                <output type="file" fnpatternselectiontag="withChromosomeIndex" typeof="de.dkfz.b080.co.files.PhasedGenotypeFile" scriptparameter="FILENAME_PHASED_GENOTYPES"/>
-                <output type="file" fnpatternselectiontag="withChromosomeIndex" typeof="de.dkfz.b080.co.files.HaploblockGroupFile" scriptparameter="FILENAME_HAPLOBLOCK_GROUPS"/>
+                <output type="file" selectiontag="withChromosomeIndex" typeof="PhasedGenotypeFile" scriptparameter="FILENAME_PHASED_GENOTYPES"/>
+                <output type="file" selectiontag="withChromosomeIndex" typeof="HaploblockGroupFile" scriptparameter="FILENAME_HAPLOBLOCK_GROUPS"/>
             </output>
         </tool>
 
@@ -370,10 +367,10 @@
                 <rset size="l" memory="10" cores="1" nodes="1" walltime="10"/>
             </resourcesets>
             <input type="filegroup" typeof="UnphasedGenotypeFileGroupByChromosome" scriptparameter="FILENAME_UNPHASED_GENOTYPE" passas="array"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEX"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEX"/>
             <output type="tuple">
-                <output type="file" fnpatternselectiontag="forChromosomeX" typeof="de.dkfz.b080.co.files.PhasedGenotypeFile" scriptparameter="FILENAME_PHASED_GENOTYPES"/>
-                <output type="file" fnpatternselectiontag="forChromosomeX" typeof="de.dkfz.b080.co.files.HaploblockGroupFile" scriptparameter="FILENAME_HAPLOBLOCK_GROUPS"/>
+                <output type="file" selectiontag="forChromosomeX" typeof="PhasedGenotypeFile" scriptparameter="FILENAME_PHASED_GENOTYPES"/>
+                <output type="file" selectiontag="forChromosomeX" typeof="HaploblockGroupFile" scriptparameter="FILENAME_HAPLOBLOCK_GROUPS"/>
             </output>
         </tool>
 
@@ -381,10 +378,10 @@
             <resourcesets>
                 <rset size="l" memory="10" cores="1" nodes="1" walltime="10"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.BamFile" scriptparameter="FILE_CONTROL_BAM"/>
+            <input type="file" typeof="BamFile" scriptparameter="FILE_CONTROL_BAM"/>
             <output type="tuple">
-                <output type="file" fnpatternselectiontag="withChromosomeIndex" typeof="de.dkfz.b080.co.files.PhasedGenotypeFile" scriptparameter="FILENAME_PHASED_GENOTYPES"/>
-                <output type="file" fnpatternselectiontag="withChromosomeIndex" typeof="de.dkfz.b080.co.files.HaploblockGroupFile" scriptparameter="FILENAME_HAPLOBLOCK_GROUPS"/>
+                <output type="file" selectiontag="withChromosomeIndex" typeof="PhasedGenotypeFile" scriptparameter="FILENAME_PHASED_GENOTYPES"/>
+                <output type="file" selectiontag="withChromosomeIndex" typeof="HaploblockGroupFile" scriptparameter="FILENAME_HAPLOBLOCK_GROUPS"/>
             </output>
         </tool>
 
@@ -392,11 +389,11 @@
             <resourcesets>
                 <rset size="l" memory="10" cores="1" nodes="1" walltime="10"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.BamFile" scriptparameter="FILE_CONTROL_BAM"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEX"/>
+            <input type="file" typeof="BamFile" scriptparameter="FILE_CONTROL_BAM"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEX"/>
             <output type="tuple">
-                <output type="file" fnpatternselectiontag="forChromosomeX" typeof="de.dkfz.b080.co.files.PhasedGenotypeFile" scriptparameter="FILENAME_PHASED_GENOTYPES"/>
-                <output type="file" fnpatternselectiontag="forChromosomeX" typeof="de.dkfz.b080.co.files.HaploblockGroupFile" scriptparameter="FILENAME_HAPLOBLOCK_GROUPS"/>
+                <output type="file" selectiontag="forChromosomeX" typeof="PhasedGenotypeFile" scriptparameter="FILENAME_PHASED_GENOTYPES"/>
+                <output type="file" selectiontag="forChromosomeX" typeof="HaploblockGroupFile" scriptparameter="FILENAME_HAPLOBLOCK_GROUPS"/>
             </output>
         </tool>
 
@@ -405,30 +402,30 @@
             <resourcesets>
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="10"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SNP_POSITIONS_WG"/>
-            <input type="filegroup" typeof="de.dkfz.b080.co.files.PhasedGenotypeFileGroupByChromosome" scriptparameter="PHASED_GENOTYPE_FILES" passas="array"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.PhasedGenotypeFile" scriptparameter="PHASED_GENOTYPE_X_FILE"/>
-            <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SNP_POSITIONS_HAPLO_WG"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SNP_POSITIONS_WG"/>
+            <input type="filegroup" typeof="PhasedGenotypeFileGroupByChromosome" scriptparameter="PHASED_GENOTYPE_FILES" passas="array"/>
+            <input type="file" typeof="PhasedGenotypeFile" scriptparameter="PHASED_GENOTYPE_X_FILE"/>
+            <output type="file" typeof="TextFile" scriptparameter="FILENAME_SNP_POSITIONS_HAPLO_WG"/>
         </tool>
 
         <tool name="createControlBafPlots" value="createControlBafPlots.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="5" walltime="1"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SNP_POSITIONS_HAPLO_WG"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEX"/>
-            <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_BAF_PLOT_CHECKPOINT"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SNP_POSITIONS_HAPLO_WG"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEX"/>
+            <output type="file" typeof="TextFile" scriptparameter="FILENAME_BAF_PLOT_CHECKPOINT"/>
         </tool>
 
         <tool name="correctGcBias" value="correct_gc_bias.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="2" walltime="1"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_COV_WINDOWS_WG"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_COV_WINDOWS_WG"/>
             <output type="tuple">
-                <output type="file" fnpatternselectiontag="correctedWindows" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_GC_CORRECTED_WINDOWS"/>
-                <output type="file" fnpatternselectiontag="tab" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_GC_CORRECTED_QUALITY"/>
-                <output type="file" fnpatternselectiontag="tabSlim" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_QC_GC_CORRECTION_JSON"/>
+                <output type="file" selectiontag="correctedWindows" typeof="TextFile" scriptparameter="FILENAME_GC_CORRECTED_WINDOWS"/>
+                <output type="file" selectiontag="tab" typeof="TextFile" scriptparameter="FILENAME_GC_CORRECTED_QUALITY"/>
+                <output type="file" selectiontag="tabSlim" typeof="TextFile" scriptparameter="FILENAME_QC_GC_CORRECTION_JSON"/>
             </output>
 
         </tool>
@@ -437,12 +434,12 @@
             <resourcesets>
                 <rset size="l" memory="50" walltime="5"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SNP_POSITIONS_HAPLO_WG"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_GC_CORRECTED_WINDOWS"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEX"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SNP_POSITIONS_HAPLO_WG"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_GC_CORRECTED_WINDOWS"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEX"/>
             <output type="tuple">
-                <output type="file" fnpatternselectiontag="knownsegments" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
-                <output type="file" fnpatternselectiontag="snpPositions" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILE_PSCBS_DATA"/>
+                <output type="file" selectiontag="knownsegments" typeof="TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
+                <output type="file" selectiontag="snpPositions" typeof="TextFile" scriptparameter="FILE_PSCBS_DATA"/>
             </output>
         </tool>
 
@@ -450,11 +447,11 @@
             <resourcesets>
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="1"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
             <input type="file" typeof="SVFile" scriptparameter="FILENAME_SV"/>
             <output type="tuple">
-                <output type="file" fnpatternselectiontag="breakpointsSvs" typeof="de.dkfz.b080.co.files.BreakpointsFile" scriptparameter="FILENAME_BREAKPOINTS"/>
-                <output type="file" fnpatternselectiontag="svPoints" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SV_POINTS"/>
+                <output type="file" selectiontag="breakpointsSvs" typeof="BreakpointsFile" scriptparameter="FILENAME_BREAKPOINTS"/>
+                <output type="file" selectiontag="svPoints" typeof="TextFile" scriptparameter="FILENAME_SV_POINTS"/>
             </output>
         </tool>
 
@@ -462,10 +459,10 @@
             <resourcesets>
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="1"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
             <output type="tuple">
-                <output type="file" fnpatternselectiontag="breakpointsSvs" typeof="de.dkfz.b080.co.files.BreakpointsFile" scriptparameter="FILENAME_BREAKPOINTS"/>
-                <output type="file" fnpatternselectiontag="svPoints" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SV_POINTS"/>
+                <output type="file" selectiontag="breakpointsSvs" typeof="BreakpointsFile" scriptparameter="FILENAME_BREAKPOINTS"/>
+                <output type="file" selectiontag="svPoints" typeof="TextFile" scriptparameter="FILENAME_SV_POINTS"/>
             </output>
         </tool>
 
@@ -473,12 +470,12 @@
             <resourcesets>
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="1"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CREST_DELDUPINV"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CREST_TRANSLOC"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_CREST_DELDUPINV"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_CREST_TRANSLOC"/>
             <output type="tuple">
-                <output type="file" fnpatternselectiontag="breakpointsSvs" typeof="de.dkfz.b080.co.files.BreakpointsFile" scriptparameter="FILENAME_BREAKPOINTS"/>
-                <output type="file" fnpatternselectiontag="svPoints" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SV_POINTS"/>
+                <output type="file" selectiontag="breakpointsSvs" typeof="BreakpointsFile" scriptparameter="FILENAME_BREAKPOINTS"/>
+                <output type="file" selectiontag="svPoints" typeof="TextFile" scriptparameter="FILENAME_SV_POINTS"/>
             </output>
         </tool>
 
@@ -486,40 +483,40 @@
             <resourcesets>
                 <rset size="l" memory="50" cores="2" nodes="1" walltime="20"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.BreakpointsFile" scriptparameter="FILENAME_BREAKPOINTS"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILE_PSCBS_DATA"/>
-            <output type="file" fnpatternselectiontag="segments" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEGMENTS"/>
+            <input type="file" typeof="BreakpointsFile" scriptparameter="FILENAME_BREAKPOINTS"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILE_PSCBS_DATA"/>
+            <output type="file" selectiontag="segments" typeof="TextFile" scriptparameter="FILENAME_SEGMENTS"/>
         </tool>
 
         <tool name="markHomozygousDeletions" value="homozygDel.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="1" cores="1" nodes="1" walltime="1"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEGMENTS"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SV_POINTS"/>
-            <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEGMENTS_W_HOMDEL"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEGMENTS"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SV_POINTS"/>
+            <output type="file" typeof="TextFile" scriptparameter="FILENAME_SEGMENTS_W_HOMDEL"/>
         </tool>
 
         <tool name="segmentsToSnpDataHomodel" value="segmentsDataHomoDel.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="1" cores="2" nodes="1" walltime="2"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEGMENTS_W_HOMDEL"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILE_PSCBS_DATA"/>
-            <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE1"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEGMENTS_W_HOMDEL"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILE_PSCBS_DATA"/>
+            <output type="file" typeof="TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE1"/>
         </tool>
 
         <tool name="clusterAndPruneSegments" value="clusteredPrunedNormal.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="50" cores="1" nodes="1" walltime="120"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEGMENTS_W_HOMDEL"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE1"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEX"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_GC_CORRECTED_QUALITY"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEGMENTS_W_HOMDEL"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE1"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEX"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_GC_CORRECTED_QUALITY"/>
             <output type="tuple">
-                <output type="file" fnpatternselectiontag="segments" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CLUSTERED_SEGMENTS"/>
-                <output type="file" fnpatternselectiontag="snps" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE2"/>
+                <output type="file" selectiontag="segments" typeof="TextFile" scriptparameter="FILENAME_CLUSTERED_SEGMENTS"/>
+                <output type="file" selectiontag="snps" typeof="TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE2"/>
             </output>
         </tool>
 
@@ -527,42 +524,42 @@
             <resourcesets>
                 <rset size="l" memory="1" cores="2" nodes="1" walltime="2"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CLUSTERED_SEGMENTS"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE2"/>
-            <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE3"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_CLUSTERED_SEGMENTS"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE2"/>
+            <output type="file" typeof="TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE3"/>
         </tool>
 
         <tool name="estimatePeaksForPurity" value="purityPloidity.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="15" cores="1" nodes="1" walltime="10"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CLUSTERED_SEGMENTS"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE3"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEX"/>
-            <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEGMENTS_W_PEAKS"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_CLUSTERED_SEGMENTS"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE3"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEX"/>
+            <output type="file" typeof="TextFile" scriptparameter="FILENAME_SEGMENTS_W_PEAKS"/>
         </tool>
 
         <tool name="estimatePurityAndPloidy" value="purityPloidity_EstimateFinal.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="7" cores="1" nodes="1" walltime="5"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEGMENTS_W_PEAKS"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEX"/>
-            <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_PURITY_PLOIDY"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEGMENTS_W_PEAKS"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEX"/>
+            <output type="file" typeof="TextFile" scriptparameter="FILENAME_PURITY_PLOIDY"/>
         </tool>
 
         <tool name="generateResultsAndPlots" value="plots.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="60" cores="1" nodes="1" walltime="15"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEGMENTS_W_PEAKS"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE3"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SV_POINTS"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_PURITY_PLOIDY"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEX"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEGMENTS_W_PEAKS"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE3"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SV_POINTS"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_PURITY_PLOIDY"/>
+            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEX"/>
             <output type="tuple">
-                <output type="file" fnpatternselectiontag="checkpoint" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_PLOTS"/>
-                <output type="file" fnpatternselectiontag="json" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_PARAMETER_JSON"/>
+                <output type="file" selectiontag="checkpoint" typeof="TextFile" scriptparameter="FILENAME_CHECKPOINT_PLOTS"/>
+                <output type="file" selectiontag="json" typeof="TextFile" scriptparameter="FILENAME_PARAMETER_JSON"/>
             </output>
         </tool>
 
@@ -570,22 +567,22 @@
             <!--<resourcesets>-->
                 <!--<rset size="l" memory="1" cores="1" nodes="1" walltime="2"/>-->
             <!--</resourcesets>-->
-            <!--<input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_PURITY_PLOIDY"/>-->
-            <!--<input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_PLOTS"/>-->
-            <!--<output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_VCF"/>-->
+            <!--<input type="file" typeof="TextFile" scriptparameter="FILENAME_PURITY_PLOIDY"/>-->
+            <!--<input type="file" typeof="TextFile" scriptparameter="FILENAME_CHECKPOINT_PLOTS"/>-->
+            <!--<output type="file" typeof="TextFile" scriptparameter="FILENAME_CHECKPOINT_VCF"/>-->
         <!--</tool>-->
 
         <tool name="estimateHrdScore" value="estimateHRDScore.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="1" cores="1" nodes="1" walltime="2"/>
             </resourcesets>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_SEX"/>
-            <input type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_PARAMETER_JSON"/>
-            <output type="file" typeof="de.dkfz.b080.co.files.TextFile" scriptparameter="FILENAME_CHECKPOINT_HRD"/>
+            <input type="file"  typeof="TextFile" scriptparameter="FILENAME_SEX"/>
+            <input type="file"  typeof="TextFile" scriptparameter="FILENAME_PARAMETER_JSON"/>
+            <output type="file" typeof="TextFile" scriptparameter="FILENAME_CHECKPOINT_HRD"/>
         </tool>
 
     </processingTools>
-    <filenames package='de.dkfz.b080.co.files' filestagesbase='de.dkfz.b080.co.files.COFileStage'>
+    <filenames package='de.dkfz.b080.co.files' filestagesbase='COFileStage'>
         <filename class='SNPPositionFile' derivedFrom="BamFile" pattern='${cnvSnpOutputDirectory}/${pid}.chr${PARM_CHR_INDEX}.${SNP_SUFFIX}'/>
         <!--<filename class='SNPPositionFile' derivedFrom="BamFile" pattern='${outputAnalysisBaseDirectory}/${aceseqOutputDirectory}/${cnvSnpOutputDirectory}/${pid}.chr${jobParameter,name="PARM_CHR_INDEX"}.snp.tab.gz' />-->
         <filename class='CoverageWindowsFile' derivedFrom="BamFile" pattern='${cnvSnpOutputDirectory}/${pid}.chr${PARM_CHR_INDEX}.${CNV_SUFFIX}'/>
@@ -608,7 +605,7 @@
                   pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}23.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
 -->
         <filename class="TextFile" onMethod="SNPPositionFileGroupByChromosome.mergeAndFilter" pattern='${aceseqOutputDirectory}/${pid}_all.snp.tab.gz'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.getGenotypes" pattern='${aceseqOutputDirectory}/${pid}_all.snp.fakeBAF.tab.gz'/>
+        <filename class="TextFile" onMethod="ACESeqMethods.getGenotypes" pattern='${aceseqOutputDirectory}/${pid}_all.snp.fakeBAF.tab.gz'/>
 
         <filename class="PhasedGenotypeFile" onTool="imputeGenotypes_noMpileup" selectiontag="withChromosomeIndex"
               pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
@@ -635,23 +632,23 @@
                 <filename class="TextFile" derivedFrom="TextFile" selectiontag="unphasedGenotypeChrXFile"
                           pattern='${imputeOutputDirectory}/${cvalue, name="unphasedGenotypesPrefix", default="unphased_chr"}X.${cvalue,name="unphasedGenotypesSuffix",default="vcf"}'/>
         -->
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.addHaploTypes" pattern='${aceseqOutputDirectory}/${pid}_all.snp.haplo.tab.gz'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.createControlBafPlot" pattern='${plotOutputDirectory}/checkpointBaf.txt'/>
+        <filename class="TextFile" onMethod="ACESeqMethods.addHaploTypes" pattern='${aceseqOutputDirectory}/${pid}_all.snp.haplo.tab.gz'/>
+        <filename class="TextFile" onMethod="ACESeqMethods.createControlBafPlot" pattern='${plotOutputDirectory}/checkpointBaf.txt'/>
         <filename class="TextFile" onMethod="CoverageWindowsFileGroupByChromosome.annotate" selectiontag="annotatedCoverage" pattern='${cnvSnpOutputDirectory}/${pid}.chr${fgindex}.${CNV_ANNO_SUFFIX}'/>
         <filename class="GenderFile" onMethod="CoverageWindowsFileGroupByChromosome.annotate" selectiontag="genderFile" pattern='${aceseqOutputDirectory}/${pid}_sex.txt'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.replaceControl" pattern='${aceseqOutputDirectory}/checkpointFakeControl.txt'/>
+        <filename class="TextFile" onMethod="ACESeqMethods.replaceControl" pattern='${aceseqOutputDirectory}/checkpointFakeControl.txt'/>
         <filename class="TextFile" onMethod="CoverageWindowsFileAnnotationResult.mergeAndFilterCoverageWindowFiles" pattern='${aceseqOutputDirectory}/${pid}_all.cnv.tab.gz'/>
         <filename class="TextFile" derivedFrom='TextFile' selectiontag='covWinFileWithBadControl' pattern='${aceseqOutputDirectory}/${pid}_all.cnv.tab.gz'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.correctGC" selectiontag="correctedWindows" pattern='${aceseqOutputDirectory}/${pid}_all.cnv.corrected.tab.gz'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.correctGC" selectiontag="tabSlim" pattern='${plotOutputDirectory}/${pid}_qc_gc_corrected.json'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.correctGC" selectiontag="tab" pattern='${plotOutputDirectory}/${pid}_qc_gc_corrected.tsv'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.pscbsGaps" selectiontag="knownsegments" pattern='${aceseqOutputDirectory}/${pid}_knownsegments.txt'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.pscbsGaps" selectiontag="snpPositions" pattern='${aceseqOutputDirectory}/${pid}_pscbs_data.txt.gz'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="crestDelDupInvFileTag" pattern='${crestOutputDirectory}/tumor_${pid}.${cvalue,name="crestDelDupInvSuffix",default="DELDUPINV"}'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="crestTranslocFileTag" pattern='${crestOutputDirectory}/tumor_${pid}.${cvalue,name="crestTransSuffix",default="TX"}'/>
+        <filename class="TextFile" onMethod="ACESeqMethods.correctGC" selectiontag="correctedWindows" pattern='${aceseqOutputDirectory}/${pid}_all.cnv.corrected.tab.gz'/>
+        <filename class="TextFile" onMethod="ACESeqMethods.correctGC" selectiontag="tabSlim" pattern='${plotOutputDirectory}/${pid}_qc_gc_corrected.json'/>
+        <filename class="TextFile" onMethod="ACESeqMethods.correctGC" selectiontag="tab" pattern='${plotOutputDirectory}/${pid}_qc_gc_corrected.tsv'/>
+        <filename class="TextFile" onMethod="ACESeqMethods.pscbsGaps" selectiontag="knownsegments" pattern='${aceseqOutputDirectory}/${pid}_knownsegments.txt'/>
+        <filename class="TextFile" onMethod="ACESeqMethods.pscbsGaps" selectiontag="snpPositions" pattern='${aceseqOutputDirectory}/${pid}_pscbs_data.txt.gz'/>
+        <filename class="TextFile" onMethod="ACESeqMethods.mergeCrest" selectiontag="crestDelDupInvFileTag" pattern='${crestOutputDirectory}/tumor_${pid}.${cvalue,name="crestDelDupInvSuffix",default="DELDUPINV"}'/>
+        <filename class="TextFile" onMethod="ACESeqMethods.mergeCrest" selectiontag="crestTranslocFileTag" pattern='${crestOutputDirectory}/tumor_${pid}.${cvalue,name="crestTransSuffix",default="TX"}'/>
 
-        <!--<filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
-        <!--<filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
+        <!--<filename class="TextFile" onMethod="ACESeqMethods.mergeCrest" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
+        <!--<filename class="TextFile" onMethod="ACESeqMethods.mergeSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
         <!--<filename class="BreakpointsFile" onTool="mergeBreakpointsAndSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
         <!--<filename class="BreakpointsFile" onTool="mergeBreakpointsWithoutSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
         <!--<filename class="BreakpointsFile" onTool="mergeBreakpointsAndSvCrest" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
@@ -659,27 +656,20 @@
 
 
         <filename class="BreakpointsFile" onScriptParameter="FILENAME_BREAKPOINTS" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
-        <!--<filename class="MergedSVFile" onTool="mergeBreakpointsAndSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
-        <!--<filename class="MergedSVFile" onTool="mergeBreakpointsWithoutSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
-        <!--<filename class="MergedSVFile" onTool="mergeBreakpointsAndSvCrest" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
 
+        <filename class="TextFile" onScriptParameter="FILENAME_SV_POINTS" selectiontag="svPoints" pattern='${aceseqOutputDirectory}/${pid}_sv_points.txt'/>
 
-        <!--<filename class="TextFile" onScriptParameter="FILENAME_SV_POINTS" selectiontag="svPoints" pattern='${aceseqOutputDirectory}/${pid}_sv_points.txt'/>-->
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="svPoints" pattern='${aceseqOutputDirectory}/${pid}_sv_points.txt'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeSv" selectiontag="svPoints" pattern='${aceseqOutputDirectory}/${pid}_sv_points.txt'/>
-
-
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.getSegmentAndGetSnps" selectiontag="segments" pattern='${aceseqOutputDirectory}/${pid}_fit.txt'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.markSegsWithHomozygDel" pattern='${aceseqOutputDirectory}/${pid}_homozygous_deletion.txt.gz'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.segsToSnpDataHomodel" pattern='${aceseqOutputDirectory}/${pid}_all_seg.txt.gz'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.clusterPruneSegments" selectiontag="snps" pattern='${aceseqOutputDirectory}/${pid}_all_seg_1.txt.gz'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.clusterPruneSegments" selectiontag="segments" pattern='${aceseqOutputDirectory}/${pid}_clustered_and_pruned_and_normal.txt'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.segsToSnpDataPruned" pattern='${aceseqOutputDirectory}/${pid}_all_seg_2.txt.gz'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.estimatePeaks" pattern='${aceseqOutputDirectory}/${pid}_combi_level.txt'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.estimatePurityPloidy" pattern='${aceseqOutputDirectory}/${pid}_ploidy_purity_2D.txt'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.generatePlots" selectiontag="checkpoint" pattern='${aceseqOutputDirectory}/checkpointPlots.txt'/>
-        <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.generatePlots" selectiontag="json" pattern='${aceseqOutputDirectory}/cnv_${pid}_parameter.json'/>
-	    <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.estimateHRD" pattern='${aceseqOutputDirectory}/checkpointHRD.txt'/>
+        <filename class="TextFile" onMethod="ACESeqMethods.getSegmentAndGetSnps" selectiontag="segments" pattern='${aceseqOutputDirectory}/${pid}_fit.txt'/>
+        <filename class="TextFile" onMethod="ACESeqMethods.markSegsWithHomozygDel" pattern='${aceseqOutputDirectory}/${pid}_homozygous_deletion.txt.gz'/>
+        <filename class="TextFile" onMethod="ACESeqMethods.segsToSnpDataHomodel" pattern='${aceseqOutputDirectory}/${pid}_all_seg.txt.gz'/>
+        <filename class="TextFile" onMethod="ACESeqMethods.clusterPruneSegments" selectiontag="snps" pattern='${aceseqOutputDirectory}/${pid}_all_seg_1.txt.gz'/>
+        <filename class="TextFile" onMethod="ACESeqMethods.clusterPruneSegments" selectiontag="segments" pattern='${aceseqOutputDirectory}/${pid}_clustered_and_pruned_and_normal.txt'/>
+        <filename class="TextFile" onMethod="ACESeqMethods.segsToSnpDataPruned" pattern='${aceseqOutputDirectory}/${pid}_all_seg_2.txt.gz'/>
+        <filename class="TextFile" onMethod="ACESeqMethods.estimatePeaks" pattern='${aceseqOutputDirectory}/${pid}_combi_level.txt'/>
+        <filename class="TextFile" onMethod="ACESeqMethods.estimatePurityPloidy" pattern='${aceseqOutputDirectory}/${pid}_ploidy_purity_2D.txt'/>
+        <filename class="TextFile" onMethod="ACESeqMethods.generatePlots" selectiontag="checkpoint" pattern='${aceseqOutputDirectory}/checkpointPlots.txt'/>
+        <filename class="TextFile" onMethod="ACESeqMethods.generatePlots" selectiontag="json" pattern='${aceseqOutputDirectory}/cnv_${pid}_parameter.json'/>
+	    <filename class="TextFile" onMethod="ACESeqMethods.estimateHRD" pattern='${aceseqOutputDirectory}/checkpointHRD.txt'/>
 
         <!-- SV file used with the runSV flag. Always the same name, derives from any file type. -->
         <filename class="SVFile" derivedFrom="BasicBamFile" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>
