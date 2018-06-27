@@ -658,14 +658,17 @@
 
 
 
-        <filename class="BreakpointsFile" onScriptParameter="FILENAME_BREAKPOINTS" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
+        <filename class="BreakpointsFile" onScriptParameter="FILENAME_BREAKPOINTS" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>
         <!--<filename class="MergedSVFile" onTool="mergeBreakpointsAndSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
         <!--<filename class="MergedSVFile" onTool="mergeBreakpointsWithoutSv" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
         <!--<filename class="MergedSVFile" onTool="mergeBreakpointsAndSvCrest" selectiontag="breakpointsSvs" pattern='${aceseqOutputDirectory}/${pid}_breakpoints.txt'/>-->
 
 
+        <!--<filename class="TextFile" onScriptParameter="FILENAME_SV_POINTS" selectiontag="svPoints" pattern='${aceseqOutputDirectory}/${pid}_sv_points.txt'/>-->
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeCrest" selectiontag="svPoints" pattern='${aceseqOutputDirectory}/${pid}_sv_points.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.mergeSv" selectiontag="svPoints" pattern='${aceseqOutputDirectory}/${pid}_sv_points.txt'/>
+
+
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.getSegmentAndGetSnps" selectiontag="segments" pattern='${aceseqOutputDirectory}/${pid}_fit.txt'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.markSegsWithHomozygDel" pattern='${aceseqOutputDirectory}/${pid}_homozygous_deletion.txt.gz'/>
         <filename class="TextFile" onMethod="de.dkfz.b080.co.aceseq.ACESeqMethods.segsToSnpDataHomodel" pattern='${aceseqOutputDirectory}/${pid}_all_seg.txt.gz'/>
