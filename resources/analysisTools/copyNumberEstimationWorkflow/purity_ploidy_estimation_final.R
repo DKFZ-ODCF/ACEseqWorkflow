@@ -26,7 +26,8 @@ spec <- matrix(c('segments',		's', 1, "character", #"IN: segment file",
 		 'purity_max',		'b', 1, "numeric",   #"maximium purity",
 		 'ploidy_min',		'p', 1, "numeric",   #"minimum poidy",
 		 'ploidy_max',		'q', 1, "numeric",   #"maximum ploidy",
-		 'pid',			'i', 1, "character"  #"patient identifier"
+		 'pid',			'i', 1, "character",  #"patient identifier",
+		 'local_minium_upper_boundary_shift', 'c', 1, "numeric"  #"IN: only solutions with local minimum < min(sel_local_minima) + local_minium_upper_boundary_shift will be considered"
                 ), ncol = 4, byrow = TRUE)
 
 opt = getopt(spec);
@@ -645,14 +646,14 @@ for ( i in seq( 2, nrow(data) - 1, 1) ) {
 mini_pur = posPurities[purity_idx - 1]
 mini_ploi = posPloidies[ploidy_idx - 1]
 
-#select all local minima that are smaller than global min + 1 SD (or +0.1 in case global minimum >=0.1)
-sel = which(all_local_minima < min(all_local_minima) + sd(all_local_minima))
+#select all local minima that are smaller than global min + 1 SD (or local_minium_upper_boundary_shift in case global minimum >=local_minium_upper_boundary_shift)
+sel = which(all_local_minima < min(all_local_minima) + max(sd(all_local_minima), ${local_minium_upper_boundary_shift}))
 sel_local_minima = all_local_minima[sel]
 sel_mini_pur = mini_pur[sel]
 sel_mini_ploi = mini_ploi[sel]
 
-if (min(sel_local_minima) >= 0.1) {
-	sel = which(sel_local_minima < min(sel_local_minima) + 0.1)
+if (min(sel_local_minima) >= ${local_minium_upper_boundary_shift} ) {
+	sel = which(sel_local_minima < min(sel_local_minima) + ${local_minium_upper_boundary_shift})
 } else {
 	sel = seq_along(sel_local_minima)
 }
