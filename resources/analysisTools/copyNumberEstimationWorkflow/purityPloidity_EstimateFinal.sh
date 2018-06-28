@@ -6,7 +6,7 @@
 
 tmpPurityPloidy=${FILENAME_PURITY_PLOIDY}_tmp
 
-${RSCRIPT_BINARY} --vanilla "${TOOL_ESTIMATE_PURITY_PLOIDY}" \
+${RSCRIPT_BINARY} --vanilla  "${TOOL_ESTIMATE_PURITY_PLOIDY}" \
 	     --segments          "${FILENAME_SEGMENTS_W_PEAKS}" \
 	     --file_sex		     "${FILENAME_SEX}" \
 	     --purity_ploidy	 "${tmpPurityPloidy}" \
@@ -20,7 +20,8 @@ ${RSCRIPT_BINARY} --vanilla "${TOOL_ESTIMATE_PURITY_PLOIDY}" \
 	     --purity_max         $purity_max \
 	     --ploidy_min         $ploidy_min \
 	     --ploidy_max         $ploidy_max \
-	     --pid		  $PID
+	     --pid		          $PID \
+	     --local_minium_upper_boundary_shift    ${local_minium_upper_boundary_shift}
 
 
 if [[ "$?" != 0 ]]

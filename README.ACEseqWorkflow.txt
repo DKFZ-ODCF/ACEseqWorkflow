@@ -22,6 +22,7 @@ runWithoutControl	        false   Run analysis with matching control and estimat
 - add 1.0 (instead of 0.00001) to lengths when getting log2 for weights to consider segments with length=1
 - Add flags and checks for handling the sv file and remove null pointer exceptions
 - fix bug in tcc ploidy estimation
+- parametrized local minimum upper boundary (local_minium_upper_boundary_shift)
 
 * Version update to 1.2.10
 - add bioconda dependencies

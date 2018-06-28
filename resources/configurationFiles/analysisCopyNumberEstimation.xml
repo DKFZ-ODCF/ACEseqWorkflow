@@ -202,6 +202,8 @@
         <cvalue name='purity_max' value='1.0' type="float" description="i"/>
         <cvalue name='ploidy_min' value='1.0' type="float"/>
         <cvalue name='ploidy_max' value="6.5" type="float"/>
+        <cvalue name='local_minium_upper_boundary_shift' value="0.1" type="float"
+                description="only solutions with local minimum < min(sel_local_minima) + local_minium_upper_boundary_shift will be considered"/>
 
         <!--generatePlots opts-->
         <cvalue name='PLOT_PRE' value="${aceseqOutputDirectory}/${pid}_plot" type="path"/>
