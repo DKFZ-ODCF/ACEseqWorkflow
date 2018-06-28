@@ -295,16 +295,19 @@
             <resourcesets>
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="4"/>
             </resourcesets>
-            <input type="file" typeof="GenderFile" scriptparameter="FILENAME_SEX"/>
+            <input type="file" typeof="CoverageWindowsFile" scriptparameter="IGNORETHIS"/>
             <input type="filegroup" typeof="GenericFileGroup" scriptparameter="COV_WIN_FILES" passas="array"/>
-            <output type="filegroup" typeof="GenericFileGroup" fileclass="TextFile" selectiontag="annotatedCoverage" scriptparameter="OUTFILES"/>
+            <output type="tuple">
+                <output type="file" typeof="GenderFile" scriptparameter="FILENAME_SEX"/>
+                <output type="filegroup" typeof="GenericFileGroup" fileclass="TextFile" selectiontag="annotatedCoverage" scriptparameter="OUTFILES"/>
+            </output>
         </tool>
 
         <tool name="replaceBadControl" value="replaceControl.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="5"/>
             </resourcesets>
-            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEX"/>
+            <input type="file" typeof="GenderFile" scriptparameter="FILENAME_SEX"/>
             <output type="file" typeof="TextFile" scriptparameter="FILENAME_CHECKPOINT_FAKECONTROL"/>
         </tool>
 
@@ -312,7 +315,7 @@
             <resourcesets>
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="5"/>
             </resourcesets>
-            <input type="file" typeof="TextFile" scriptparameter="IGNORETHIS" passas="array"/>
+            <input type="file" typeof="TextFile" scriptparameter="IGNORETHIS"/>
             <input type="filegroup" typeof="de.dkfz.roddy.knowledge.files.GenericFileGroup" scriptparameter="COV_WIN_FILES" passas="array"/>
             <output type="file" typeof="TextFile" scriptparameter="FILENAME_COV_WINDOWS_WG"/>
         </tool>
@@ -367,7 +370,7 @@
                 <rset size="l" memory="10" cores="1" nodes="1" walltime="10"/>
             </resourcesets>
             <input type="filegroup" typeof="UnphasedGenotypeFileGroupByChromosome" scriptparameter="FILENAME_UNPHASED_GENOTYPE" passas="array"/>
-            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEX"/>
+            <input type="file" typeof="GenderFile" scriptparameter="FILENAME_SEX"/>
             <output type="tuple">
                 <output type="file" selectiontag="forChromosomeX" typeof="PhasedGenotypeFile" scriptparameter="FILENAME_PHASED_GENOTYPES"/>
                 <output type="file" selectiontag="forChromosomeX" typeof="HaploblockGroupFile" scriptparameter="FILENAME_HAPLOBLOCK_GROUPS"/>
@@ -390,7 +393,7 @@
                 <rset size="l" memory="10" cores="1" nodes="1" walltime="10"/>
             </resourcesets>
             <input type="file" typeof="BamFile" scriptparameter="FILE_CONTROL_BAM"/>
-            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEX"/>
+            <input type="file" typeof="GenderFile" scriptparameter="FILENAME_SEX"/>
             <output type="tuple">
                 <output type="file" selectiontag="forChromosomeX" typeof="PhasedGenotypeFile" scriptparameter="FILENAME_PHASED_GENOTYPES"/>
                 <output type="file" selectiontag="forChromosomeX" typeof="HaploblockGroupFile" scriptparameter="FILENAME_HAPLOBLOCK_GROUPS"/>
@@ -413,7 +416,7 @@
                 <rset size="l" memory="5" walltime="1"/>
             </resourcesets>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_SNP_POSITIONS_HAPLO_WG"/>
-            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEX"/>
+            <input type="file" typeof="GenderFile" scriptparameter="FILENAME_SEX"/>
             <output type="file" typeof="TextFile" scriptparameter="FILENAME_BAF_PLOT_CHECKPOINT"/>
         </tool>
 
@@ -436,7 +439,7 @@
             </resourcesets>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_SNP_POSITIONS_HAPLO_WG"/>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_GC_CORRECTED_WINDOWS"/>
-            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEX"/>
+            <input type="file" typeof="GenderFile" scriptparameter="FILENAME_SEX"/>
             <output type="tuple">
                 <output type="file" selectiontag="knownsegments" typeof="TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
                 <output type="file" selectiontag="snpPositions" typeof="TextFile" scriptparameter="FILE_PSCBS_DATA"/>
@@ -512,7 +515,7 @@
             </resourcesets>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEGMENTS_W_HOMDEL"/>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE1"/>
-            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEX"/>
+            <input type="file" typeof="GenderFile" scriptparameter="FILENAME_SEX"/>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_GC_CORRECTED_QUALITY"/>
             <output type="tuple">
                 <output type="file" selectiontag="segments" typeof="TextFile" scriptparameter="FILENAME_CLUSTERED_SEGMENTS"/>
@@ -535,7 +538,7 @@
             </resourcesets>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_CLUSTERED_SEGMENTS"/>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE3"/>
-            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEX"/>
+            <input type="file" typeof="GenderFile" scriptparameter="FILENAME_SEX"/>
             <output type="file" typeof="TextFile" scriptparameter="FILENAME_SEGMENTS_W_PEAKS"/>
         </tool>
 
@@ -544,7 +547,7 @@
                 <rset size="l" memory="7" cores="1" nodes="1" walltime="5"/>
             </resourcesets>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEGMENTS_W_PEAKS"/>
-            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEX"/>
+            <input type="file" typeof="GenderFile" scriptparameter="FILENAME_SEX"/>
             <output type="file" typeof="TextFile" scriptparameter="FILENAME_PURITY_PLOIDY"/>
         </tool>
 
@@ -556,7 +559,7 @@
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE3"/>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_SV_POINTS"/>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_PURITY_PLOIDY"/>
-            <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEX"/>
+            <input type="file" typeof="GenderFile" scriptparameter="FILENAME_SEX"/>
             <output type="tuple">
                 <output type="file" selectiontag="checkpoint" typeof="TextFile" scriptparameter="FILENAME_CHECKPOINT_PLOTS"/>
                 <output type="file" selectiontag="json" typeof="TextFile" scriptparameter="FILENAME_PARAMETER_JSON"/>
@@ -576,7 +579,7 @@
             <resourcesets>
                 <rset size="l" memory="1" cores="1" nodes="1" walltime="2"/>
             </resourcesets>
-            <input type="file"  typeof="TextFile" scriptparameter="FILENAME_SEX"/>
+            <input type="file"  typeof="GenderFile" scriptparameter="FILENAME_SEX"/>
             <input type="file"  typeof="TextFile" scriptparameter="FILENAME_PARAMETER_JSON"/>
             <output type="file" typeof="TextFile" scriptparameter="FILENAME_CHECKPOINT_HRD"/>
         </tool>

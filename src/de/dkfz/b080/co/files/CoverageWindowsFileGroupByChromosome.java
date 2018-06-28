@@ -13,6 +13,7 @@ import de.dkfz.roddy.execution.jobs.Job;
 import de.dkfz.roddy.knowledge.files.BaseFile;
 import de.dkfz.roddy.knowledge.files.FileGroup;
 import de.dkfz.roddy.knowledge.files.GenericFileGroup;
+import de.dkfz.roddy.knowledge.files.Tuple2;
 import de.dkfz.roddy.knowledge.methods.GenericMethod;
 
 import java.io.File;
@@ -37,9 +38,12 @@ public class CoverageWindowsFileGroupByChromosome extends FileGroup {
     }
 
     public CoverageWindowsFileAnnotationResult annotate() {
-        GenderFile genderFile = (GenderFile)BaseFile.constructManual(GenderFile.class, files.get("1"), null, null, null, null, "genderFile", null, null);
-        GenericFileGroup outFiles = GenericMethod.callGenericToolWithFileGroupOutput(ACEseqConstants.TOOL_ANNOTATE_COV_WIN,  genderFile, new LinkedList<>(files.keySet()), this);
+//        GenderFile genderFile = (GenderFile)BaseFile.constructManual(GenderFile.class, files.get("1"), null, null, null, null, "genderFile", null, null);
+        CoverageWindowsFile dummyFile = files.get("1");
+        LinkedList<String> outputFileGroupIndices = new LinkedList<>(files.keySet());
+        Tuple2<BaseFile, GenericFileGroup> outFiles = new GenericMethod(ACEseqConstants.TOOL_ANNOTATE_COV_WIN, null, dummyFile, outputFileGroupIndices, this)._callGenericToolOrToolArray();
+//        Tuple2<BaseFile, GenericFileGroup> outFiles = (Tuple2<BaseFile, GenericFileGroup>)GenericMethod.callGenericToolWithFileGroupOutput(ACEseqConstants.TOOL_ANNOTATE_COV_WIN, dummyFile, outputFileGroupIndices, this);
 
-        return new CoverageWindowsFileAnnotationResult(outFiles.getFilesInGroup(), genderFile);
+        return new CoverageWindowsFileAnnotationResult(outFiles.value1.getFilesInGroup(), (GenderFile) outFiles.value0);
     }
 }
