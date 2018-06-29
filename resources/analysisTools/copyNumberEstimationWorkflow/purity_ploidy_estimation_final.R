@@ -647,13 +647,13 @@ mini_pur = posPurities[purity_idx - 1]
 mini_ploi = posPloidies[ploidy_idx - 1]
 
 #select all local minima that are smaller than global min + 1 SD (or local_minium_upper_boundary_shift in case global minimum >=local_minium_upper_boundary_shift)
-sel = which(all_local_minima < min(all_local_minima) + max(sd(all_local_minima), ${local_minium_upper_boundary_shift}))
+sel = which(all_local_minima < min(all_local_minima) + max(sd(all_local_minima), local_minium_upper_boundary_shift))
 sel_local_minima = all_local_minima[sel]
 sel_mini_pur = mini_pur[sel]
 sel_mini_ploi = mini_ploi[sel]
 
-if (min(sel_local_minima) >= ${local_minium_upper_boundary_shift} ) {
-	sel = which(sel_local_minima < min(sel_local_minima) + ${local_minium_upper_boundary_shift})
+if (min(sel_local_minima) >= local_minium_upper_boundary_shift ) {
+	sel = which(sel_local_minima < min(sel_local_minima) + local_minium_upper_boundary_shift)
 } else {
 	sel = seq_along(sel_local_minima)
 }
