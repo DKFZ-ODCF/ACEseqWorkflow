@@ -11,7 +11,7 @@ require(grid)
 #chr is the chromosome number
 #ratio: data.frame; subset (chromosome) of dataAll dataframe containing all SNPs
 #seg: data.frame; subset of combi which contains all segments for sample
-plotTCN = function (chromosome, ratio, seg, Ploidy, tcc, fullPloidy, chrLen, ymaxcov, plots='single', svSub=NULL, p = NULL) {
+plotTCN = function (chromosome, ratio, seg, Ploidy, tcc, fullPloidy, chrLen, ymaxcov, plots='single', svSub=NULL, p = NULL, ymaxcov_threshold) {
 		
 		ymaxDH	= 1 
 		xtotal	= chrLen/ 10
@@ -28,9 +28,9 @@ plotTCN = function (chromosome, ratio, seg, Ploidy, tcc, fullPloidy, chrLen, yma
 		copyTColors = c("#000000","#228B22", "#8B0000")
 		colScale <- scale_colour_manual( values = c( 'n'=copyTColors[1], 'g'=copyTColors[2], 'l'=copyTColors[3] ) )
 
-		#limit plots to TCN 8 to avoid displaying high level amplifications
-		if (ymaxcov>10){
-			ymaxcov <- 8
+		#limit plots to TCN [ymaxcov_threshold] to avoid displaying high level amplifications
+		if (ymaxcov>ymaxcov_threshold+2){
+			ymaxcov <- ymaxcov_threshold
 		}
 
 		# SNPs as data points, colored according to gain, loss and neutral
@@ -60,7 +60,7 @@ plotTCN = function (chromosome, ratio, seg, Ploidy, tcc, fullPloidy, chrLen, yma
 		if ( any(seg$tcnMean>ymaxcov) ){
 			highAmp <- which( seg$tcnMean > ymaxcov )
 			highSeg <- seg[highAmp, ]
-			highSeg$tcnMean <- 8
+			highSeg$tcnMean <- ymaxcov_threshold
 			highSeg$middle <- highSeg$start + ( highSeg$end - highSeg$start )/2
 			p <- p + geom_segment( data=highSeg, aes( x=start, y=tcnMean, xend=end, yend=tcnMean ), colour="#0000CDFF", size = 1 )
 			p <- p + geom_point( data=highSeg, aes( x=middle, y=tcnMean), colour="#0000CDFF", shape=17)

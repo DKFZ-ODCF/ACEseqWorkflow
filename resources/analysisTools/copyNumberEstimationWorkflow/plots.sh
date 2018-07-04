@@ -16,7 +16,9 @@ ${RSCRIPT_BINARY} 	--vanilla "${TOOL_GENERATE_PLOTS}" \
 		--file_sex "${FILENAME_SEX}" \
 		--sv_YN $SV \
 		--ID ${PID} \
-		--pipelineDir `dirname ${TOOL_GENERATE_PLOTS}`
+		--pipelineDir `dirname ${TOOL_GENERATE_PLOTS}` \
+		--ymaxcov_threshold ${ymaxcov_threshold}
+
 
 if [[ "$?" != 0 ]]
 then

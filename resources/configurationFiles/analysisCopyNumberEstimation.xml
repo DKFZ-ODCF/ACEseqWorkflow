@@ -207,6 +207,8 @@
 
         <!--generatePlots opts-->
         <cvalue name='PLOT_PRE' value="${aceseqOutputDirectory}/${pid}_plot" type="path"/>
+        <cvalue name='ymaxcov_threshold' value="8.0" type="float"
+                description="Maximum copy number to be shown in plots. Segments with higher TCN will be represented with triangles at the upper border of the plot."/>
 
         <!--generateVCF opts-->
         <cvalue name="blacklistFileName" value='artifact.homoDels.potentialArtifacts.txt' type="string"/>

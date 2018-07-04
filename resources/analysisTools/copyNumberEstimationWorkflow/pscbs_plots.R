@@ -18,7 +18,8 @@ spec <- matrix(c('SNPfile',       'f', 1, "character",
                  'file_sex',      'g', 1, "character", 
                  'sv_YN',         'y', 1, "character", 
                  'ID',            'i', 1, "character", 
-				 'pipelineDir',	  'd', 1, "character"
+				 'pipelineDir',	  'd', 1, "character",
+				 'ymaxcov_threshold', 't', 1, "numeric"
                 ), ncol = 4, byrow = TRUE)
                
  
@@ -37,6 +38,8 @@ cat(paste0("outDir: ", outDir, "\n\n"))
 cat(paste0("file_sex: ", file_sex, "\n\n"))
 cat(paste0("sv_YN: ", sv_YN, "\n\n"))
 cat(paste0("ID: ", ID, "\n\n"))
+cat(paste0("pipelineDir: ", pipelineDir, "\n\n"))
+cat(paste0("ymaxcov_threshold: ", ymaxcov_threshold, "\n\n"))
 cat("\n")
 
 source( file.path(pipelineDir, "pscbs_plots_functions.R") )
@@ -115,7 +118,7 @@ plotChromosomes = function (chrom, dat, comb,  TCC, ploi , roundPloi, svPoints=N
 #	maxCov = 2*ploi
 	maxCov = max(comb$tcnMean, na.rm= TRUE)
 
-	p1 <- plotTCN( chrom, ratio, segs, ploi, TCC, roundPloi, chrL, ymaxcov=maxCov, svSub=svSub) + labs(x=NULL)
+	p1 <- plotTCN( chrom, ratio, segs, ploi, TCC, roundPloi, chrL, ymaxcov=maxCov, svSub=svSub, ymaxcov_threshold=ymaxcov_threshold) + labs(x=NULL)
 	p2 <- plotDHmeans( segs, chrL ) + theme( axis.text.x=element_blank() )
 
 	X = which( (ratio$betaN > 0.3) & (ratio$betaN < 0.7) )
@@ -164,12 +167,13 @@ plotAll <- function(dat, comb, ploi, TCC, roundPloi, chrCount) {
 	X = which((dat$betaN > 0.3) & (dat$betaN < 0.7))
 
 	#plot
-       	p1 <- plotTCN( chr, dat, comb, ploi, TCC, roundPloi, chrL, maxCov, plots='all' ) 
+	p1 <- plotTCN( chr, dat, comb, ploi, TCC, roundPloi, chrL, maxCov, plots='all', ymaxcov_threshold=ymaxcov_threshold )
 	p2 <- plotDHmeans( comb, chrL, plots='all' )
 	p3 <- plotRawBAF( dat[X,], comb, chrL, plots='all' )
 
-	if (maxCov >10){
-		maxCov=8
+	#limit plots to TCN [ymaxcov_threshold] to avoid displaying high level amplifications
+	if (maxCov>ymaxcov_threshold+2){
+		maxCov = ymaxcov_threshold
 	}
 
 	#add chromosome labels and borders
