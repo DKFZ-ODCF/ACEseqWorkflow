@@ -26,29 +26,44 @@ do
 	##remove artifact regions
 	combProFileNew=$(echo $combProFile | sed 's/.txt/.smoothed.txt/')
 	combProFileNoArtifacts=$(echo $combProFile | sed 's/.txt/.noartifacts.txt/')
+
+	COMBPROFILE_FIFO=${aceseqOutputDirectory}/combProFile_FIFO
+	if [[ -p ${COMBPROFILE_FIFO} ]]; then rm ${COMBPROFILE_FIFO}; fi
+	mkfifo ${COMBPROFILE_FIFO}
+
+    if [[ ${legacyMode} == 'true' ]]; then
+        # replace 'crest' column name by the new name 'SV.Type'
+        cat ${COMBPROFILE_FIFO} | awk 'BEGIN{ FS="\t"; OFS="\t" } FNR==1{ for (col=1; col<=NF; ++col) if ($col == "crest") $col = "SV.Type"; } {print}' >$combProFile.tmp &
+        pid_legacyMode=$!
+    else
+        cat ${COMBPROFILE_FIFO} >$combProFile.tmp &
+        pid_legacyMode=$!
+	fi
+
 	${INTERSECTBED_BINARY} -header -v -f 0.7 \
 				     -a $combProFile -b $PIPELINE_DIR/$blacklistFileName \
-				     >$combProFile.tmp
+				     >${COMBPROFILE_FIFO}
 	if [[ "$?" != 0 ]]
 	then
 		echo "There was a non-zero exit code intersecting with bedfile" 
 		exit 2
 	fi
-
+    wait ${pid_legacyMode}; [[ ! $? -eq 0 ]] && echo "Error in legacyMode transcoding process" && exit 10
+    rm ${COMBPROFILE_FIFO}
 
 	#smooth Data
-	${PYTHON_BINARY} ${TOOL_REMOVE_BREAKPOINTS} -f $combProFile.tmp -o $combProFile.tmp.tmp && mv $combProFile.tmp.tmp $combProFile.tmp && \
-	${PYTHON_BINARY} ${TOOL_MERGE_ARTIFACTS} -f $combProFile.tmp -o $combProFile.tmp.tmp && mv $combProFile.tmp.tmp $combProFile.tmp && \
-	${PYTHON_BINARY} ${TOOL_REMOVE_BREAKPOINTS} -f $combProFile.tmp -o $combProFile.tmp.tmp && mv $combProFile.tmp.tmp $combProFile.tmp && \
-	if [[ "$?" != 0 ]]
-	then
-		echo "There was a non-zero exit code while removing breakpoints" 
-		exit 2
-	fi
+	${PYTHON_BINARY} ${TOOL_REMOVE_BREAKPOINTS} -f $combProFile.tmp -o $combProFile.tmp.tmp
+    [[ "$?" != 0 ]] && echo "There was a non-zero exit code while removing breakpoints (first time)" && exit 2
+	mv $combProFile.tmp.tmp $combProFile.tmp
+	${PYTHON_BINARY} ${TOOL_MERGE_ARTIFACTS} -f $combProFile.tmp -o $combProFile.tmp.tmp
+	[[ "$?" != 0 ]] && echo "There was a non-zero exit code while merging artifacts" && exit 2
+	mv $combProFile.tmp.tmp $combProFile.tmp
+	${PYTHON_BINARY} ${TOOL_REMOVE_BREAKPOINTS} -f $combProFile.tmp -o $combProFile.tmp.tmp
+	[[ "$?" != 0 ]] && echo "There was a non-zero exit code while removing breakpoints (second time)" && exit 2
+	mv $combProFile.tmp.tmp $combProFile.tmp
 
 
-	(head -1 $combProFile.tmp ; tail -n +2 $combProFile.tmp | sort -k 1,1 -V -k 2,2n ) \
-		>$combProFileNoArtifacts
+	(head -1 $combProFile.tmp ; tail -n +2 $combProFile.tmp | sort -k 1,1 -V -k 2,2n ) >$combProFileNoArtifacts
 
 	if [[ "$?" != 0 ]]
 	then
