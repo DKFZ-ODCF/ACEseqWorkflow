@@ -677,6 +677,7 @@ for (p in seq_along(ploi)) {
     red_line_purity_position = purity_min
   }
   distance_to_red_line.current = purity.current - red_line_purity_position
+  s <-  which(local_minima == min(local_minima[which(ploi <= ploi[p] + 0.25 & ploi >= ploi[p] - 0.25)]))
   purity.s = pur[s]
   ploidy.s = ploi[s]
   distance_to_red_line.s = purity.s - red_line_purity_position
