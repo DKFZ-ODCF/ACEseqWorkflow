@@ -90,6 +90,7 @@ final class ACESeqMethods {
             UnphasedGenotypeFile unphasedGenotypeFile = (UnphasedGenotypeFile) BaseFile.constructManual(UnphasedGenotypeFile.class, genotypeSNPFile);
             String path = unphasedGenotypeFile.getAbsolutePath();
             unphasedGenotypeFile.setPath(new File(path.replace("#CHROMOSOME_INDEX#", chrIndex)));
+//            unphasedGenotypeFile.setPath(new File(path.replace('${fgindex}', chrIndex)));
             listOfFiles.put(chrIndex, unphasedGenotypeFile);
             filesToCheck.add(unphasedGenotypeFile);
         }
