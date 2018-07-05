@@ -48,6 +48,7 @@ cat(paste0("purity_min: ", purity_min, "\n\n"))
 cat(paste0("purity_max: ", purity_max, "\n\n"))
 cat(paste0("ploidy_min: ", ploidy_min, "\n\n"))
 cat(paste0("ploidy_max: ", ploidy_max, "\n\n"))
+cat(paste0("local_minium_upper_boundary_shift: ", local_minium_upper_boundary_shift, "\n\n"))
 cat(paste0("pid: ",pid, "\n\n"))
 
 #functions
@@ -149,7 +150,7 @@ for (ploidy in posPloidies) {
 	
 	for (purity in posPurities) 	{
 
-		i = i + 1  
+		i = i + 1
 		D = getD(purity, ploidy)
 		TCNmatrix[, i] = getTCN(testSet_anti$tcnMean,D, purity) 
 		AFmatrix[, i]  = getAF(testSet_anti$meanCovT, TCNmatrix[,i], purity)
@@ -423,8 +424,7 @@ for (ploidy in posPloidies) {
 	
 	for (purity in posPurities) {
 
-		i = i + 1       
-
+		i = i + 1
 		D = getD(purity, ploidy)
 		NTCNmatrix[, i]  = getTCN(testSet_anti$tcnMean, D, purity)  
 		NAFmatrix[ , i]  = getAF( testSet_anti$meanCovT, NTCNmatrix[,i], purity)
@@ -665,7 +665,39 @@ local_minima = sel_local_minima[sel]
 select = c()
 # select local minimum from each ploidy frame +-0.25
 for (p in seq_along(ploi)) {
+  # adapted by G Warsow:
+  # if we have a high purity solution and a low purity solution at the same +-0.25 ploidy frame,
+  # only the solution with lower distance value has been taken. The goal of this adaptation was
+  # to also keep the low purity solution if the high purity solution has lower distance.
+  # That is, this is a quick and dirty approch for dealing with 'artifact 1' cases.
+  purity.current = pur[p]
+  ploidy.current = ploi[p]
+  red_line_purity_position = unique(df.lines[which(df.lines$ploidy==ploidy.current),"purity"])
+  if (is.na(red_line_purity_position)) {
+    red_line_purity_position = purity_min
+  }
+  distance_to_red_line.current = purity.current - red_line_purity_position
   s <-  which(local_minima == min(local_minima[which(ploi <= ploi[p] + 0.25 & ploi >= ploi[p] - 0.25)]))
+  purity.s = pur[s]
+  ploidy.s = ploi[s]
+  distance_to_red_line.s = purity.s - red_line_purity_position
+  if (distance_to_red_line.s - distance_to_red_line.current > 0.2) {
+    # the solution with minimum distance (s) has a purity value >20 percentage points higher than the current solution (p)
+    # let's divide the ploidy frame into 2 parts. one for lower, one for higher purity solutions
+    separation_position = (purity_max - red_line_purity_position) / 2 + red_line_purity_position
+    if (purity.current <= separation_position) {
+      s <-  which(local_minima == min(local_minima[which(
+        ploi <= ploi[p] + 0.25 & ploi >= ploi[p] - 0.25 &
+          pur  <= separation_position
+      )]))
+    } else {
+      s <-  which(local_minima == min(local_minima[which(
+        ploi <= ploi[p] + 0.25 & ploi >= ploi[p] - 0.25 &
+          pur  > separation_position
+      )]))
+    }
+
+  }
   select = c(select, s)
 }
 
@@ -724,17 +756,24 @@ testPlot$purity = as.numeric(testPlot$purity)
 
 
 # contour lines will be plotted for each contour_level (e.g. at 101% or 105% of the minimum distance value)
-contour_levels = c(0.01,0.05,0.1,0.15,0.2)
+# contour_levels = c(0.01,0.05,0.1,0.15,0.2)
+contour_levels = c(0.01,0.1,0.25,0.4)
 secondLastLevel = tail(contour_levels,2)[-2]
-countour_local_minima = final_local_minima
+countour_local_minima = sort(final_local_minima)
 # for contour plots: remove local minima that are not at least 10% larger (or whatever 
-# the third-last value of contour_levels is) than the global minimum
+# the second-last value of contour_levels is) than the global minimum
 # that is: no own cloud for minima with near-optimum distance value.
+
+
 while (any(abs(diff(countour_local_minima)) <= min(countour_local_minima)*secondLastLevel)) {
-  sel = which(diff(countour_local_minima) <= min(countour_local_minima)*secondLastLevel)[1]
-  sel = c(sel, sel+1)
-  s = which.min( countour_local_minima[sel] )
-  countour_local_minima = countour_local_minima[sel[s]]
+  index.representativeOfNearbySolutions = which(diff(countour_local_minima) <= min(countour_local_minima)*secondLastLevel)[1]
+  index.solutionsCoveredByRepresentative = which(
+    countour_local_minima >= countour_local_minima[index.representativeOfNearbySolutions] &
+    countour_local_minima <= countour_local_minima[index.representativeOfNearbySolutions]*(1+secondLastLevel)
+  )
+  index.solutionsCoveredByRepresentative = setdiff(index.solutionsCoveredByRepresentative, index.representativeOfNearbySolutions)
+  sel = setdiff(seq_along(countour_local_minima), index.solutionsCoveredByRepresentative)
+  countour_local_minima = countour_local_minima[sel]
 }
 contour_breaks = as.numeric(sapply(countour_local_minima, function(x) {
   return(x*(1+contour_levels))
