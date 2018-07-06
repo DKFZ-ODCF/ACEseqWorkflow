@@ -676,14 +676,19 @@ for (p in seq_along(ploi)) {
   if (is.na(red_line_purity_position)) {
     red_line_purity_position = purity_min
   }
-  distance_to_red_line.current = purity.current - red_line_purity_position
+  # distance_to_red_line.current = purity.current - red_line_purity_position
   s <-  which(local_minima == min(local_minima[which(ploi <= ploi[p] + 0.25 & ploi >= ploi[p] - 0.25)]))
   purity.s = pur[s]
   ploidy.s = ploi[s]
-  distance_to_red_line.s = purity.s - red_line_purity_position
-  if (distance_to_red_line.s - distance_to_red_line.current > 0.2) {
+  # distance_to_red_line.s = purity.s - red_line_purity_position
+  # to be dicussed: how to define when to enter next block (define if clause)
+  if ( purity.s == 1 ) {
+    # suggested solution has a 'purity 1 artifact'. Allow also (suboptimal) solutions with lesser purity (suboptimal w.r.t. distance value)
+# if (purity.s - purity.current > 0.2) {
     # the solution with minimum distance (s) has a purity value >20 percentage points higher than the current solution (p)
     # let's divide the ploidy frame into 2 parts. one for lower, one for higher purity solutions
+
+    # to be dicussed: how to define separation_position
     separation_position = (purity_max - red_line_purity_position) / 2 + red_line_purity_position
     if (purity.current <= separation_position) {
       s <-  which(local_minima == min(local_minima[which(
@@ -696,7 +701,6 @@ for (p in seq_along(ploi)) {
           pur  > separation_position
       )]))
     }
-
   }
   select = c(select, s)
 }
