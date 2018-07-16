@@ -682,7 +682,7 @@ for (p in seq_along(ploi)) {
   ploidy.s = ploi[s]
   # distance_to_red_line.s = purity.s - red_line_purity_position
   # to be dicussed: how to define when to enter next block (define if clause)
-  if ( purity.s == 1 ) {
+  if ( purity.s == purity_max ) {
     # suggested solution has a 'purity 1 artifact'. Allow also (suboptimal) solutions with lesser purity (suboptimal w.r.t. distance value)
 # if (purity.s - purity.current > 0.2) {
     # the solution with minimum distance (s) has a purity value >20 percentage points higher than the current solution (p)
