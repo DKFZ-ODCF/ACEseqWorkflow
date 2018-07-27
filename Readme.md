@@ -19,6 +19,8 @@ ACEseq (Allele-specific copy number estimation with whole genome sequencing) is 
 
 The complete installation instructions can be found in the [documentation](http://aceseq.readthedocs.io/en/latest/installation.html).
 
+## Further required software and plugins
 
+Additional necessary software like e.g. Roddy can be found in [TheRoddyWMS organization](https://github.com/TheRoddyWMS)
 
 
