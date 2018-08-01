@@ -11,7 +11,7 @@ module load "bedtools/$BEDTOOLS_VERSION"
 module load "samtools/$SAMTOOLS_VERSION"
 module load "vcftools/$VCFTOOLS_VERSION"
 
-source /ibios/tbi_cluster/virtualenvs/warsow/python_2.7.9_SNVCalling_1.2.166-1/bin/activate
+source /odcf/cluster/virtualenvs/warsow/python_2.7.9_SNVCalling_1.2.166-1/bin/activate
 
 export BGZIP_BINARY=bgzip
 export TABIX_BINARY=tabix

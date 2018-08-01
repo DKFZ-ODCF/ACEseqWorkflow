@@ -55,5 +55,8 @@ annotateCNA <- function( seg.df, ploidy=fullPloidy, cut.off = 0.7, TCN.colname =
         seg.df$CNA.type[selLoss]    <- paste0( seg.df$CNA.type[selLoss], ";DEL")
         seg.df$CNA.type[selLOH ]    <- paste0( seg.df$CNA.type[selLOH], ";LOH")
         seg.df$CNA.type[selHomoDel] <- paste0( seg.df$CNA.type[selHomoDel], ";HomoDel")
+
+        seg.df$CNA.type <- gsub("NA;", "", seg.df$CNA.type)
+
 	return(seg.df)
 }
