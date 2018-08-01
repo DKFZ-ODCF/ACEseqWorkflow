@@ -1,14 +1,14 @@
+/*
+ * Copyright (c) 2017 The ACEseq workflow developers.
+ *
+ * Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+ */
+
 package de.dkfz.b080.co.files;
 
-import de.dkfz.roddy.core.ExecutionContext;
-import de.dkfz.roddy.execution.jobs.Job;
-import de.dkfz.roddy.execution.jobs.JobResult;
-import de.dkfz.roddy.knowledge.files.BaseFile;
 import de.dkfz.roddy.knowledge.files.FileGroup;
 
-import java.io.File;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**

@@ -1,28 +1,14 @@
 #!/bin/bash
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 
-source ${CONFIG_FILE}
-
-
-#CHR_NAME=${CHR_NR}
-#CHR_NR=${CHR_PREFIX}${CHR_NR}${CHR_SUFFIX}
-#
-#testing=FILES_TO_EVALUATE
-#type=eval_job
-#source ${TOOL_CHECK_FILES}
-#[[ $? != 0 ]] && echo -e "\nTest for files for PID: ${PID} had non zero exit status, exiting pipeline\n\n" && exit 1
-#[[ ${ok} == 0 ]] && echo -e "\nEvaluation of bam files for PID: ${PID} had non zero exit status, exiting pipeline\n\n" && exit 1
-#
-#testing=FILES_IMPUTE
-#type=create
-#source=${TOOL_CHECK_FILES}
-#[[ $? != 0 ]] && echo -e "\nTest for files for PID: ${PID} had non zero exit status, exiting pipeline\n\n" && exit 1
 
 
 source ${TOOL_ANALYZE_BAM_HEADER}
 getRefGenomeAndChrPrefixFromHeader ${FILE_CONTROL_BAM} # Sets CHR_PREFIX and REFERENCE_GENOME
 
-CHR_NR=${CHR_PREFIX}${CHR_NAME}
+CHR_NR=${CHR_PREFIX}${CHR_NAME:?CHR_NAME is not set}
 
 #DEFINE FILE NAMES
 
@@ -35,13 +21,13 @@ PHASED_SUMMARY="${PHASED_GENOTYPE}_summary"
 PHASED_WARNINGS="${PHASED_GENOTYPE}_warnings"
 tmpPhased="${FILENAME_PHASED_GENOTYPES}_tmp"
 tmpHaploblocks="${FILENAME_HAPLOBLOCK_GROUPS}_tmp"
+UNPHASED="${FILE_UNPHASED_PRE}${CHR_NAME}.${FILE_VCF_SUF}"
+UNPHASED_GENOTYPE="${FILE_UNPHASED_GENOTYPE}${CHR_NAME}.${FILE_TXT_SUF}"
 
 if [[ ${runWithoutControl} == false ]]
 then
-	UNPHASED="${FILE_UNPHASED_PRE}${CHR_NAME}.${FILE_VCF_SUF}"
-	UNPHASED_GENOTYPE="${FILE_UNPHASED_GENOTYPE}${CHR_NAME}.${FILE_TXT_SUF}"
 
-         ${SAMTOOLS_BINARY} mpileup ${MPILEUP_OPTS} -u \
+         ${SAMTOOLS_BINARY} mpileup ${CNV_MPILEUP_OPTS} -u \
          	    -f "${REFERENCE_GENOME}" \
          	    -r ${CHR_NR} \
          	    "${FILE_CONTROL_BAM}" \
@@ -51,7 +37,7 @@ then
          
          if [[ "$?" != 0 ]]
          then
-         	echo "Non zero exit status for mpileup in impute2.sh"
+         	echo "Non zero exit status for mpileup in impute2.sh" >> /dev/stderr
          	exit 2
          fi
 fi
@@ -62,7 +48,7 @@ ${PYTHON_BINARY} "${TOOL_EXTRACT_GENOTYPE_VCF}" \
 
 if [[ "$?" != 0 ]]
 then
-	echo "Non zero exit status while extracting genotype in impute2.sh"
+	echo "Non zero exit status while extracting genotype in impute2.sh" >> /dev/stderr
 	exit 2
 fi
 
@@ -104,14 +90,33 @@ fi
 		    -g "${UNPHASED_GENOTYPE}" \
 		    -int $[5000000*${SEGMENT}] $[5000000*${SEGMENT} + 4999999] \
 		    -Ne 20000 \
-		    -o "${PHASED_GENOTYPE_PART}"
+		    -o "${PHASED_GENOTYPE_PART}" 2>&1 /dev/stderr
 
 		if [[ "$?" != 0 ]]
 			then
-			echo "WARNING: Non zero exit status during segmentation of segment ${SEGMENT} on chr ${CHR_NAME} in impute2.sh"
-			exit 2
-		fi
+			if [[ $test == "test" ]]
+			then
+				grep 'ERROR: There are no type 2 SNPs after applying the command-line settings for this run, which makes it impossible to perform imputation.' ${target_dir}/phasing/phased_genotypes_chr${CHR_NAME}_part${SEGMENT}.txt_summary > ${target_dir}/phasing/exit_check_temp.txt
+			
+				var=$(ls -s1 ${target_dir}/phasing/exit_check_temp.txt | awk '{print $1}')
+	
+				if [[ $var == 0 ]]
+				then
+					echo "WARNING: Non zero exit status during segmentation of segment ${SEGMENT} on chr ${CHR_NAME} in impute2.sh" >> /dev/stderr
+					exit 2
+				else
+					echo "Warning of no type 2 SNPs was issued but is ignored during segmentation of segment ${SEGMENT} on chr ${CHR_NAME} in impute2.sh" >> /dev/stderr
+				fi
 
+				rm ${target_dir}/phasing/exit_check_temp.txt
+				var=0
+			else
+				echo "WARNING: Non zero exit status during segmentation of segment ${SEGMENT} on chr ${CHR_NAME} in impute2.sh" >> /dev/stderr
+				exit 2
+
+			fi
+
+		fi
 
 		cat "${PHASED_HAPS_PART}" \
 		    >> "${PHASED_HAPS}"
@@ -142,7 +147,7 @@ ${PYTHON_BINARY} "${TOOL_EMBED_HAPLOTYPES_VCF}" \
 
 if [[ "$?" != 0 ]]
 then
-	echo "Non zero exit status while embedding haplotypes in impute2.sh"
+	echo "Non zero exit status while embedding haplotypes in impute2.sh" >> /dev/stderr
 	exit 2
 fi
 
@@ -154,7 +159,7 @@ ${PYTHON_BINARY} "${TOOL_GROUP_HAPLOTYPES}" \
 	
 if [[ "$?" != 0 ]]
 then
-	echo "Non zero exit status while grouping haplotypes in impute2.sh"
+	echo "Non zero exit status while grouping haplotypes in impute2.sh" >> /dev/stderr
 	exit 2
 fi
 

@@ -1,34 +1,42 @@
 #!/usr/bin/R
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# This script is licenced under (license terms are at
+# https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 library(ks)
 library(getopt)
 
 script_dir = dirname(get_Rscript_filename())
-source(paste0(script_dir,"/qq.R"))
-source(paste0(script_dir, "/getopt.R"))
-source(qq("@{script_dir}/functions.R"))
+
+source(paste0("",script_dir, "/functions.R"))
 
 minLim=0.47
 maxLim=0.53
 minCoverage=20
-getopt2(matrix(c('file',     	'f', 1, "character", "", # input  /ibios/co02/bludau/ACEseq/medullo_pediatric/MBBL8/all_seg_2.txt
-		 'gender',	'g', 1, "character", "",
-                 'segments',	's', 1, "character", "", # input  /ibios/co02/bludau/ACEseq/medullo_pediatric/MBBL8/clustered_and_pruned_and_normal.txt
-                 'segOut',    	'o', 1, "character", "",  # output segments file
-		 'out',		'u', 1, "character", "", #output dir
-		 'minLim',	'i', 2, "numeric"  , 'minimum peak value to be within balanced range',
-		 'maxLim',	'a', 2, "numeric" , "maximum peak value to be within balanced range",
-		 'minCoverage',	'm', 2, "numeric" , "minimum coverage in control for a SNP to be considered"
-                ), ncol = 5, byrow = TRUE));
+spec <- matrix(c('file',     	'f', 1, "character", #"", # input
+		 'gender',	'g', 1, "character", #"",
+                 'segments',	's', 1, "character", #"", # input
+                 'segOut',    	'o', 1, "character", #"",  # output segments file
+		 'out',		'u', 1, "character", #"", #output dir
+		 'minLim',	'i', 2, "numeric"  , #'minimum peak value to be within balanced range',
+		 'maxLim',	'a', 2, "numeric" ,  #"maximum peak value to be within balanced range",
+		 'minCoverage',	'm', 2, "numeric"   #"minimum coverage in control for a SNP to be considered"
+                ), ncol = 4, byrow = TRUE)
 
-cat(qq("file: @{file}\n\n"))
-cat(qq("gender_file: @{gender}\n\n"))
-cat(qq("segments: @{segments}\n\n"))
-cat(qq("segOut: @{segOut}\n\n"))
-cat(qq("out: @{out}\n\n"))
-cat(qq("minLim: @{minLim}\n\n"))
-cat(qq("maxLim: @{maxLim}\n\n"))
-cat(qq("minCoverage: @{minCoverage}\n\n"))
+opt = getopt(spec);
+for(item in names(opt)){
+       assign( item, opt[[item]])
+}
+
+cat(paste0("file: ", file, "\n\n"))
+cat(paste0("gender_file: ", gender, "\n\n"))
+cat(paste0("segments: ", segments, "\n\n"))
+cat(paste0("segOut: ", segOut, "\n\n"))
+cat(paste0("out: ", out, "\n\n"))
+cat(paste0("minLim: ", minLim, "\n\n"))
+cat(paste0("maxLim: ", maxLim, "\n\n"))
+cat(paste0("minCoverage: ", minCoverage, "\n\n"))
 
 ## seems in previous step in the pipeline, chrX and chrY have beem transformed to chr23 and chr24
  
@@ -40,7 +48,7 @@ if (sex == "male" | sex == 'klinefelter') {
 }
 
 #data = read.table(file, sep = "\t", header = FALSE, as.is = TRUE, stringsAsFactors = TRUE)
-colNamesData = c("chromosome", "SNP",     "start",   "end",     "crest",
+colNamesData = c("chromosome", "SNP",     "start",   "end",     "SV.Type",
                    "copyT",      "covT",    "meanTCN", "betaT",   "betaN",
                    "Atumor",     "Btumor",  "Anormal", "Bnormal", "haplotype", "map")
 #dataAll = data
@@ -73,7 +81,7 @@ averageCoverage <- sum(as.numeric(totalCoverage$totalReads))/sum(as.numeric(tota
 cat("average SNP coverage observed in control: ", averageCoverage, "\n")
 
 #get area under the curve for each segment's BAF distribution
-segAll$area = runTheStuff(segments, chromosomes = chromosomes, minLim=minLim, maxLim=maxLim, threads = 1, averageCoverage, minCov=minCoverage)
+segAll$area = runTheStuff(segments, chromosomes = chromosomes, minLim=minLim, maxLim=maxLim, averageCov = averageCoverage, minCov=minCoverage)
 cat(segAll$area[1:10],"\n")
 #estimate cut off for classification  into imbalanced and balanced
 densDiff <- density(segAll$area,from=0.25,to=0.35, na.rm=T)
@@ -101,7 +109,7 @@ selImbalanced <- which(segAll$area > densDiff$x[minDiffIndex])
 if(length(selImbalanced)>1){
   segAll$peaks[selImbalanced] <- 2
 }
-#write.table(segAll, file = qq("@{out}/peaks.txt"), sep = "\t", row.names = FALSE, quote = FALSE) 
+#write.table(segAll, file = paste0("",out, "/peaks.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
 
 ## it may affect, they were in `for (fac in facts)` loop
 #table = subset(table, !is.na(Btumor) & !is.na(Atumor))
@@ -113,7 +121,7 @@ for (chr in chromosomes) {
 	if ( ! is.data.frame( dataAll[[chr]] ) ){
 		next
 	}
-	cat(qq("processing @{chr}\n\n"))
+	cat(paste0("processing ",chr, "\n\n"))
 	selS = which( segAll$chromosome == chr )
 	## seems unique(table$start[sel]) does not work
 	facts = segAll$start[selS]

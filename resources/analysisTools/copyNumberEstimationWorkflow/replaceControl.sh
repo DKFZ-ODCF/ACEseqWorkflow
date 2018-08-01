@@ -1,12 +1,13 @@
 #!/bin/bash
 
-
-source ${CONFIG_FILE}
-
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 
 
 sex=`cat ${FILENAME_SEX}`
 
+
+declare -a CHROMOSOME_INDICES="$CHROMOSOME_INDICES"
 
 for CHR_NR in "${CHROMOSOME_INDICES[@]}"
  do
@@ -22,7 +23,7 @@ for CHR_NR in "${CHROMOSOME_INDICES[@]}"
 		exit 2
 	fi
 
-	O_FILE="${SNP_VCF_CNV_PATH}${CHR_NR}.${VCF_SUFFIX}"
+	O_FILE="${SNP_VCF_CNV_PATH}${CHR_NR}.${CNV_ANNO_SUFFIX}"
 	tmp_out="${O_FILE}_tmp"
 
 	${RSCRIPT_BINARY} ${TOOL_FAKE_CONTROL} \

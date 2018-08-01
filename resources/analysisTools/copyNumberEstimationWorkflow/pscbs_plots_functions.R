@@ -1,12 +1,17 @@
 require(ggbio)
+
+# Copyright (c) 2017 The ACEseq workflow developers.
+# This script is licenced under (license terms are at
+# https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 require(ggplot2)
 require(gridExtra)
+require(grid)
 
 #plot TCNs
 #chr is the chromosome number
 #ratio: data.frame; subset (chromosome) of dataAll dataframe containing all SNPs
 #seg: data.frame; subset of combi which contains all segments for sample
-plotTCN = function (chromosome, ratio, seg, Ploidy, Purity, fullPloidy, chrLen, ymaxcov, plots='single', crestSub=NULL, p = NULL) {
+plotTCN = function (chromosome, ratio, seg, Ploidy, tcc, fullPloidy, chrLen, ymaxcov, plots='single', svSub=NULL, p = NULL, ymaxcov_threshold) {
 		
 		ymaxDH	= 1 
 		xtotal	= chrLen/ 10
@@ -23,15 +28,15 @@ plotTCN = function (chromosome, ratio, seg, Ploidy, Purity, fullPloidy, chrLen, 
 		copyTColors = c("#000000","#228B22", "#8B0000")
 		colScale <- scale_colour_manual( values = c( 'n'=copyTColors[1], 'g'=copyTColors[2], 'l'=copyTColors[3] ) )
 
-		#limit plots to TCN 8 to avoid displaying high level amplifications
-		if (ymaxcov>10){
-			ymaxcov <- 8
+		#limit plots to TCN [ymaxcov_threshold] to avoid displaying high level amplifications
+		if (ymaxcov>ymaxcov_threshold+2){
+			ymaxcov <- ymaxcov_threshold
 		}
 
 		# SNPs as data points, colored according to gain, loss and neutral
 		p <- ggplot(environment=environment())
 		if(nrow(ratio)>1){
-		  p <- p + geom_point( data=ratio[ seq(1 ,nrow(ratio), 7), ], aes( x=SNP, y=copyT, col=GNL ), pch=16, cex=0.3 ) +
+		  p <- p + geom_point( data=ratio[ seq(1 ,nrow(ratio), 7), ], aes( x=SNP, y=copyT, col=GNL ), pch=16, cex=0.01 ) +
 					colScale + theme_bw()
 		}
 		# allele specific and total copy numbers: c1Mean, c2Mean and tcnMean
@@ -55,7 +60,7 @@ plotTCN = function (chromosome, ratio, seg, Ploidy, Purity, fullPloidy, chrLen, 
 		if ( any(seg$tcnMean>ymaxcov) ){
 			highAmp <- which( seg$tcnMean > ymaxcov )
 			highSeg <- seg[highAmp, ]
-			highSeg$tcnMean <- 8
+			highSeg$tcnMean <- ymaxcov_threshold
 			highSeg$middle <- highSeg$start + ( highSeg$end - highSeg$start )/2
 			p <- p + geom_segment( data=highSeg, aes( x=start, y=tcnMean, xend=end, yend=tcnMean ), colour="#0000CDFF", size = 1 )
 			p <- p + geom_point( data=highSeg, aes( x=middle, y=tcnMean), colour="#0000CDFF", shape=17)
@@ -68,40 +73,34 @@ plotTCN = function (chromosome, ratio, seg, Ploidy, Purity, fullPloidy, chrLen, 
 			# add axis
 			p <- p + scale_x_continuous( breaks=pretty(1:len, n=10)/len, labels=pretty(1:len, n=10) ) 
 
-			# crest segments
-			if ( is.data.frame(crestSub) ) {
+			# sv segments
+			if ( is.data.frame(svSub) ) {
 
-				crestSub$start  <- crestSub$start/10/xtotal
-				crestSub$end    <- crestSub$end/10/xtotal
+				svSub$start  <- svSub$start/10/xtotal
+				svSub$end    <- svSub$end/10/xtotal
 			
-				crestSub$ymaxcov <- replicate( nrow(crestSub), ymaxcov )
-				crestList = split(crestSub, crestSub$type) 
+				svSub$ymaxcov <- replicate( nrow(svSub), ymaxcov )
+				svList = split(svSub, svSub$type) 
 
-				if (length(crestList$DUP) > 0){
-					p <- p + geom_arch( data=crestList$DUP, aes(x=start, xend=end, height=1.2, y=ymaxcov), col='blue', lwd = 0.3)
+				if (length(svList$DUP) > 0){
+					p <- p + geom_arch( data=svList$DUP, aes(x=start, xend=end, height=1.2, y=ymaxcov), col='red', lwd = 0.3)
 				}
 	          
-				if (length(crestList$DEL) > 0){
-					p <- p + geom_arch( data=crestList$DEL, aes(x=start, xend=end, height=1.2, y=ymaxcov), col='red', lwd = 0.3)
+				if (length(svList$DEL) > 0){
+					p <- p + geom_arch( data=svList$DEL, aes(x=start, xend=end, height=1.2, y=ymaxcov), col='blue', lwd = 0.3)
 				}
 						 
-				if (length(crestList$INV) > 0){
-					p <- p + geom_arch( data=crestList$INV, aes(x=start, xend=end, height=1.2, y=ymaxcov), col='purple', lwd = 0.3)
+				if (length(svList$INV) > 0){
+					p <- p + geom_arch( data=svList$INV, aes(x=start, xend=end, height=1.2, y=ymaxcov), col='purple', lwd = 0.3)
 				}
 
-				if (length(crestList$ITX) > 0){ 
-					p <- p + geom_arch( data=crestList$ITX, aes( x=start, xend=end, height=1.2, y=ymaxcov ), col="#7CFC00", lwd=0.3 ) 
+				if (length(svList$ITX) > 0){ 
+					p <- p + geom_arch( data=svList$ITX, aes( x=start, xend=end, height=1.2, y=ymaxcov ), col="#7CFC00", lwd=0.3 ) 
 				}
 			  
-				if (length(crestList$CTX) > 0){
-					p <- p + geom_linerange( data = crestList$CTX, aes(x=start,  y=ymaxcov, ymin=ymaxcov, ymax=ymaxcov+1 ), col="#006400", lty=1, lwd=0.3) 
-					for ( i in seq_len( nrow(crestList$CTX) ) ){
-						if (crestList$CTX$chromosome[i]==crestList$CTX$chr2[i]){
-							p <- p + geom_text(data=crestList$CTX[i,], aes(x=start+0.001, y=ymaxcov+1, label = chr2 ), cex = 2, col = "#006400")
-						} else {
-							p <- p + geom_text(data=crestList$CTX[i,], aes(x=start+0.001, y=ymaxcov+1, label = chr2), cex = 2, col = "#006400")
-						}
-					}
+				if (length(svList$CTX) > 0){
+					p <- p + geom_linerange( data = svList$CTX, aes(x=start,  y=ymaxcov, ymin=ymaxcov, ymax=ymaxcov+1 ), col="#006400", lty=1, lwd=0.3) 
+					p <- p + geom_text(data=svList$CTX, aes(x=start+0.001, y=ymaxcov+1, label = chr2), cex = 2, col = "#006400")
 				}
 			}
 		}
@@ -159,7 +158,7 @@ plotRawBAF <- function(ratio, seg=NULL, chrLen, plots='single', p=NULL){
 		# BAF values
 		p <-  ggplot(environment=environment())
 		if (nrow(ratio) >0){
-			p <- p + geom_point( data=ratio, aes( SNP, betaT, col=as.character(haplotype)), pch=16, cex=0.3) 
+			p <- p + geom_point( data=ratio, aes( SNP, betaT, col=as.character(haplotype)), pch=16, cex=0.01) 
 		}
 		# labs, scales etc.
 		p <- p + geom_hline(yintercept=c(0, 0.2, 0.4, 0.6, 0.8, 1), col="#C0C0C0", lty="dotted", lwd=0.5)
@@ -179,7 +178,7 @@ plotRawBAF <- function(ratio, seg=NULL, chrLen, plots='single', p=NULL){
 
 # adjust values with obtained ploidies and puirities  
 
-completeSNP = function( chr, dat, Ploidy, Purity, fullPloidy ) {
+completeSNP = function( chr, dat, Ploidy, tcc, fullPloidy ) {
 	
 	if (nrow(dat) < 1 ){
 		GNL <- data.frame( matrix( vector(), 0,1, dimnames=list(c(), 'GNL' ) ), stringsAsFactors=F )
@@ -187,10 +186,10 @@ completeSNP = function( chr, dat, Ploidy, Purity, fullPloidy ) {
 		return(dat_new)
 	}
 
-	D = Purity * Ploidy + 2 * (1 - Purity) 		
+	D = tcc * Ploidy + 2 * (1 - tcc) 		
 
-	dat$copyT = (dat$copyT * D - 2 * (1-Purity) ) / (Purity)
-	dat$meanTCN = (dat$meanTCN * D - 2 * (1-Purity) ) / (Purity)
+	dat$copyT = (dat$copyT * D - 2 * (1-tcc) ) / (tcc)
+	dat$meanTCN = (dat$meanTCN * D - 2 * (1-tcc) ) / (tcc)
 	dat$roundTCN = round(dat$meanTCN)
 
 	dat$GNL = NA
@@ -225,13 +224,13 @@ completeSNP = function( chr, dat, Ploidy, Purity, fullPloidy ) {
 	return(dat)
 }
 
-completeSeg = function( comb, Ploidy, Purity, id, solution_possible=NA ) {
+completeSeg = function( comb, Ploidy, tcc, id, solutionPossible=NA, sex=sex) {
 
 	comb$tcnMeanRaw <- comb$tcnMean
 
-	#calculate correct TCN with estimated ploidy and purity
-	D = Purity * Ploidy + 2 * ( 1 - Purity )
-	comb$tcnMean = (comb$tcnMean - ( 2 *( 1-Purity ))/D ) / (Purity/D)
+	#calculate correct TCN with estimated ploidy and tcc 
+	D = tcc * Ploidy + 2 * ( 1 - tcc )
+	comb$tcnMean = (comb$tcnMean - ( 2 *( 1-tcc ))/D ) / (tcc/D)
 
 	fullPloidyLength <- sapply(unique(round(comb$tcnMean)), function(i) sum( as.numeric( comb$length[round(comb$tcnMean)==i] ) ) )
 	fullPloidyTab <- data.frame( ploidy=unique(round(comb$tcnMean)), length=fullPloidyLength )
@@ -257,7 +256,6 @@ completeSeg = function( comb, Ploidy, Purity, id, solution_possible=NA ) {
 	comb$B = NA
 	comb$genotype = NA
 	comb$TCN = NA
-	comb$GNL = NA
 
 	# for balanced alleles split cn equally
 	sel = which(comb$peaks == 1 & 
@@ -278,8 +276,8 @@ completeSeg = function( comb, Ploidy, Purity, id, solution_possible=NA ) {
 	            comb$meanCovB != "NA" & 
 	            comb$meanCovB != "NaN")
 
-	comb$AF[sel] = (comb$meanCovT[sel]/10000) / ((Purity*comb$tcnMean[sel])+((1-Purity)*2))			#Initial segnments for covT where 10000 bases long
-	comb$BAF[sel] = ((comb$meanCovB[sel]/comb$AF[sel])-(1-Purity))/(Purity*comb$tcnMean[sel])
+	comb$AF[sel] = (comb$meanCovT[sel]/10000) / ((tcc*comb$tcnMean[sel])+((1-tcc)*2))			#Initial segnments for covT where 10000 bases long
+	comb$BAF[sel] = ((comb$meanCovB[sel]/comb$AF[sel])-(1-tcc))/(tcc*comb$tcnMean[sel])
 	comb$dhMean[sel] = 2*(abs(comb$BAF[sel] - 0.5))
 	sel_dh = which(comb$dhMean > 1)
 	comb$dhMean[sel_dh] = 1
@@ -329,85 +327,6 @@ completeSeg = function( comb, Ploidy, Purity, id, solution_possible=NA ) {
 
 	# classify according to dh and copy numbers
 	# all segments with defined peak were heterozygous in the normal tissue
-	sel <- which( ! is.na(comb$tcnMean) & 
-		      ! is.na(comb$dhMean)  &
-		      comb$TCN != "sub" &
-		      comb$TCN == 2 &
-#		      comb$TCN == fullPloidy &
-		      comb$dhMean == 0 )
-	comb$GNL[sel] <- 'neutral'
-	rm(sel)
-
-	sel <- which( ! is.na(comb$tcnMean) & 
-	              ! is.na(comb$dhMean)  &
-	      	      comb$TCN != "sub" &
-#	      	      comb$TCN == fullPloidy &
-		      comb$TCN == 2 &
-		      (round(comb$c1Mean) == 0 |
-		      round(comb$c2Mean) == 0 ) )
-
-	comb$GNL[sel] <- 'cnLOH'
-	rm(sel)
-
-	sel <- which( ! is.na(comb$tcnMean) & 
-	              ! is.na(comb$dhMean)  &
-	      	      comb$TCN != "sub" &
-#	      	      comb$TCN == fullPloidy &
-	      	      comb$TCN == 2 &
-		    ( round(comb$c1Mean) != 0 &
-		      round(comb$c2Mean) != 0   ) & 
-		      comb$dhMean > 0 )
-
-	comb$GNL[sel] <- 'mixDH'
-	rm(sel)
-
-	sel <- which( ! is.na(comb$tcnMean) & 
-	              ! is.na(comb$dhMean)  &
-	      	      comb$TCN != "sub" &
-#	      	      comb$TCN > fullPloidy &
-	      	      comb$TCN > 2 &
-		      (round(comb$c1Mean) == 0 |
-		      round(comb$c2Mean) == 0 ) )
-
-	comb$GNL[sel] <- 'LOHgain'
-	rm(sel)
-
-	sel <- which( ! is.na(comb$tcnMean) & 
-	              ! is.na(comb$dhMean)  &
-	      	      comb$TCN != "sub" &
-#	      	      comb$TCN > fullPloidy &
-	      	      comb$TCN > 2 &
-		    ( round(comb$c1Mean) != 0 &
-		      round(comb$c2Mean) != 0 ) )
-
-	comb$GNL[sel] <- 'gain'
-	rm(sel)
-
-	sel <- which( ! is.na(comb$tcnMean) & 
-	              ! is.na(comb$dhMean)  &
-	      	      comb$TCN != "sub" &
-#	      	      comb$TCN < fullPloidy &
-	      	      comb$TCN < 2 &
-		    ( round(comb$c1Mean) != 0 &
-		      round(comb$c2Mean) != 0 ) )
-
-	comb$GNL[sel] <- 'loss'
-	rm(sel)
-
-	sel <- which( ! is.na(comb$tcnMean) & 
-	              ! is.na(comb$dhMean)  &
-	      	      comb$TCN != "sub" &
-#	      	      comb$TCN < fullPloidy &
-	      	      comb$TCN < 2 &
-		      (round(comb$c1Mean) == 0 |
-		      round(comb$c2Mean) == 0 ) )
-
-	comb$GNL[sel] <- 'LOH'
-	rm(sel)
-
-	sel <- which( comb$TCN == 'sub' )
-	comb$GNL[sel] <- 'sub'
-
 
 	# sex specific
 	if (sex == "male") {
@@ -424,18 +343,6 @@ completeSeg = function( comb, Ploidy, Purity, id, solution_possible=NA ) {
 		comb$TCN[sel] = comb$A[sel]
 		rm(sel)
 
-#		sel = which((comb$chromosome == 23 | comb$chromosome == 24) & (comb$TCN == (fullPloidy/2)))
-		sel = which((comb$chromosome == 23 | comb$chromosome == 24) & (comb$TCN == 1))
-		comb$GNL[sel] = "neutral"
-		rm(sel)
-
-		sel = which((comb$chromosome == 23 | comb$chromosome == 24) & (comb$TCN > 1 ))
-		comb$GNL[sel] = "gain"
-		rm(sel)
-
-		sel = which((comb$chromosome == 23 | comb$chromosome == 24) & (comb$TCN < 1))
-		comb$GNL[sel] = "loss"
-		rm(sel)
 	}else if (sex == "klinefelter") {
 		sel = which(comb$chromosome == 24)
 		comb$tcnMean[sel] = comb$tcnMean[sel] / 2
@@ -448,18 +355,6 @@ completeSeg = function( comb, Ploidy, Purity, id, solution_possible=NA ) {
 		comb$c2Mean[sel] = NA  
 		comb$genotype[sel] = comb$A[sel]
 		comb$TCN[sel] = comb$A[sel]
-		rm(sel)
-
-		sel = which((comb$chromosome == 24) & (comb$TCN == 1 ))
-		comb$GNL[sel] = "neutral"
-		rm(sel)
-
-		sel = which((comb$chromosome == 24) & (comb$TCN > 1 ))
-		comb$GNL[sel] = "gain"
-		rm(sel)
-
-		sel = which((comb$chromosome == 24) & (comb$TCN < 1 ))
-		comb$GNL[sel] = "loss"
 		rm(sel)
 
 	} else if (sex == "female") {
@@ -479,7 +374,6 @@ completeSeg = function( comb, Ploidy, Purity, id, solution_possible=NA ) {
 		comb$dhMean[sel] = 0
 		comb$c1Mean[sel] = 0
 		comb$c2Mean[sel] = 0
-		comb$GNL[sel] = "homozygousDel"
 		comb$map[sel] = 'mappable'
 	}
 
@@ -492,38 +386,59 @@ completeSeg = function( comb, Ploidy, Purity, id, solution_possible=NA ) {
 		comb$dhMean[sel] = NA
 		comb$c1Mean[sel] = NA
 		comb$c2Mean[sel] = NA
-		comb$GNL[sel] = NA
 	}
+
+	comb <- annotateCNA(seg.df = comb, ploidy=fullPloidy, cut.off = 0.7, TCN.colname = "tcnMean",
+                         c1Mean.colname = "c1Mean", c2Mean.colname = "c2Mean", sex=sex)
 
 	#format data so that no e-x is used and 0.5 is rounded to the next bigger value for start and next lower for end of a segment
 	comb$start	<- as.integer(ceiling(comb$start))
 	comb$end	<- as.integer(floor(comb$end))
+	comb		<- comb[order(comb$chromosome, comb$start),]
 	comb_out   	<- format(comb, scientific = FALSE, trim = TRUE)
+	colnames(comb_out)[1] <- "#chromosome"
 
 
-	write.table(comb_out, qq("@{outDir}/@{id}_comb_pro_extra@{round(Ploidy, digits = 3)}_@{Purity}.txt"), sep = "\t", row.names = FALSE, quote = FALSE) 
+	write.table(comb_out, paste0("",outDir, "/",id, "_comb_pro_extra",round(Ploidy, digits = 3), "_",tcc, ".txt"), sep = "\t", row.names = FALSE, quote = FALSE)
 
-	important_cols <- c('chromosome', 'start', 'end', 'length', 'tcnMeanRaw', 'tcnMean', 'crest', 'c1Mean', 'c2Mean', 'dhMean', 'dhMax', 'genotype', 'GNL', 'tcnNbrOfHets','minStart', 'maxStart', 'minStop', 'maxStop')
+	if(any(grepl("crest", colnames(comb_out))))  {
+		names(comb_out)[names(comb_out)=="crest"] <- 'SV.Type'
+	}
+
+	important_cols <- c('#chromosome', 'start', 'end', 'length', 'tcnMeanRaw', 'tcnMean', 'SV.Type', 'c1Mean', 'c2Mean', 'dhMean', 'dhMax', 'genotype', 'CNA.type', 'tcnNbrOfHets','minStart', 'maxStart', 'minStop', 'maxStop')
   	important_sub  <- comb_out[,important_cols]
   
-  	colnames(important_sub) <- c('chromosome', 'start', 'end', 'length', 'covRatio', 'TCN', 'SV.Type', 'c1Mean', 'c2Mean', 'dhEst', 'dhSNPs',  'genotype', 'GNL', 'NbrOfHetSNPs','minStart', 'maxStart', 'minEnd', 'maxEnd' )
-	important_sub 	    <- format(important_sub, scientific = FALSE, trim = TRUE)
+	colnames(important_sub) <- sub("tcnMeanRaw", "covRatio", colnames(important_sub))
+	colnames(important_sub) <- sub("tcnMean", "TCN", colnames(important_sub))
+	colnames(important_sub) <- sub("SV.Type", "SV.Type", colnames(important_sub))
+	colnames(important_sub) <- sub("dhMean", "dhEst", colnames(important_sub))
+	colnames(important_sub) <- sub("dhMax", "dhSNPs", colnames(important_sub))
+	colnames(important_sub) <- sub("tcnNbrOfHets", "NbrOfHetsSNPs", colnames(important_sub))
 
-	qual = sum( important_sub$GNL != 'sub', na.rm=TRUE) / sum(!is.na(important_sub$GNL))
-	importantFile = qq("@{outDir}/@{id}_most_important_info@{round(Ploidy, digits = 3)}_@{Purity}.txt")
+	important_sub 	    <- format(important_sub, scientific = FALSE, trim = TRUE)
+	qual = sum( as.numeric(comb$length[abs(comb$tcnMean - round(comb$tcnMean)) <= 0.3])  ) / sum(as.numeric(comb$length))
+	importantFile = paste0("",outDir, "/",id, "_most_important_info",round(Ploidy, digits = 3), "_",tcc, ".txt")
 
 	#change parameter names for json conversion output
-	normalContamination= 1-purity
+	tcc= tcc
 	goodnessOfFit=qual
+	ploidyFactor=Ploidy
+	ploidy=fullPloidy
 	caller = "ACEseq"
 	gender = sex
-	tabFileForJson = qq("@{outDir}/@{id}_cnv_parameter_@{round(Ploidy, digits = 3)}_@{Purity}.txt")
-	write.table( data.frame( normalContamination, Ploidy, goodnessOfFit, gender, solution_possible ), tabFileForJson, row.names=FALSE, col.names=TRUE, quote=FALSE, sep='\t' )
+	tabFileForJson = paste0("",outDir, "/",id, "_cnv_parameter_",round(Ploidy, digits = 3), "_",tcc, ".txt")
+	write.table( data.frame( tcc, ploidyFactor, ploidy, goodnessOfFit, gender, solutionPossible ), tabFileForJson, row.names=FALSE, col.names=TRUE, quote=FALSE, sep='\t' )
 
-	write.table(qq("#purity:@{Purity}\n#ploidy:@{Ploidy}\n#roundPloidy:@{fullPloidy}\n#fullPloidy:@{fullPloidy}\n#quality:@{qual}\n#assumed sex:@{sex}"), importantFile, col.names=FALSE, row.names=FALSE, quote=FALSE )
+	write.table(paste0("#tcc:",tcc, "\n#ploidy:",ploidyFactor, "\n#roundPloidy:",fullPloidy, "\n#fullPloidy:",fullPloidy, "\n#quality:",qual, "\n#assumed sex:",sex, ""), importantFile, col.names=FALSE, row.names=FALSE, quote=FALSE )
 	write.table( important_sub,
 		     importantFile,
 		     sep = "\t", row.names = FALSE, quote = FALSE, append=TRUE ) 
 
+	comb$chromosome <- gsub("^X", "23", comb$chromosome)
+	comb$chromosome <- gsub("^Y", "24", comb$chromosome)
+	comb$chromosome <- as.integer(comb$chromosome)
+
 	return(list(comb,fullPloidy))
 }	
+
+

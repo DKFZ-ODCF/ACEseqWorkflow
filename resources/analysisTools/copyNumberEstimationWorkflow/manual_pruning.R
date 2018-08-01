@@ -1,5 +1,9 @@
 #!/usr/bin/R
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# This script is licenced under (license terms are at
+# https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 library(mclust)
 library(fpc)
 library(reshape)
@@ -9,52 +13,55 @@ library(ggplot2)
 library(gridExtra)
 
 script_dir = dirname(get_Rscript_filename())
-source(paste0(script_dir,"/qq.R"))
-source(paste0(script_dir, "/getopt.R"))
 
 wd = getwd()
 min_num_SNPs =15
 libloc=NULL
-getopt2(matrix(c('file',                  'f', 1, "character", "",    # /ibios/co02/bludau/ACEseq/medullo_pediatric/MBBL8/all_seg.txt
-                 'segments',              's', 1, "character", "",    # /ibios/co02/bludau/ACEseq/medullo_pediatric/MBBL8/homozygous_deletion.txt.gz
-		 'functions',		  'p', 1, "character", "",
-		 'blockPre',		  'b', 1, "character", "",    # prefix of file containing haplotype groups
-		 'blockSuf',		  'u', 1, "character", "",    # suffix of file containing haplotype groups
-		 'adjustAlleles',	  'a', 1, "character", "",    # function to swap alleles where necessary
-		 'sex',		  	  'g', 1, "character", "",    # sex of patient
-		 'newFile',		  'w', 1, "character", "",
-                 'out',                   'x', 1, "character", "",
-		 'segOut',		  'o', 1, "character", "",
-                 'min_seg_length',        'l', 1, "numeric",   "",
-                 'clustering_YN',         'c', 1, "character", "",
-                 'min_num_cluster',       'n', 1, "numeric",   "",
-                 'min_num_SNPs',          'i', 2, "numeric",   "",
-		 'min_distance',	  'd', 1, "numeric",   "",
-                 'min_membership',        'm', 1, "numeric",   "",
-      		 'chrLengthFile',         'r', 1, "character", "",
-     		 'gcCovWidthFile',        'y', 1, "character", "",
-		 'pid',			  'v', 1, "character", "",
-		 'libloc',		  'z', 2, 'character', ""
-                ), ncol = 5, byrow = TRUE));
-  
-cat(qq("file: @{file}\n\n"))
-cat(qq("segments: @{segments}\n\n"))
-cat(qq("functions: @{functions}\n\n" ))
-cat(qq("out: @{out}\n\n"))
-cat(qq("segOut: @{segOut}\n\n"))
-cat(qq("blocks: @{blockPre}*@{blockSuf}\n\n"))
-cat(qq("adjustAlleles: @{adjustAlleles}\n\n"))
-cat(qq("gcCovWidthFile: @{gcCovWidthFile}\n\n"))
-cat(qq("newFile: @{newFile}\n\n"))
-cat(qq("min_seg_length: @{min_seg_length}\n\n"))
-cat(qq("clustering_YN: @{clustering_YN}\n\n"))
-cat(qq("min_num_cluster: @{min_num_cluster}\n\n"))
-cat(qq("min_num_SNPs: @{min_num_SNPs}\n\n"))
-cat(qq("min_distance: @{min_distance}\n\n"))
-cat(qq("min_membership: @{min_membership}\n\n"))
-cat(qq("chrLengthFile: @{chrLengthFile}\n\n"))
-cat(qq("gcCovWidthFile: @{gcCovWidthFile}\n\n"))
-cat(qq("min_membership: @{min_membership}\n\n"))
+spec <- matrix(c('file',                'f', 1, "character",
+                 'segments',            's', 1, "character",
+				 'functions',		  	'p', 1, "character",
+				 'blockPre',		  	'b', 1, "character",     # prefix of file containing haplotype groups
+				 'blockSuf',		  	'u', 1, "character",     # suffix of file containing haplotype groups
+				 'adjustAlleles',	  	'a', 1, "character",     # function to swap alleles where necessary
+				 'sex',		  	  	  	'g', 1, "character",     # sex of patient
+				 'newFile',				'w', 1, "character",
+                 'out',                 'x', 1, "character",
+				 'segOut',		  		'o', 1, "character",
+                 'min_seg_length',      'l', 1, "numeric",
+                 'clustering_YN',       'c', 1, "character",
+                 'min_num_cluster',     'n', 1, "numeric",
+                 'min_num_SNPs',        'i', 2, "numeric",
+		 		 'min_distance',	  	'd', 1, "numeric",
+                 'min_membership',      'm', 1, "numeric",
+				 'chrLengthFile',       'r', 1, "character",
+				 'gcCovWidthFile',      'y', 1, "character",
+				 'pid',			  		'v', 1, "character",
+				 'libloc',		  		'z', 2, 'character'
+                ), ncol = 4, byrow = TRUE)
+
+opt = getopt(spec);
+for(item in names(opt)){
+       assign( item, opt[[item]])
+}
+
+
+cat(paste0("file: ",file, "\n\n"))
+cat(paste0("segments: ",segments, "\n\n"))
+cat(paste0("functions: ",functions, "\n\n" ))
+cat(paste0("out: ",out, "\n\n"))
+cat(paste0("segOut: ",segOut, "\n\n"))
+cat(paste0("blocks: ",blockPre, "*",blockSuf, "\n\n"))
+cat(paste0("adjustAlleles: ",adjustAlleles, "\n\n"))
+cat(paste0("gcCovWidthFile: ",gcCovWidthFile, "\n\n"))
+cat(paste0("newFile: ",newFile, "\n\n"))
+cat(paste0("min_seg_length: ",min_seg_length, "\n\n"))
+cat(paste0("clustering_YN: ",clustering_YN, "\n\n"))
+cat(paste0("min_num_cluster: ",min_num_cluster, "\n\n"))
+cat(paste0("min_num_SNPs: ",min_num_SNPs, "\n\n"))
+cat(paste0("min_distance: ",min_distance, "\n\n"))
+cat(paste0("min_membership: ",min_membership, "\n\n"))
+cat(paste0("chrLengthFile: ",chrLengthFile, "\n\n"))
+cat(paste0("gcCovWidthFile: ",gcCovWidthFile, "\n\n"))
 cat("\n")
 
 
@@ -64,7 +71,9 @@ if ( libloc == "" | libloc == TRUE ){
 
 source(functions)
 
-cat(qq("reading @{segments}...\n\n"))
+mclust.options(hcUse = "VARS") # set hcUse to use VARS-method (method will be changed to SVD mith mclust>=5.4 which leads to different results)
+
+cat(paste0("reading ",segments,"...\n\n"))
 segAll = read.table(segments, sep = "\t", as.is = TRUE, header = TRUE)
 
 #########################
@@ -78,7 +87,7 @@ covRight <- covWidthLimits[,2]
 covWidth <- covRight -covLeft
 
 sex <- read.table(sex, header=FALSE, stringsAsFactors=FALSE)[,1]
-cat( qq("sex: @{sex}\n\n") )
+cat( paste0("sex: ", sex, "\n\n") )
 
 if (sex =='male'){
 	#in case the patient is male do not take X and Y chromosome into account as they are haploid
@@ -96,7 +105,7 @@ if (sex =='male'){
 	chromosomes = c(1:23)
 }
 
-cat(qq("blocks: @{blockPre}*@{blockSuf}\n\n"))
+cat(paste0("blocks: ",blockPre,"*",blockSuf,"\n\n"))
 for (chr in chromosomes) {
 	blockFile <- NULL
 	blockFile <- paste0( blockPre, chr, ".", blockSuf)
@@ -117,7 +126,7 @@ sel = which(chrLength$V1 == "Y")
 chrLength$V1[sel] = 24
 
 
-colNamesData <-  c( "chromosome", "SNP", "start", "end", "crest", "copyT", "covT", "meanTCN", "betaT","betaN", "Atumor", "Btumor", "Anormal", "Bnormal", 'haplotype', "map" )
+colNamesData <-  c( "chromosome", "SNP", "start", "end", "SV.Type", "copyT", "covT", "meanTCN", "betaT","betaN", "Atumor", "Btumor", "Anormal", "Bnormal", 'haplotype', "map" )
 
 dataAll = lapply( seq_len(maxChr), function(chr){
 		cat( "Reading chr ", chr," from ", file, "...\n" )
@@ -150,11 +159,11 @@ if (min_seg_length != 0) {
 		        
 			if ( segAll$chromosome[i] != segAll$chromosome[i+1] | segAll$map[i+1]=="homozygousDel"  )  { 
 
-				cat(qq("@{segAll$chromosome[i]}-@{segAll$start[i]}: segment is smaller min_seg_length and only one in chromosome -> not attached to next segment\n\n"))
+				cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment is smaller min_seg_length and only one in chromosome -> not attached to next segment\n\n"))
 				next
 			}
 
-			cat(qq("@{segAll$chromosome[i]}-@{segAll$start[i]}: segment is smaller min_seg_length and first in chromosome -> attached to next segment\n\n"))
+			cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment is smaller min_seg_length and first in chromosome -> attached to next segment\n\n"))
 			
 			segAll$start[i + 1] = segAll$start[i]
 			segAll$length[i + 1] = segAll$length[i + 1] + segAll$length[i]
@@ -170,11 +179,11 @@ if (min_seg_length != 0) {
 
 			if (  segAll$chromosome[i] != segAll$chromosome[i-1] | segAll$map[i-1]== "homozygousDel" ) {
 
-				cat(qq("@{segAll$chromosome[i]}-@{segAll$start[i]}: segment is smaller min_seg_length and only one in chromosome -> not attached to next segment\n\n"))
+				cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment is smaller min_seg_length and only one in chromosome -> not attached to next segment\n\n"))
 				next
 			}
 				
-			cat(qq("@{segAll$chromosome[i]}-@{segAll$start[i]}: segment is smaller min_seg_length and last in chromosome -> attached to former segment\n\n"))
+			cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment is smaller min_seg_length and last in chromosome -> attached to former segment\n\n"))
 			
 			segAll$end[i - 1] = segAll$end[i]
 			segAll$length[i - 1] = segAll$length[i - 1] + segAll$length[i]
@@ -188,17 +197,17 @@ if (min_seg_length != 0) {
 				   segAll$chromosome[i] == segAll$chromosome[i - 1] && 
 				   segAll$chromosome[i] == segAll$chromosome[i + 1] ) {
 		
-			cat(qq("@{segAll$chromosome[i]}-@{segAll$start[i]}: segment is smaller min_seg_length and within chromosome\n\n"))
+			cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment is smaller min_seg_length and within chromosome\n\n"))
 			
       #segment is only adjacent to prior segment or more similar to prior segment with regards to coverage
 			if (i != 1 && i != nrows && 
-			    is.na(segAll$crest[i]) &&
+			    is.na(segAll$SV.Type[i]) &&
 				 ( segAll$end[i-1] == segAll$start[i] | segAll$end[i-1]+1==segAll$start[i] ) &&
            segAll$map[i-1]!="homozygousDel" &&
 					( (segAll$start[i+1] != segAll$end[i] & segAll$end[i]+1 != segAll$start[i+1] ) ||
 					  abs(segAll$tcnMean[i] - segAll$tcnMean[i - 1]) <= abs(segAll$tcnMean[i] - segAll$tcnMean[i + 1]) ) ) {
 			
-				cat(qq("@{segAll$chromosome[i]}-@{segAll$start[i]}: segment start not eq crest point and tcnMean differnence to former segment < to next segment -> attached to former segment\n\n"))
+				cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment start not eq sv point and tcnMean differnence to former segment < to next segment -> attached to former segment\n\n"))
 			
 				segAll$end[i - 1] = segAll$end[i]
 				segAll$length[i - 1] = segAll$length[i - 1] + segAll$length[i]
@@ -209,13 +218,13 @@ if (min_seg_length != 0) {
 			
       #segment is only adjacent to following segment or more similar to following segment with regards to coverage  
 			} else if (i != 1 && i != nrows && 
-			           is.na(segAll$crest[i+1]) && 
+			           is.na(segAll$SV.Type[i+1]) && 
                  segAll$map[i+1]!="homozygousDel" &&
 					( segAll$end[i] == segAll$start[i+1] | segAll$end[i]+1==segAll$start[i+1] ) &&
 						( (segAll$start[i] != segAll$end[i-1] & segAll$end[i-1]+1 != segAll$start[i] ) ||
 						   abs(segAll$tcnMean[i] - segAll$tcnMean[i - 1]) > abs(segAll$tcnMean[i] - segAll$tcnMean[i + 1]) ) ) {
 			
-				cat(qq("@{segAll$chromosome[i]}-@{segAll$start[i]}: segment start not eq crest point and tcnMean differnence to former segment > to next segment -> attached to next segment\n\n"))
+				cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment start not eq sv point and tcnMean differnence to former segment > to next segment -> attached to next segment\n\n"))
 			
 				segAll$start[i + 1] = segAll$start[i]
 				segAll$length[i + 1] = segAll$length[i + 1] + segAll$length[i]
@@ -226,14 +235,14 @@ if (min_seg_length != 0) {
 				
 			} else {
 			
-				cat(qq("@{segAll$chromosome[i]}-@{segAll$start[i]}: segment has crest point -> not attached\n\n"))
+				cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment has sv point -> not attached\n\n"))
 				next
 				
 			} 
 			
 		} else {
 		
-			cat(qq("@{segAll$chromosome[i]}-@{segAll$start[i]}: segment longer min_seg_length -> not attached\n\n"))
+			cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment longer min_seg_length -> not attached\n\n"))
 			next
 			
 		}
@@ -250,7 +259,7 @@ dhMax = seq_len(nrow(segAll))
                          
 for (chr in chromosomes) {
 	
-    cat(qq("processing @{chr}...\n\n"))
+    cat(paste0("processing ",chr, "...\n\n"))
     
     dataAll[[chr]]$dh = 2 * (abs(dataAll[[chr]]$betaT - 0.5)) # dh value for each SNP
     sel = which(segAll$chromosome == chr)
@@ -285,12 +294,12 @@ for (chr in chromosomes) {
                   
 dhMax_new = as.numeric(dhMax)
 segAll$dhMax = dhMax_new
-write.table(segAll, file = qq("@{out}/minus_short_w_dh_BIC.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
+write.table(segAll, file = paste0("",out, "/minus_short_w_dh_BIC.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
 
 tcnMean = segAll$tcnMean
 dhMax = segAll$dhMax
 
-png(qq("@{out}/@{pid}_tcn_dh.png"), width=1200, height=1200, type='cairo')           
+png(paste0("",out, "/",pid, "_tcn_dh.png"), width=1200, height=1200, type='cairo')
 plot(tcnMean,dhMax)
 dev.off()
   
@@ -306,38 +315,47 @@ if (clustering_YN == "yes") {
 	            cluster_matrix_norm[ ,1] == "-Inf" | 
 	            cluster_matrix_norm[ ,2] == "Inf" | 
 	            cluster_matrix_norm[,2] == "-Inf")
-	            
-	cat(qq("@{length(rem)} lines dropped.\n\n")) #
-	if ( length(rem) > 0){
-	        weights = log2(segAll$length[-rem]) #sepcify your size vector here
-                                                     #weights <- 1
-          cluster_matrix_norm = cluster_matrix_norm[-rem, ]
-      	  #convert limits to scaled coordinates
-      	  covLeftNorm  <- ( log2(covLeft)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
-      	  covRightNorm <- ( log2(covRight)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
-      	  covLeftFullNorm <- ( log2(covLeft-covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
-          covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
-          
-  }else{
-      	   weights = log2(segAll$length)
-      	   cluster_matrix_norm = cluster_matrix_norm
-      	   #convert limits to scaled coordinates
-      	   covLeftNorm  <- (log2(covLeft)-mean(log2(tcnMean)) )/sd(log2(tcnMean))
-      	   covRightNorm <- (log2(covRight)-mean(log2(tcnMean)) )/sd(log2(tcnMean))  
-           covLeftFullNorm <- ( log2(covLeft-covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
-           covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+
+	cat(paste0("",length(rem), " lines dropped.\n\n")) #
+	if ( length(rem) > 0) {
+		# +1 as pseudo count to account for segments of length 1bp
+		weights = log2(segAll$length[-rem] + 1) #specify your size vector here
+												 #weights <- 1
+		cluster_matrix_norm = cluster_matrix_norm[-rem, ]
+		#convert limits to scaled coordinates
+		covLeftNorm  <- ( log2(covLeft)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+		covRightNorm <- ( log2(covRight)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+		covLeftFullNorm <- ( log2(covLeft-covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+		covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+
+  } else {
+		# +1 as pseudo count to account for segments of length 1bp
+		weights = log2(segAll$length + 1)
+		cluster_matrix_norm = cluster_matrix_norm
+		#convert limits to scaled coordinates
+		covLeftNorm  <- (log2(covLeft)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
+		covRightNorm <- (log2(covRight)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
+		covLeftFullNorm <- ( log2(covLeft-covWidth/2)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
+		covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
   }
   
 	cluster_matrix = scale(cluster_matrix_norm)
 
 	#find optimal number of clusters using bayesian information criterion
+	cat("Calling Mclust...\n")
+	cat(paste0("cluster_matrix nrow: ",nrow(cluster_matrix),"\n"))
+	cat(paste0("cluster_matrix ncol: ",ncol(cluster_matrix),"\n"))
+	cat(paste0("min_num_cluster: ",min_num_cluster,"\n"))
 	d_clust <- Mclust(cluster_matrix, G=min_num_cluster:20)
+	cat("finished Mclust...\n")
 	m.best  <- dim(d_clust$z)[2]
 
 	#cmeans to get clusters with m.best centers 
 	#resample clustering by jittering point B times)
-  
+
+	cat("Calling clusterboot...\n")
 	results = clusterboot(cbind(weights, cluster_matrix), B = 100, bootmethod = "jitter", clustermethod = cmeansCBI, k = m.best, seed = 15555, multipleboot = FALSE)
+	cat("finished clusterboot...\n")
 	CM <- results$result$result
 
     	massCenterX <- sapply(seq_along(CM$centers[,1]), function(i) {
@@ -361,14 +379,14 @@ if (clustering_YN == "yes") {
 	  centerMain <- CM$centers[maxCluster,]
   }
 	col = c("#000000","#800000","#008000","#000080","#800080","#808080","#FF0000","#00FF00","#FFFF00","#0000FF","#FF00FF","#00FFFF","#DC143C","#FF8C00","#FF69B4","#FF4500", "#EE82EE", "#FFD700")
-    
+
 	clusterPlot <- ggplot( data.frame(cluster_matrix), aes(log2.tcnMean, dhMax, col=as.character(CM$cluster) ) )  +
 	  geom_point(size=1.7, alpha=0.8) +
 	  geom_point(data=data.frame(CM[['centers']]), aes(log2.tcnMean, dhMax), col='red', pch=3) +
-	  geom_vline(x=c(covRightNorm, covLeftNorm),size=0.4, col="black", alpha=0.8) +
-	  geom_vline(x=c(covRightFullNorm, covLeftFullNorm),size=0.4, col="red", alpha=0.8) +
+	  geom_vline(xintercept=c(covRightNorm, covLeftNorm),size=0.4, col="black", alpha=0.8) +
+	  geom_vline(xintercept=c(covRightFullNorm, covLeftFullNorm),size=0.4, col="red", alpha=0.8) +
 	  scale_color_manual(values=c(col[1:length(unique(CM$cluster))], "grey"), name="cluster" )
-	ggsave(qq("@{out}/@{pid}_cluster_cmeans.png"), clusterPlot, width = 10, height = 10, type='cairo')
+	ggplot2::ggsave(paste0("",out, "/",pid, "_cluster_cmeans.png"), clusterPlot, width = 10, height = 10, type='cairo')
 
 	minTcnMean <- covLeftNorm
 	maxTCNmean <- covRightNorm
@@ -419,9 +437,9 @@ if (clustering_YN == "yes") {
     dhMax <- NaN
     if(length(s)>4){
       tcnMean <- density(segAll.tmp$tcnMean[s] )
-      tcnMean <- tcnMean$x[which(tcnMean$y==max(tcnMean$y))]
+      tcnMean <- tcnMean$x[which(tcnMean$y==max(tcnMean$y))[1]] # [1]: bugfix, more than one value possible. always take the first one
       dhMax <- density(segAll.tmp$dhMax[s])
-      dhMax <- dhMax$x[which(dhMax$y==max(dhMax$y))]
+      dhMax <- dhMax$x[which(dhMax$y==max(dhMax$y))[1]] # [1]: bugfix, more than one value possible. always take the first one
     }
     c(tcnMean, dhMax)
   })))
@@ -431,25 +449,26 @@ if (clustering_YN == "yes") {
   
   clusterPlotRmOutlier  <- ggplot( data.frame(segAll.tmp), aes(log2(tcnMean), dhMax, col=as.factor(cluster) ) )  +
     geom_point(size=1.7, alpha=0.8) +
-    geom_vline(x=c(log2( covLeft) , log2(covRight) ), size=0.4, col="black", alpha=0.8) +
-    geom_vline(x=c(log2( covLeft -  covWidth), log2(covRight + covWidth) ),size=0.4, col="red", alpha=0.8) +
+    geom_vline(xintercept=c(log2( covLeft) , log2(covRight) ), size=0.4, col="black", alpha=0.8) +
+    geom_vline(xintercept=c(log2( covLeft -  covWidth), log2(covRight + covWidth) ),size=0.4, col="red", alpha=0.8) +
     scale_color_manual(values=c(col[1:(length(unique(segAll.tmp$cluster))-1)]),name="cluster" ) +
     geom_point(data=data.frame(segAll.tmp[is.na(segAll.tmp$cluster),]), aes(log2(tcnMean), dhMax), col='grey')
-	ggsave(qq("@{out}/@{pid}_cluster_cmeans_wo_outlier.png"), clusterPlotRmOutlier, width=10, height=10, type='cairo')
+	ggplot2::ggsave(paste0("",out, "/",pid, "_cluster_cmeans_wo_outlier.png"), clusterPlotRmOutlier, width=10, height=10, type='cairo')
   
-  segAll.tmp[keep,]$cluster[is.na(segAll.tmp[keep,]$cluster)] <- "NA"
+  segAll.tmp[keep,]$cluster[is.na(segAll.tmp[keep,]$cluster)] <- "NA"  #seem redundant and uneccesary
  
-	freqs <- sapply( as.numeric(rownames(newCenters)), function(i) sum(segAll.tmp$cluster==i, na.rm=T) )
+  freqs <- sapply( as.numeric(rownames(newCenters)),
+               function(i) sum(segAll.tmp$cluster==i, na.rm=T) )
   names(freqs) <- rownames(newCenters)                     
-	minimalClusters <- names(which(freqs <5 ))
-	for(i in as.numeric(minimalClusters)){
+  minimalClusters <- names(which(freqs <5 ))
+  for(i in as.numeric(minimalClusters)){
 	  selMin <- which(segAll.tmp$cluster==i )
 	  segAll.tmp$cluster[selMin] <- NA
-    newCenters[as.character(i),] <- NA
-	}
-#	write.table(segAll, file = qq("@{out}/clustered.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
+          newCenters[as.character(i),] <- NA
+  }
+  # write.table(segAll, file = paste0("",out, "/clustered.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
   
-	# pruning if neighbouring segments are assigned to identical cluster                
+  # pruning if neighbouring segments are assigned to identical cluster                
 	
   test <- combineNeighbours(segAll.tmp)
 
@@ -491,7 +510,7 @@ if (clustering_YN == "yes") {
     selIdentical <- which( test_new$neighbour == 'identical' )
 
     minNbrOfHets =5
-  png(qq("@{out}/@{pid}_merged_cluster.png"), width=1500, height=1020, type='cairo')
+  png(paste0("",out, "/",pid, "_merged_cluster.png"), width=1500, height=1020, type='cairo')
     generatePlots(test_new, selIdentical, centerMainNew, covLeft, covRight, covLeft-covWidth, covRight+covWidth, minNbrOfHets=minNbrOfHets)
   dev.off()
       
@@ -499,11 +518,11 @@ if (clustering_YN == "yes") {
   clusterPlotNewlog2 <- ggplot( data.frame(test_new), aes(log2(tcnMean), dhMax, col=as.factor(cluster) ) )  +
     geom_point(size=1.7, alpha=0.8) +
     geom_point(data=data.frame(test_new[is.na(test_new$cluster),]), aes(log2(tcnMean), dhMax), col='grey') +
-    geom_vline(x=c(log2( covLeft) , log2(covRight) ), size=0.4, col="black", alpha=0.8) +
-    geom_vline(x=c(log2( covLeft -  covWidth), log2(covRight + covWidth) ),size=0.4, col="red", alpha=0.8) +
+    geom_vline(xintercept=c(log2( covLeft) , log2(covRight) ), size=0.4, col="black", alpha=0.8) +
+    geom_vline(xintercept=c(log2( covLeft -  covWidth), log2(covRight + covWidth) ),size=0.4, col="red", alpha=0.8) +
     scale_color_manual(values=c(col[1:(length(unique(test_new$cluster))-1)]),name="cluster" )
-  ggsave( qq("@{out}/@{pid}_cluster_cmeans_merged_log2.png"), clusterPlotNewlog2, width=10, height=10, type='cairo' )
-#	write.table(test, file = qq("@{out}/clustered_and_pruned_BIC.txt"), sep = "\t", row.names = FALSE, quote = FALSE )
+	ggplot2::ggsave( paste0("",out, "/",pid, "_cluster_cmeans_merged_log2.png"), clusterPlotNewlog2, width=10, height=10, type='cairo' )
+#	write.table(test, file = paste0("",out,"/clustered_and_pruned_BIC.txt"), sep = "\t", row.names = FALSE, quote = FALSE )
 
   combi <- test_new
 
@@ -526,7 +545,7 @@ if (clustering_YN == "yes") {
       pChr2 <- pChr2 + hlinesDH
       pChr2 <- pChr2 + labs(x=NULL) + theme( axis.text.x=element_blank() )
       pC <- arrangeGrob(pChr1,pChr2)
-      ggsave( paste0(out, "/", pid,"_chr", chr,".pdf"), pC, width=28,height=14 )
+      ggplot2::ggsave( paste0(out, "/", pid,"_chr", chr,".pdf"), pC, width=28,height=14 )
     }  
   }
   
@@ -566,7 +585,7 @@ if (clustering_YN == "yes") {
   p2 <- p2 + hlinesDH
   p2 <- p2 + vlines + labs(x=NULL) + theme( axis.text.x=element_blank() )
   p <- arrangeGrob(p1,p2)
-  ggsave(paste0(out, "/", pid, "_colored_segments_cluster.pdf"), p,width=28,height=14,units='cm' ) 
+  ggplot2::ggsave(paste0(out, "/", pid, "_colored_segments_cluster.pdf"), p,width=28,height=14,units='cm' ) 
  # }
 
 
@@ -620,7 +639,7 @@ source(adjustAlleles)
  
 for (chr in  seq_len(maxChr) ) {
 
- 	cat (qq("adjusting frequencies for chromosome @{chr} \n\n") )
+ 	cat (paste0("adjusting frequencies for chromosome ",chr, " \n\n") )
  	selSeg <- which(test_new$chromosome==chr)
  
  	if ( length(selSeg) > 0  & is.data.frame(dataAll[[chr]]) ){
@@ -692,7 +711,7 @@ for (chr in  seq_len(maxChr) ) {
    
 			selRem <- which( dataAll[[chr]]$betaN > 0.3 & dataAll[[chr]]$betaN < 0.7 & is.na(dataAll[[chr]]$adjusted) )
 			if ( length(selRem) > 0 ){
-				cat( qq("Removing @{length(selRem)} unphased SNPs from chromosome @{chr}...\n\n") )
+				cat( paste0("Removing ",length(selRem), " unphased SNPs from chromosome ",chr, "...\n\n") )
 				dataAll[[chr]] <- dataAll[[chr]][-selRem,]
 			}
  
@@ -707,7 +726,7 @@ for (chr in  seq_len(maxChr) ) {
 
  
 # for chromosome 1 to change columnnames for saving file so segments to data work
-new_colnames <- c("chromosome", "x", "a", "end", "crest", "CT", "covT", "meanTCN", "betaT","betaN", "Atumor", "Btumor", "Anormal", "Bnormal", 'haplotype', "map")
+new_colnames <- c("chromosome", "x", "a", "end", "SV.Type", "CT", "covT", "meanTCN", "betaT","betaN", "Atumor", "Btumor", "Anormal", "Bnormal", 'haplotype', "map")
 
 dataAll[[1]] = format(dataAll[[1]], scientific = FALSE, trim = TRUE)
 write.table(dataAll[[1]], pipe(paste0("bgzip >", newFile) ), sep='\t', col.names=new_colnames, row.names=FALSE, quote=FALSE) 
@@ -724,7 +743,7 @@ lapply(dataAll[-1], writetable, newFile = newFile)
 #dataAll <- do.call(rbind, dataAll)
 # 
 ##change columnnames for saving file so segments to data works
-#colnames(dataAll) = c("chromosome", "x", "a", "end", "crest", "CT", "covT", "meanTCN", "betaT","betaN", "Atumor", "Btumor", "Anormal", "Bnormal", 'haplotype', "map")
+#colnames(dataAll) = c("chromosome", "x", "a", "end", "sv", "CT", "covT", "meanTCN", "betaT","betaN", "Atumor", "Btumor", "Anormal", "Bnormal", 'haplotype', "map")
 #dataAll = format(dataAll, scientific = FALSE, trim = TRUE)
 #write.table(dataAll, pipe(paste0("bgzip >",newFile) ), sep='\t', col.names=TRUE, row.names=FALSE, quote=FALSE) 
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-
-source ${CONFIG_FILE}
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 
 
 #estimate sex of patient from X and Y coverage
@@ -21,7 +21,7 @@ then
 	 --min_X_ratio ${min_X_ratio} \
 	 --file_out ${tmp_sex_file}
 
-elif [[ $PATIENTSEX ]]
+elif [[ -n ${PATIENTSEX-} ]]
 then
 	echo $PATIENTSEX > ${tmp_sex_file}
 else
@@ -36,12 +36,14 @@ fi
 
 mv $tmp_sex_file ${FILENAME_SEX}
 
+declare -a CHROMOSOME_INDICES="$CHROMOSOME_INDICES"
+
 for CHR_NR in "${CHROMOSOME_INDICES[@]}"
  do
 
   A_FILE="${SNP_VCF_CNV_PATH}${CHR_NR}.${CNV_SUFFIX}"
   echo ${SNP_VCF_CNV_PATH}
-  O_FILE="${SNP_VCF_CNV_PATH}${CHR_NR}.${VCF_SUFFIX}"
+  O_FILE="${SNP_VCF_CNV_PATH}${CHR_NR}.${CNV_ANNO_SUFFIX}"
   tmp_out="${O_FILE}_tmp"
 
   ${PERL_BINARY} "${TOOL_ANNOTATE_CNV_VCF}" \

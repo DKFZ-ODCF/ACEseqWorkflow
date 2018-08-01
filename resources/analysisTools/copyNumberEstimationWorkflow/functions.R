@@ -1,38 +1,25 @@
 
+
+# Copyright (c) 2017 The ACEseq workflow developers.
+# This script is licenced under (license terms are at
+# https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 ################################################################################
 ## functions for purity_ploidy.R
 ################################################################################
-
-library(multicore)
 library(flux)
 
-
 # == title
-# parallel computing by chromosomes
+# computing by chromosomes
 #
 # == param
 # -chromosomes chromosome name
-# -threads     number of threads
 #
 # == value
 # character vector
-runTheStuff = function(segments, chromosomes, minLim, maxLim, threads = 1, averageCov, minCov) {
+runTheStuff = function(segments, chromosomes, minLim, maxLim, averageCov, minCov) {
 
   index = 1
-	k = list()
-	jobs = list()
-	jobsIndex = 0
-	
-	for (chr in chromosomes) {
-		cat("start chromosome:", chr, "\n")	
-		jobsIndex = jobsIndex+1
-		jobs[[jobsIndex]] = parallel(doItForOneChr(segments,chr, minLim, maxLim, averageCov, minCov), silent = FALSE)
-		if(jobsIndex == threads || chr == chromosomes[length(chromosomes)]) {
-			k[[index]] = collect(jobs, wait = TRUE)
-			index = index + 1
-			jobsIndex = 0
-		}
-	}
+	k = lapply(chromosomes, function(chr) doItForOneChr(segments,chr, minLim, maxLim, averageCov, minCov))
 
 	myPeaks2=c()
 	for(i in seq_along(k)) {
@@ -68,13 +55,13 @@ doItForOneChr = function(segments, chr, minLim, maxLim, averageCov, minCov) {
 	index = 1
 	
 	## save images in a multiple page PDF
-	pdf(qq("@{out}/chr_@{chr}_peaks.pdf"), width = 5, height = 5)
-	
+	pdf(paste0(out,"/chr_", chr,"_peaks.pdf"), width = 5, height = 5)
+
 	for (seg in start) {
 	
 		## add 2013-9-25
-		cat(qq("segment: @{seg}\n\n"))
-		
+		cat(paste0( "segment: ", seg, "\n\n"))
+	
 		sel <- which(dataAll[[chr]]$start == seg &
 		             dataAll[[chr]]$betaN > 0.3 & 
 		             dataAll[[chr]]$betaN < 0.7 & 
@@ -106,13 +93,17 @@ doItForOneChr = function(segments, chr, minLim, maxLim, averageCov, minCov) {
 	position_quot <- area_right / area_left+0.000001
 	position_rel_diff <- abs(area_right - area_left) / (area_right + area_left)
 	# can also potentially include an asymmetry criterion here
-	plot(tmp, col="blue", main = qq("chr: @{chr}, segment: @{index}, SNPS: @{length(sel)}\narea_left = @{round(area_left,digits=3)}; area_right = @{round(area_right, digits=3)}\nposition_quot = @{round(position_quot,digits=3)}; position_rel_diff = @{round(position_rel_diff, digits=3)}"), xlab="BAF", xlim = c(-0.2, 1.2),
-	sub=qq("start: @{seg}"))               
+	plot(tmp, col="blue", main = paste0("chr: ",chr, "  segment: ", index,", SNPS: ",length(sel),"\narea_left = ",
+		 round(area_left,digits=3),"; area_right = ",round(area_right, digits=3),
+	 	 "\nposition_quot = ", round(position_quot,digits=3),"; position_rel_diff = ",
+		 round(position_rel_diff, digits=3)), xlab="BAF", xlim = c(-0.2, 1.2),
+		 sub=paste0("start: i",seg))
 	polygon(c(tmp$x[left_ind],limit),c(tmp$y[left_ind],0),col="red")
 	polygon(c(limit,tmp$x[right_ind]),c(0,tmp$y[right_ind]),col="blue")
-	abline(v=0.5) 
-      
-	
+	abline(v=0.5)
+
+
+
 	allAreas = c(allAreas, position_rel_diff)
       }else{
 	allAreas = c(allAreas, NA)

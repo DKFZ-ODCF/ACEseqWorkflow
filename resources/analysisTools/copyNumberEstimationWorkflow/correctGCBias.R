@@ -1,5 +1,9 @@
 #!/usr/bin/Rscript
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# This script is licenced under (license terms are at
+# https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 #Kortine Kleinheinz 14.08.14
 #This script can be used to correct for gc bias and replication timing starting from tumor and control read counts in 10kb windows
 #
@@ -7,8 +11,6 @@
 library(getopt)
 
 script_dir = dirname(get_Rscript_filename())
-source(paste0(script_dir,"/qq.R"))
-source(paste0(script_dir, "/getopt.R"))
 
 #default Parameter
 functionPath <- paste0(script_dir, "/correctGCBias_functions.R")
@@ -17,37 +19,47 @@ lowess_f <- 0.1
 magnification_factor <- 1e9
 coverageYlims <- 4
 email <- ""
-getopt2(matrix(c('timefile',				 't', 1, "character", 'file for replication timing',
-		         'windowFile',			 'f', 1, "character", 'file with 10kb window coordinates and coverage',
-		         'chrLengthFile',		 'h', 1, "character", 'file with chromosomelength',
-	                 'pid',				 'p', 1, "character", 'patient ID',
-        	         'email',			 'e', 2, "character", "email adress to enable contact in case of evidence for sample errors",
-                	 'outfile',			 'o', 1, "character", 'new file with corrected and raw coverage',
-	                 'corPlot',			 'c', 1, "character", 'Name for plot with corrected GC bias',
-        	         'corTab',			 'r', 1, "character", 'Name for table with GC bias parameter',
-        	         'qcTab',			 'q', 1, "character", 'Name for table with GC bias parameters relevant for qc',
-	                 'gcFile',			 'g', 1, "character", 'table with gc content per 10kb window',
-        	         'outDir',			 'x', 1, "character", 'directory for outputfiles',
-	        	 'scaleFactor',			 's', 2, "double"   , 'scaling factor to determine range of points to take as main cloud',
-		         'lowess_f',			 'l', 2, "double"   , 'smoothing parameter of lowess function',
-		         'magnification_factor',	 'm', 2, "double"   , 'factor to prevent underflow in slope and curvature',
-		         'functionPath', 		 'u', 2, "character", 'path and name of script with functions for script',
-		         'coverageYlims', 		 'y', 2, "numeric", 'Y range for corrected coverage plot'
-                ), ncol = 5, byrow = TRUE))
+spec <- matrix(c('timefile',	 't', 1, "character",# 'file for replication timing',
+		 'windowFile',	 'f', 1, "character",# 'file with 10kb window coordinates and coverage',
+		 'chrLengthFile','h', 1, "character",# 'file with chromosomelength',
+                 'pid',		 'p', 1, "character",# 'patient ID',
+                 'email',	 'e', 2, "character",# "email adress to enable contact in case of evidence for sample errors",
+                 'outfile',	 'o', 1, "character",# 'new file with corrected and raw coverage',
+                 'corPlot', 	 'c', 1, "character",# 'Name for plot with corrected GC bias',
+                 'gcFile',	 'g', 1, "character",# 'table with gc content per 10kb window',
+                 'outDir',	 'x', 1, "character",# 'directory for outputfiles',
+	         'scaleFactor',	 's', 2, "double"   ,# 'scaling factor to determine range of points to take as main cloud',
+	         'lowess_f',	 'l', 2, "double"   ,# 'smoothing parameter of lowess function',
+	         'corTab',	 'r', 1, "character", #'Name for table with GC bias parameter',
+                 'qcTab',	 'q', 1, "character", #'Name for table with GC bias parameters relevant for qc',
+	         'magnification_factor', 'm', 2, "double",  #'factor to prevent underflow in slope and curvature',
+	         'coverageYlims', 'y', 2, "numeric", #'Y range for corrected coverage plot'
+		 'functionPath', 'u', 2, "character" #'path and name of script with functions for script'
+                ), ncol = 4, byrow = TRUE)
 
-cat(qq("windowFile: @{windowFile}\n\n"))
-cat(qq("timefile: @{timefile}\n\n"))
-cat(qq("chrLengthFile: @{chrLengthFile}"))
-cat(qq("pid: @{pid}\n\n"))
-cat(qq("email: @{email}\n\n"))
-cat(qq("outfile: @{outfile}\n\n"))
-cat(qq("corPlot: @{corPlot}\n\n"))
-cat(qq("corTab: @{corTab}\n\n"))
-cat(qq("qcTab: @{qcTab}\n\n"))
-cat(qq("gcFile: @{gcFile}\n\n"))
-cat(qq("outDir: @{outDir}\n\n"))
-cat(qq("coverageYlims: @{coverageYlims}\n\n"))
+opt = getopt(spec);
+
+for(item in names(opt)){
+       assign( item, opt[[item]])
+}
+
+
+cat(paste0("windowFile: ", windowFile, "\n\n"))
+cat(paste0("timefile: ", timefile, "\n\n"))
+cat(paste0("pid: ", pid, "\n\n"))
+cat(paste0("email: ", email, "\n\n"))
+cat(paste0("outfile: ", outfile, "\n\n"))
+cat(paste0("corPlot: ", corPlot, "\n\n"))
+cat(paste0("gcFile: ", gcFile, "\n\n"))
+cat(paste0("outDir: ", outDir, "\n\n"))
+cat(paste0("chrLengthFile: ",chrLengthFile))
+cat(paste0("corTab: ",corTab, "\n\n"))
+cat(paste0("qcTab: ",qcTab, "\n\n"))
+cat(paste0("coverageYlims: ", coverageYlims, "\n\n"))
+
 cat("\n")
+
+
 
 if( email == "")
 	email=NULL
@@ -413,7 +425,7 @@ write(c(pid,repQuant_string),sep="\t",file=outrepQuant_file,ncolumns=17)
 # ## end OPTIONAL section ##
 # ##########################
 
-cat(qq("writing results into @{outfile}\n\n"))
+cat(paste0("writing results into ", outfile, "\n\n"))
 out_table		<- order_file_rt[,c('chromosome', 'start', 'normal', 'tumor', 'covR', 'corrected_covR4_rt')]
 colnames(out_table)	<- c('chromosome', 'start', 'normal', 'tumor', 'covR_raw', 'covR') 
 out_table		<- out_table[order(out_table$chromosome, out_table$start),]
@@ -448,7 +460,7 @@ cat(diffPeaks, "\n")
 if ( ! is.null(email) & length(diffPeaks) != sum( is.na(diffPeaks) ) ) {
   sel <- paste( which( ! is.na( diffPeaks ) ), collapse=", " )
   bodyText <- paste0("Warning ", pid, ": Errors found for chromosome ", sel )
-  system(qq("echo @{bodyText} | mail -s @{pid} @{email}"))
+  system(paste0("echo ", bodyText," | mail -s ", pid, " ",email))
 }
 
 #create coverage and gc/replication-timing plots
@@ -475,9 +487,9 @@ if (plot_flag) {
   dev.off()
 
 write.table(out_table, outfile, row.names=FALSE, col.names=TRUE,sep='\t', quote=F)
-write.table(sub_order_file, qq("@{plotDir}/all_corrected.txt"), row.names=FALSE, col.names=TRUE,sep='\t', quote=F)
+write.table(sub_order_file, paste0(plotDir,"/all_corrected.txt"), row.names=FALSE, col.names=TRUE,sep='\t', quote=F)
 
-cat(qq("creating plots...\n\n"))
+cat("creating plots...\n\n")
 png(file=outputfile_gc, width=1000, height=2000, type='cairo')
 #	par(mfrow=c(4,3))
 	par(mfrow=c(3,3))

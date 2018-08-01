@@ -1,30 +1,17 @@
 #!/bin/bash
-#
-source ${CONFIG_FILE}
-#
-#PID=$PID
-#
-#testing=CNV_ARRAY
-#array=${CHROMOSOME_INDICES[@]}
-#type=file_array
-#
-#source ${TOOL_CHECK_FILES}
-#[[ $? != 0 ]] && echo -e "\nTest for files for PID: ${PID} had non zero exit status, exiting pipeline\n\n" && exit 1
-#[[ ${ok} == 0 ]] && echo -e "\nEvaluation of bam files for PID: ${PID} had non zero exit status, exiting pipeline\n\n" && exit 1
-#
-#testing=CNV_OUT
-#type=create
-#source ${TOOL_CHECK_FILES}
-#[[ $? != 0 ]] && echo -e "\nCreation of files for PID: ${PID} had non zero exit status, exiting pipeline\n\n" && exit 1
+
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 
 
 ${PYTHON_BINARY} "${TOOL_MERGE_FILTER_CNV}" \
             --inputpath    "${SNP_VCF_CNV_PATH}" \
-            --inputsuffix  ".${VCF_SUFFIX}" \
+            --inputsuffix  ".${CNV_ANNO_SUFFIX}" \
             --output       "${FILENAME_COV_WINDOWS_WG}" \
 	        --coverage     ${cnv_min_coverage} \
             --mappability  ${mapping_quality} \
-            --NoOfWindows  ${min_windows} 
+            --NoOfWindows  ${min_windows} \
+            >> /dev/stderr
 
 if [[ "$?" != 0 ]]
 then

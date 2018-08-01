@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 ### Kortine Kleinheinz 10.02.2014
 ### k.kleinheinz@dkfz.de
 ### This script allows to obtain mappability values from the vcf_annotate.pl script using the report --reportBFeatCoord option

@@ -5,14 +5,74 @@ Some description
 == Run flags / switches
 
 Switch                      Default Description
-runWithDelly          		true    Run with delly output (from EMBLs delly workflow) or with crest
+runWithSv                   true    By default, the workflow will try to use an SV file for breakpoints
+allowMissingSVFile          false   Allows the workflow to stop without an error, if the SV file does not exist
+
+runWithCrest          		false   Run with crest output
 runQualityCheckOnly      	false   Stop the workflow after the gc correction.
 runMetaCNVGeneration        false   Run a meta step for the cnv generation. This submits a single,
 									slightly optimized step instead of several (per chromosome) jobs.
-runWithoutControl	    false Run analysis with matching control and estimate control genotypes based on tumor BAF
+runWithoutControl	        false   Run analysis with matching control and estimate control genotypes based on tumor BAF
 
 == Changelist
 
+
+* Version update to 2.0.0
+- add contours in 2D plots
+- add 1.0 (instead of 0.00001) to lengths when getting log2 for weights to consider segments with length=1
+- Add flags and checks for handling the sv file and remove null pointer exceptions
+- fix bug in tcc ploidy estimation
+- parametrized local minimum upper boundary (local_minium_upper_boundary_shift)
+
+* Version update to 1.2.10
+- add bioconda dependencies
+- replace all occurences of qq.R and getopt2 by getopt
+- replace all occurenced of name delly and crest, also in final output 
+- change color for deletions(red ==>blue) and duplications (red ==> blue)
+- enable modularization of workflow
+- remove generateVCF job, add estiate HRD score
+- remove dependency of haploblock files in cluster_and_prune_segments  
+- add HRD score estimation, smooth segments and filter for blacklist segments
+- add 0.00001 to lengths when getting log2 for weights to consider segments with length=1, which will be merged in a future release
+- adjust colors for clustering so they are consistent across all three cluster plots
+
+* Version update to 1.2.8-1
+- remove vcf creation in final job (obsolete)
+
+* Version update to 1.2.8
+- comb_pro_extra and most_important_info contain X and Y
+- removed GNL column
+- new annotation of CNA.type (DEL/DUP/LOH/TCNNeutral/NA)
+- new estimation of quality (length of subclonal over total mapped)
+
+* Version update to 1.2.7-1/2
+- removed dependencies on coConfigurations
+- change of svOutputdirectory and set to default SOPHIA
+
+* Version update to 1.2.7
+- addition of tumorSample and controlSample variable as read out from bam file
+
+* Version update to 1.2.6-*
+
+- bugfix allowing coordinates for chrom2 in SV file to be smaller than chrom1 coordinates
+- bugfix allowing chrom1 being decoy chromosome in case chrom2 is autosome|X|Y
+- bugfix plots using print and ggplot2:ggsave to generate plots
+
+* Version update to 1.2.6
+
+- runparallel for impute moved from COWorkflows to ACEseqMethods.groovy
+- sort most_important_info and comb_pro_extra file
+
+* Version update to 1.2.1
+
+- enable BAF plots as extra step, that is only run for paired workflow and only writes down checkpoint
+- enable json with quality parameters for closest to diploid solution, should be read out by otp, file noted down in config.xml
+- enable upgrade to R-3.3.1, R-2.15.0 is only working with exception (pscbs_all_R_2.15.R must be redefined as tool and path to pscbs lib should be given)
+- better format of cnv_parameter files
+- removed "set -x", pipefail etc.
+- PSCBSgabs_delly.py
+	- improved code
+	- added selective column
 - add noControl options
 - cluster and prune take mean if two equally high peaks appear or for single peak remove bug
 - add chromosome labels to general coverage plots

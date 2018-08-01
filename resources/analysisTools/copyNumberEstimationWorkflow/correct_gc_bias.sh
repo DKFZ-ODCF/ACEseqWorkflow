@@ -1,7 +1,7 @@
 #!/usr/bin/sh
 
-
-source ${CONFIG_FILE}
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 
 
 tmp_corrected_windowfile=${FILENAME_GC_CORRECTED_WINDOWS}.tmp

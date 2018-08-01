@@ -1,10 +1,12 @@
 #!/usr/bin/R
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# This script is licenced under (license terms are at
+# https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 library(getopt)
 
 script_dir = dirname(get_Rscript_filename())
-source(paste0(script_dir,"/qq.R"))
-source(paste0(script_dir, "/getopt.R"))
 
 ################################################################################
 ## I wrap getopt into a function, which can check options, default values
@@ -12,30 +14,35 @@ source(paste0(script_dir, "/getopt.R"))
 ################################################################################
 wd = getwd()
 # set default values 
-file_beta          = qq("@{wd}/densityBeta.pdf")
-file_knownSegments = qq("@{wd}/knownSegments.txt")
-file_data          = qq("@{wd}/pscbs_data.txt")
+file_beta          = paste0(wd,"/densityBeta.pdf")
+file_knownSegments = paste0(wd,"/knownSegments.txt")
+file_data          = paste0(wd,"/pscbs_data.txt")
 min_gap_length     = 500000
 libloc=""
 # variables in the first column will be exported into global environment
 # I add the fifth column because it can explain the options in the first column
-getopt2(matrix(c('file_cnv',           'c', 1, "character", "input coverage data, 1 kb windows",        # input, /ibios/co02/bludau/ACEseq/medullo_pediatric/MBBL8/all.cnv.tab
-                 'file_snp',           's', 1, "character", "input coverage data, dbSNP",               # input, /ibios/co02/bludau/ACEseq/medullo_pediatric/MBBL8/all.snp.tab
-		 'file_sex',	       'g','1',"character", "file with sex of patient",			# input 
-                 'file_beta',          'p', 2, "character", "control plots path, should be .pdf file",  # output
-                 'file_knownSegments', 'k', 2, "character", "output file for known segments",           # output
-                 'file_data',          'd', 2, "character", "output file for SNPS",                     # output
-                 'min_gap_length',     'l', 2, "numeric",   "minimal gap length, default is 500000",
-		 'libloc',		'o',2, "character", "location of PSCBS package"
-                ), ncol = 5, byrow = TRUE));
+spec <- matrix( c('file_cnv',           'c', 1, "character", #"input coverage data, 1 kb windows", 
+                 'file_snp',           's', 1, "character", #"input coverage data, dbSNP",               # input
+		 'file_sex',	       'g','1',"character", #"file with sex of patient",		# input 
+                 'file_beta',          'p', 2, "character", #"control plots path, should be .pdf file",  # output
+                 'file_knownSegments', 'k', 2, "character", #"output file for known segments",           # output
+                 'file_data',          'd', 2, "character", #"output file for SNPS",                     # output
+                 'min_gap_length',     'l', 2, "numeric",   #"minimal gap length, default is 500000",
+		 'libloc',		'o',2, "character" #"location of PSCBS package"
+                ), ncol = 4, byrow = TRUE)
       
-cat(qq("file_cnv: @{file_cnv}\n\n"))
-cat(qq("file_snp: @{file_snp}\n\n"))
-cat(qq("file_beta: @{file_beta}\n\n"))
-cat(qq("file_knownSegments: @{file_knownSegments}\n\n"))
-cat(qq("file_data: @{file_data}\n\n"))
-cat(qq("file_sex:@{file_sex}\n\n"))
-cat(qq("min_gap_length: @{min_gap_length}\n\n"))
+opt = getopt(spec);
+for(item in names(opt)){
+       assign( item, opt[[item]])
+}
+
+cat(paste0("file_cnv:  ",file_cnv, "\n\n"))
+cat(paste0("file_snp:  ",file_snp, "\n\n"))
+cat(paste0("file_beta: ",file_beta, "\n\n"))
+cat(paste0("file_knownSegments: ", file_knownSegments, "\n\n"))
+cat(paste0("file_data: ", file_data, "\n\n"))
+cat(paste0("file_sex: ", file_sex, "\n\n"))
+cat(paste0("min_gap_length: ", min_gap_length, "\n\n"))
 cat("\n")
 
 if ( libloc == "" | libloc == TRUE ){
@@ -45,11 +52,11 @@ if ( libloc == "" | libloc == TRUE ){
 library(PSCBS, lib.loc=libloc)
 
 #input coverage data, 1 kb windows
-cat(qq("reading @{file_cnv}...\n\n"))
+cat(paste0("reading ", file_cnv, "...\n\n"))
 sample = read.table(file_cnv, sep = "\t",as.is = TRUE, header=T)
           
 #input coverage data, dbSNP
-cat(qq("reading @{file_snp}...\n\n"))
+cat(paste0("reading ",file_snp, "...\n\n"))
 colNamesAllele = c("chr", "pos", "Anormal1", "Bnormal1", "Atumor1", "Btumor1", "haplotype")
 
 #if patient is female remove all Y chromosome windows (will lead to exclusion of SNPs during merge) 
@@ -117,8 +124,8 @@ tablesample = data.frame(a = sample$start,
 tablesample$chromosome = gsub("^chr", "", tablesample$chromosome)
 tableallele$chromosome = gsub("^chr", "", tableallele$chromosome)
 
-cat(qq("@{nrow(tableallele)} rows for tableallele.\n\n"))
-cat(qq("@{nrow(tablesample)} rows for tablesample\n\n"))
+cat(paste0( nrow(tableallele), " rows for tableallele.\n\n"))
+cat(paste0( nrow(tablesample), " rows for tablesample\n\n"))
 
 ################################################################################
 ## here I used sqldf instead of data.table to run SQL command to merge two data 
@@ -146,16 +153,14 @@ cat("generating control plots.\n")
 
 
 require(ggplot2)
-p <- ggplot( data=completeTable, aes(x=betaT, y='..scaled..'), colour='red') + geom_density()
-p <- p + geom_density(aes(x=betaN, y='..scaled..'), colour='blue')
+p <- ggplot( data=completeTable, aes(x=betaT, y=..scaled..), colour='red') + geom_density()
+p <- p + geom_density(aes(x=betaN, y=..scaled..), colour='blue')
 p <- p + scale_colour_manual( name=c("Tumor","Normal") , breaks=c('betaT', 'betaN'), values=c('red','blue') )
 p <- p + ggtitle("control plots of betaT and betaN") + ylab("scaled density")
-ggsave(file_beta, p, width=6, height=6, units='cm')
+ggplot2::ggsave(file_beta, p, width=6, height=6, units='cm')
 
 #PSCBS
 cat("PSCBS\n")
-#library(PSCBS, lib.loc = "/home/bludau/R/x86_64-unknown-linux-gnu-library/2.13")
-#library(PSCBS, lib.loc = "/home/schlesne/R/x86_64-unknown-linux-gnu-library/2.12")
 
 data = dropSegmentationOutliers(completeTable) #removes single outliers
 gaps = findLargeGaps(data, minLength = min_gap_length) #regions larger than 5 Mb that do not contain enough data points (SNPs) are detected (e.g. centromeres)

@@ -1,10 +1,9 @@
 #!/bin/bash
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 
-source ${CONFIG_FILE}
-
-
-[[ -z ${PARM_CHR_INDEX-} ]] && echo "Variable is missing" && exit -5
+[[ -z ${PARM_CHR_INDEX-} ]] && echo "PARM_CHR_INDEX variable is missing" && exit -5
 
 tmpFileSnpPos=${FILENAME_SNP_POS}_tmp
 tmpFileCovWin=${FILENAME_COV_WIN}_tmp
@@ -12,12 +11,12 @@ tmpFileCovWin=${FILENAME_COV_WIN}_tmp
 source ${TOOL_ANALYZE_BAM_HEADER}
 getRefGenomeAndChrPrefixFromHeader ${FILE_TUMOR_BAM} # Sets CHR_PREFIX and REFERENCE_GENOME
 
-CHR_NR=${CHR_PREFIX}${CHR_NAME}
+CHR_NR=${CHR_PREFIX}${CHR_NAME:?CHR_NAME is not set}
 runWithoutControl=${runWithoutControl^}
 
 if [[ $runWithoutControl == "True" ]]
 then
-     $SAMTOOLS_BINARY mpileup ${MPILEUP_OPTS} \
+     $SAMTOOLS_BINARY mpileup ${CNV_MPILEUP_OPTS} \
 	-f "${REFERENCE_GENOME}" \
 	-r ${CHR_NR} \
 	"${FILE_TUMOR_BAM}" \
@@ -29,7 +28,7 @@ then
         --outcov ${tmpFileCovWin} \
 	--withoutcontrol ${runWithoutControl} 
 else
-     $SAMTOOLS_BINARY mpileup ${MPILEUP_OPTS} \
+     $SAMTOOLS_BINARY mpileup ${CNV_MPILEUP_OPTS} \
 	-f "${REFERENCE_GENOME}" \
 	-r ${CHR_NR} \
 	"${FILE_CONTROL_BAM}" "${FILE_TUMOR_BAM}" \
@@ -39,7 +38,6 @@ else
 	--infile - \
 	--outsnps ${tmpFileSnpPos} \
         --outcov ${tmpFileCovWin}
-
 fi
 
 if [[ "$?" != 0 ]]

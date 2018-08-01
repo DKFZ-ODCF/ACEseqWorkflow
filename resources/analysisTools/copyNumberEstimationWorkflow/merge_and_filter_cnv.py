@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 # This script replaces all.cnv.pl.
 #
 # usage: merge_and_filter_cnv.py --inputpath [PATH] --inputsuffix [SUFFIX] --output [FILE] --coverage [INT]

@@ -1,5 +1,9 @@
 #!/usr/bin/R
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# This script is licenced under (license terms are at
+# https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 library(reshape)
 library(reshape2)
 library(ggplot2)
@@ -7,43 +11,49 @@ library(scales)
 library(getopt)
 
 script_dir = dirname(get_Rscript_filename())
-source(paste0(script_dir,"/qq.R"))
-source(paste0(script_dir, "/getopt.R"))
 
-getopt2(matrix(c('segments',		's', 1, "character", "IN: segment file",
-		 'file_sex',		'f', 1, "character", "IN: file with sex of patient",
-		 'purity_ploidy',	'u', 1, "character", "OUT: file with purities and ploidies",
-		 'out',			'x', 1, "character", "OUT: output directory",
-		 'min_length_purity',	'l', 1, "numeric",   "minimal length of segments to be considered for estimation",
-		 'min_hetSNPs_purity',	'h', 1, "numeric",   "minimum number of heterozygous SNPs in segments to be considered for estimation",
-		 'dh_Stop',		'd', 1, "character", "red line for DH boundary estimated by mean or max values",
-		 'min_length_dh_stop',	'm', 1, "numeric",   "minimum length of segment to be considered for border value (mean|max)",
-		 'dh_zero',		'z', 1, "character", "can dh be zero (yes|no)",
-		 'purity_min',		'a', 1, "numeric",   "minimum purity",
-		 'purity_max',		'b', 1, "numeric",   "maximium purity",
-		 'ploidy_min',		'p', 1, "numeric",   "minimum poidy",
-		 'ploidy_max',		'q', 1, "numeric",   "maximum ploidy",
-		 'pid',			'i', 1, "character",  "patient identifier"
-                ), ncol = 5, byrow = TRUE))
 
-cat(qq("segments: @{segments}\n\n"))
-cat(qq("sex: @{file_sex}\n\n"))
-cat(qq("purity_ploidy_out: @{purity_ploidy}\n\n"))
-cat(qq("out: @{out}\n\n"))
-cat(qq("min_length_purity: @{min_length_purity}\n\n"))
-cat(qq("min_hetSNPs_purity: @{min_hetSNPs_purity}\n\n"))
-cat(qq("dh_Stop: @{dh_Stop}\n\n"))
-cat(qq("min_length_dh_stop: @{min_length_dh_stop}\n\n"))
-cat(qq("dh_zero: @{dh_zero}\n\n"))
-cat(qq("purity_min: @{purity_min}\n\n"))
-cat(qq("purity_max: @{purity_max}\n\n"))
-cat(qq("ploidy_min: @{ploidy_min}\n\n"))
-cat(qq("ploidy_max: @{ploidy_max}\n\n"))
-cat(qq("pid: @{pid}\n\n"))
+spec <- matrix(c('segments',		's', 1, "character", #"IN: segment file",
+		 'file_sex',		'f', 1, "character", #"IN: file with sex of patient",
+		 'purity_ploidy',	'u', 1, "character", #"OUT: file with purities and ploidies",
+		 'out',			'x', 1, "character", #"OUT: output directory",
+		 'min_length_purity',	'l', 1, "numeric",   #"minimal length of segments to be considered for estimation",
+		 'min_hetSNPs_purity',	'h', 1, "numeric",   #"minimum number of heterozygous SNPs in segments to be considered for estimation",
+		 'dh_Stop',		'd', 1, "character", #"red line for DH boundary estimated by mean or max values",
+		 'min_length_dh_stop',	'm', 1, "numeric",   #"minimum length of segment to be considered for border value (mean|max)",
+		 'dh_zero',		'z', 1, "character", #"can dh be zero (yes|no)",
+		 'purity_min',		'a', 1, "numeric",   #"minimum purity",
+		 'purity_max',		'b', 1, "numeric",   #"maximium purity",
+		 'ploidy_min',		'p', 1, "numeric",   #"minimum poidy",
+		 'ploidy_max',		'q', 1, "numeric",   #"maximum ploidy",
+		 'pid',			'i', 1, "character",  #"patient identifier",
+		 'local_minium_upper_boundary_shift', 'c', 1, "numeric"  #"IN: only solutions with local minimum < min(sel_local_minima) + local_minium_upper_boundary_shift will be considered"
+                ), ncol = 4, byrow = TRUE)
+
+opt = getopt(spec);
+for(item in names(opt)){
+       assign( item, opt[[item]])
+}
+
+cat(paste0("segments: ", segments, "\n\n"))
+cat(paste0("sex: ", file_sex, "\n\n"))
+cat(paste0("purity_ploidy_out: ", purity_ploidy, "\n\n"))
+cat(paste0("out: ", out, "\n\n"))
+cat(paste0("min_length_purity: ", min_length_purity, "\n\n"))
+cat(paste0("min_hetSNPs_purity: ", min_hetSNPs_purity, "\n\n"))
+cat(paste0("dh_Stop: ", dh_Stop, "\n\n"))
+cat(paste0("min_length_dh_stop: ", min_length_dh_stop, "\n\n"))
+cat(paste0("dh_zero: ", dh_zero, "\n\n"))
+cat(paste0("purity_min: ", purity_min, "\n\n"))
+cat(paste0("purity_max: ", purity_max, "\n\n"))
+cat(paste0("ploidy_min: ", ploidy_min, "\n\n"))
+cat(paste0("ploidy_max: ", ploidy_max, "\n\n"))
+cat(paste0("local_minium_upper_boundary_shift: ", local_minium_upper_boundary_shift, "\n\n"))
+cat(paste0("pid: ",pid, "\n\n"))
 
 #functions
 getD   = function(alpha, P) 		    alpha * P + 2 * (1-alpha)  
-getTCN = function(tcnMean, D, alpha) 	    (tcnMean * D - 2*(1-alpha)) / alpha  
+getTCN = function(tcnMean, D, alpha) (tcnMean * D - 2*(1-alpha)) / alpha
 getAF  = function(meanCovT, TCN, alpha)	    (meanCovT / 10000) / (alpha * as.numeric(TCN) + 2*(1-alpha))
 getBAF = function(meanCovB, TCN, AF, alpha) (meanCovB / AF - (1-alpha)) / (alpha * as.numeric(TCN))
 getDH  = function(BAF) 			    2 * (abs(BAF - 0.5))
@@ -136,11 +146,11 @@ a = 0
 
 for (ploidy in posPloidies) { 
 	a = a + 1
-	cat(qq("ploidy_@{ploidy}\n\n"))
+	cat(paste0("ploidy_", ploidy, "\n\n"))
 	
 	for (purity in posPurities) 	{
 
-		i = i + 1  
+		i = i + 1
 		D = getD(purity, ploidy)
 		TCNmatrix[, i] = getTCN(testSet_anti$tcnMean,D, purity) 
 		AFmatrix[, i]  = getAF(testSet_anti$meanCovT, TCNmatrix[,i], purity)
@@ -152,7 +162,9 @@ for (ploidy in posPloidies) {
 
 		pos1 = which((round(as.numeric(TCNmatrix[, i])) == round(ploidy)) & (TCNmatrix[, 1] == 2)) 
 		pos2 = which(round(as.numeric(TCNmatrix[, i])) != round(ploidy))
-		pos = union(pos1, pos2)
+		# TCN of 0 causes DH=inf and c1=NaN; so skip these cases
+		pos_forbidden = which(as.numeric(TCNmatrix[, i]) == 0)
+		pos = setdiff(union(pos1, pos2),pos_forbidden)
 
 		### Distance matrix for TCN & median distance matrix
 
@@ -321,7 +333,7 @@ colnames(DH) = posPurities
 rownames(DH) = posPloidies
 
 
-cat(qq("dist_DH @{dim(dist_DH)}\n\n"))
+cat(paste0("dist_DH ",dim(dist_DH), "\n\n"))
 testPlot = melt(data.frame(dist_DH))
 ploi = rep(posPloidies, length(posPurities))
 testPlot$ploidy = ploi
@@ -408,12 +420,11 @@ a = 0
 
 for (ploidy in posPloidies) { 
 	a = a + 1
-	cat(qq("ploidy_@{ploidy}\n\n"))
+	cat(paste0("ploidy_",ploidy, "\n\n"))
 	
 	for (purity in posPurities) {
 
-		i = i + 1       
-
+		i = i + 1
 		D = getD(purity, ploidy)
 		NTCNmatrix[, i]  = getTCN(testSet_anti$tcnMean, D, purity)  
 		NAFmatrix[ , i]  = getAF( testSet_anti$meanCovT, NTCNmatrix[,i], purity)
@@ -424,6 +435,9 @@ for (ploidy in posPloidies) {
 		NDHmatrix[pos, i] = 0
 
 		pos = which(round(as.numeric(NTCNmatrix[, i])) == round(ploidy) & NTCNmatrix[, 1] == 1)
+		# TCN of 0 causes DH=inf and c1=NaN; so skip these cases
+		pos_forbidden = which(as.numeric(NTCNmatrix[, i]) == 0)
+		pos = setdiff(pos,pos_forbidden)
 
 		### Distance matrix for TCN & median distance matrix
 
@@ -544,11 +558,12 @@ colnames(testPlot) = c('purity', 'tcn.distance', 'ploidy')
 ####limits can be taken over from aberrant segments
 df.vlines = data.frame(ploi = ploi, vline = limitDH)
 
-png(qq("@{out}/@{pid}_tcn_NON_ABERRANT_n_more.png"), width = 1200, height = 1200, type='cairo')
-ggplot(testPlot, aes(purity, ploidy)) + geom_tile(aes(fill = tcn.distance), colour =   "white") + 
+png(paste0(out, "/", pid, "_tcn_NON_ABERRANT_n_more.png"), width = 1200, height = 1200, type='cairo')
+print( ggplot(testPlot, aes(purity, ploidy)) + geom_tile(aes(fill = tcn.distance), colour =   "white") + 
 	scale_fill_gradient(low = "white", high = "black", limits=c(0, 0.2), na.value = "black") + 
 	theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 10)) + 
 	geom_errorbar(data = df.vlines, aes(x = vline, ymax = ploi, ymin = ploi), colour = "#AA0000")
+)
 dev.off()
 	
 	
@@ -576,14 +591,15 @@ testPlot$ploidy = testPlotploi
 names(testPlot) = c("purity", "distance", "ploidy")
 testPlot$purity = substring(testPlot$purity, 2, 5)
 testPlot$purity = as.numeric(testPlot$purity)
-png(qq("@{out}/@{pid}_tcn_distances_combined.png"), width = 1200, height = 1200, type='cairo')
+png(paste0("",out, "/",pid, "_tcn_distances_combined.png"), width = 1200, height = 1200, type='cairo')
 erupt = ggplot(testPlot, aes(purity, ploidy, fill = distance)) +
 	geom_tile() + 
 	scale_x_continuous(expand = c(0 ,0)) + 
 	scale_y_continuous(expand = c(0, 0))
-erupt + scale_fill_gradient2(limits = c(0, max(testPlot$distance, na.rm=TRUE)),midpoint = mean(testPlot$distance[which(!is.na(testPlot$distance))])/2, low = "darkred", high = "darkblue", na.value = "darkblue") + 
+print( erupt + scale_fill_gradient2(limits = c(0, max(testPlot$distance, na.rm=TRUE)),midpoint = mean(testPlot$distance[which(!is.na(testPlot$distance))])/2, low = "darkred", high = "darkblue", na.value = "darkblue") + 
 	theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 10)) +
 	geom_point(x = df.lines$purity, y = df.lines$ploidy, size = 1.2, color = "darkred")
+)
 dev.off()
 
 
@@ -630,14 +646,14 @@ for ( i in seq( 2, nrow(data) - 1, 1) ) {
 mini_pur = posPurities[purity_idx - 1]
 mini_ploi = posPloidies[ploidy_idx - 1]
 
-#select all local minima that are smaller than global min + 1 SD (or +0.1 in case global minimum >=0.1)
-sel = which(all_local_minima < min(all_local_minima) + sd(all_local_minima))
+#select all local minima that are smaller than global min + 1 SD (or local_minium_upper_boundary_shift in case global minimum >=local_minium_upper_boundary_shift)
+sel = which(all_local_minima < min(all_local_minima) + max(sd(all_local_minima), local_minium_upper_boundary_shift))
 sel_local_minima = all_local_minima[sel]
 sel_mini_pur = mini_pur[sel]
 sel_mini_ploi = mini_ploi[sel]
 
-if (min(sel_local_minima) >= 0.1) {
-	sel = which(sel_local_minima < min(sel_local_minima) + 0.1)
+if (min(sel_local_minima) >= local_minium_upper_boundary_shift ) {
+	sel = which(sel_local_minima < min(sel_local_minima) + local_minium_upper_boundary_shift)
 } else {
 	sel = seq_along(sel_local_minima)
 }
@@ -649,7 +665,43 @@ local_minima = sel_local_minima[sel]
 select = c()
 # select local minimum from each ploidy frame +-0.25
 for (p in seq_along(ploi)) {
-  s <-  which(sel_local_minima == min(sel_local_minima[which(ploi <= ploi[p] + 0.25 & ploi >= ploi[p] - 0.25)]))
+  # adapted by G Warsow:
+  # if we have a high purity solution and a low purity solution at the same +-0.25 ploidy frame,
+  # only the solution with lower distance value has been taken. The goal of this adaptation was
+  # to also keep the low purity solution if the high purity solution has lower distance.
+  # That is, this is a quick and dirty approch for dealing with 'artifact 1' cases.
+  purity.current = pur[p]
+  ploidy.current = ploi[p]
+  red_line_purity_position = unique(df.lines[which(df.lines$ploidy==ploidy.current),"purity"])
+  if (is.na(red_line_purity_position)) {
+    red_line_purity_position = purity_min
+  }
+  # distance_to_red_line.current = purity.current - red_line_purity_position
+  s <-  which(local_minima == min(local_minima[which(ploi <= ploi[p] + 0.25 & ploi >= ploi[p] - 0.25)]))
+  purity.s = pur[s]
+  ploidy.s = ploi[s]
+  # distance_to_red_line.s = purity.s - red_line_purity_position
+  # to be dicussed: how to define when to enter next block (define if clause)
+  if ( purity.s == purity_max ) {
+    # suggested solution has a 'purity 1 artifact'. Allow also (suboptimal) solutions with lesser purity (suboptimal w.r.t. distance value)
+# if (purity.s - purity.current > 0.2) {
+    # the solution with minimum distance (s) has a purity value >20 percentage points higher than the current solution (p)
+    # let's divide the ploidy frame into 2 parts. one for lower, one for higher purity solutions
+
+    # to be dicussed: how to define separation_position
+    separation_position = (purity_max - red_line_purity_position) / 2 + red_line_purity_position
+    if (purity.current <= separation_position) {
+      s <-  which(local_minima == min(local_minima[which(
+        ploi <= ploi[p] + 0.25 & ploi >= ploi[p] - 0.25 &
+          pur  <= separation_position
+      )]))
+    } else {
+      s <-  which(local_minima == min(local_minima[which(
+        ploi <= ploi[p] + 0.25 & ploi >= ploi[p] - 0.25 &
+          pur  > separation_position
+      )]))
+    }
+  }
   select = c(select, s)
 }
 
@@ -665,7 +717,7 @@ while( any (diff(final_ploi) < 0.25 & diff(final_pur) < 0.1 & diff(final_local_m
   s <- which( min(final_local_minima[sel]) != final_local_minima[sel] )
   final_pur  <- final_pur[-sel[s]]
   final_ploi <- final_ploi[-sel[s]]
-  final_local_minima = local_minima[-sel[s]]
+  final_local_minima = final_local_minima[-sel[s]]
 }
 
 pp_matrix = matrix(data = 0, nrow = length(final_pur), ncol = 4, byrow = FALSE, dimnames = NULL )
@@ -678,7 +730,7 @@ for (i in seq_along(final_pur)) {
 }                            
 
 pp_table = as.table(pp_matrix)
-colnames(pp_table) = c("ploidy", "ploidy_factor", "purity", "distance")
+colnames(pp_table) = c("ploidy", "ploidy_factor", "tcc", "distance")
 write.table(pp_table, file = purity_ploidy, sep = "\t", row.names = FALSE, quote = FALSE)
 
 #create data frame with ploidies and purities found at final minima (for star in plot)
@@ -706,15 +758,43 @@ names(testPlot) = c("purity", "distance", "ploidy")
 testPlot$purity = substring(testPlot$purity, 2, 5)
 testPlot$purity = as.numeric(testPlot$purity)
 
-png(qq("@{out}/@{pid}_tcn_distances_combined_star.png"), width = 800, height = 800, type='cairo')
-erupt = ggplot(testPlot, aes(purity, ploidy, fill = distance)) +
-	geom_tile()+ 
+
+# contour lines will be plotted for each contour_level (e.g. at 101% or 105% of the minimum distance value)
+# contour_levels = c(0.01,0.05,0.1,0.15,0.2)
+contour_levels = c(0.01,0.1,0.25,0.4)
+secondLastLevel = tail(contour_levels,2)[-2]
+countour_local_minima = sort(final_local_minima)
+# for contour plots: remove local minima that are not at least 10% larger (or whatever 
+# the second-last value of contour_levels is) than the global minimum
+# that is: no own cloud for minima with near-optimum distance value.
+
+
+while (any(abs(diff(countour_local_minima)) <= min(countour_local_minima)*secondLastLevel)) {
+  index.representativeOfNearbySolutions = which(diff(countour_local_minima) <= min(countour_local_minima)*secondLastLevel)[1]
+  index.solutionsCoveredByRepresentative = which(
+    countour_local_minima >= countour_local_minima[index.representativeOfNearbySolutions] &
+    countour_local_minima <= countour_local_minima[index.representativeOfNearbySolutions]*(1+secondLastLevel)
+  )
+  index.solutionsCoveredByRepresentative = setdiff(index.solutionsCoveredByRepresentative, index.representativeOfNearbySolutions)
+  sel = setdiff(seq_along(countour_local_minima), index.solutionsCoveredByRepresentative)
+  countour_local_minima = countour_local_minima[sel]
+}
+contour_breaks = as.numeric(sapply(countour_local_minima, function(x) {
+  return(x*(1+contour_levels))
+}))
+
+
+png(paste0("",out, "/",pid, "_tcn_distances_combined_star.png"), width = 800, height = 800, type='cairo')
+erupt = ggplot(testPlot, aes(purity, ploidy, z = distance)) +
+	geom_tile(aes(fill = distance))+ 
+  stat_contour( aes(colour = ..level..), breaks=contour_breaks) +
 	scale_x_continuous(expand = c(0, 0)) + 
 	scale_y_continuous(expand = c(0, 0)) 
-erupt + scale_fill_gradient2(limits = c(0, mean(testPlot$distance[which(!is.na(testPlot$distance))])), midpoint = mean(testPlot$distance[which(!is.na(testPlot$distance))]) / 2, low = "darkred", high = "darkblue", na.value = "darkblue") + 
+print( erupt + scale_fill_gradient2(limits = c(0, mean(testPlot$distance[which(!is.na(testPlot$distance))])), midpoint = mean(testPlot$distance[which(!is.na(testPlot$distance))]) / 2, low = "darkred", high = "darkblue", na.value = "darkblue") + 
 	theme(axis.text.x = element_text(vjust = 0.5, size = 14, color = "black"), axis.text.y = element_text(vjust = 0.5, size = 14, color = "black"), axis.title.x = element_text(color = "black", size = 16, vjust = 2, face = "bold"), axis.title.y = element_text(color = "black", size = 16, face = "bold")) +
 	geom_point(x = df.lines$purity, y = df.lines$ploidy, size = 1.2, color = "darkred") +
-	geom_point(x = df.opt$purity, y = df.opt$ploidy, size = 6, color = "black", shape = 8) +
+	geom_point(x = df.opt$purity, y = df.opt$ploidy, size = 6, color = "black", shape = 8) + xlab("tumor cell content") +
 	theme(legend.text = element_text(colour = "black", size = 16), legend.title = element_text(colour = "black", size = 16, face = "bold"))
+)
 dev.off()
 

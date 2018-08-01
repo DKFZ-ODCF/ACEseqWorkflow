@@ -1,8 +1,11 @@
 #!/usr/bin/R
 
+# Copyright (c) 2017 The ACEseq workflow developers.
+# This script is licenced under (license terms are at
+# https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
+
 library(e1071)
-library(flexclust, lib.loc=libloc)#, lib.loc='/ibios/tbi_cluster/11.4/x86_64/R/R-2.15.2/lib64/R/library/')
-#library(flexclust, lib.loc='/home/kleinhei/R/x86_64-unknown-linux-gnu-library/3.0/')
+library(flexclust, lib.loc=libloc)
 library(reshape)
 library(plyr)
 
@@ -362,7 +365,7 @@ mergePointsBySNP <- function(segments, clusterCenter, mainCluster, covValueRight
   #merge tose points in with less than minNumHets heterozygous SNPs in segment and that lie within 2 FWHM around center 
   sel <- which(segments$neighbour=="identical" & segments$tcnNbrOfHets < minNumHets &
     segments$tcnMean < (covValueRight) & segments$tcnMean > (covValueLeft) &
-    is.na(segments$crest) & ! is.na(segments$cluster))
+    is.na(segments$SV.Type) & ! is.na(segments$cluster))
   if(length(sel)>0)
     segments$cluster[sel] <- mainCluster
   return(segments)
@@ -373,7 +376,7 @@ mergePointsByError <- function( segments, clusterCenter, mainCluster ){
   #merge tose points in with less than minNumHets heterozygous SNPs in segment and that lie within 2 FWHM around center 
   sel <- which(segments$neighbour=="identical" & 
     ( segments$errorLength > segments$distTcn & segments$errorSNP > segments$distDH ) &
-    is.na(segments$crest) & ! is.na(segments$cluster)) 
+    is.na(segments$SV.Type) & ! is.na(segments$cluster))
   
   if (length(sel)>0)
     segments$cluster[sel] <- mainCluster
@@ -411,10 +414,10 @@ combineNeighbours <- function(segments){
                 chr$cluster[ sel[j] ] != "NA" &&
                 !is.na(chr$cluster[ sel[j] + 1 ]) &&
                 chr$cluster[ sel[j] ] == chr$cluster[ sel[j+1] ] &&
-                is.na(chr$crest[ sel[j]+1 ]) &&
+                is.na(chr$SV.Type[ sel[j]+1 ]) &&
                 ( chr$end[ sel[j] ] == chr$start[sel[j+1]] | chr$end[sel[j]]+1 == chr$start[sel[j+1]] ) ) { 
           
-          cat(qq("@{chr$start[sel[j]]} @{chr$end[sel[j]]} -> prune\n\n"))
+          cat(paste0("",chr$start[sel[j]], " ",chr$end[sel[j]], " -> prune\n\n"))
           
           chr$end[ sel[j] ] = chr$end[ sel[j + 1 ] ]
           chr$length[ sel[j] ] = chr$length[ sel[j] ] + chr$length[ sel[j + 1] ]
@@ -447,43 +450,43 @@ generatePlots<- function(segments, selIdentical, mainCenter, covLeftHalf, covRig
 
      pSnpNbr <- ggplot(data=segments, aes(log2(tcnMean), dhMax) ) +
             geom_point() + 
-       	    ggtitle(qq("nbrOfHets< minNbrOfHets") ) + 
+       	    ggtitle("nbrOfHets< minNbrOfHets" ) + 
             scale_color_manual(values=c('red','blue'), name='nbrOfHets<5') +
-            geom_vline( x=c( log2(covLeftFull) ), col='red')+
-            geom_vline( x=c( log2(covRightFull) ), col='red' ) +
-            geom_vline( x=c( log2(covLeftHalf) ), col='blue')+
-            geom_vline( x=c( log2(covRightHalf) ), col='blue' ) +
+            geom_vline( xintercept=c( log2(covLeftFull) ), col='red')+
+            geom_vline( xintercept=c( log2(covRightFull) ), col='red' ) +
+            geom_vline( xintercept=c( log2(covLeftHalf) ), col='blue')+
+            geom_vline( xintercept=c( log2(covRightHalf) ), col='blue' ) +
             theme(legend.position="none")
 
   pSNPError <- ggplot(data=segments, aes(log2(tcnMean), dhMax) ) +
             geom_point() + 
-	    ggtitle(qq("errorSNP > distDH") ) + 
+	    ggtitle("errorSNP > distDH") + 
             scale_color_manual(values=c('red','blue'), name='errorSNP>distDH') +
-            geom_vline( x=c( log2(covLeftFull) ), col='red')+
-            geom_vline( x=c( log2(covRightFull) ), col='red' ) +
-            geom_vline( x=c( log2(covLeftHalf) ), col='blue')+
-            geom_vline( x=c( log2(covRightHalf) ), col='blue' ) +
+            geom_vline( xintercept=c( log2(covLeftFull) ), col='red')+
+            geom_vline( xintercept=c( log2(covRightFull) ), col='red' ) +
+            geom_vline( xintercept=c( log2(covLeftHalf) ), col='blue')+
+            geom_vline( xintercept=c( log2(covRightHalf) ), col='blue' ) +
             theme(legend.position="none")
 
   pError <- ggplot(data=segments, aes(log2(tcnMean), dhMax) ) +
             geom_point() + 
-	    ggtitle(qq("errorLength >distTcn & errorSNP > distDH") ) + 
+	    ggtitle("errorLength >distTcn & errorSNP > distDH")  + 
             scale_color_manual(values=c('red','blue'), name='totalErr>totalDist' ) +
-            geom_vline( x=c( log2(covLeftFull) ), col='red')+
-            geom_vline( x=c( log2(covRightFull) ), col='red' ) +
-            geom_vline( x=c( log2(covLeftHalf) ), col='blue')+
-            geom_vline( x=c( log2(covRightHalf) ), col='blue' ) +
+            geom_vline( xintercept=c( log2(covLeftFull) ), col='red')+
+            geom_vline( xintercept=c( log2(covRightFull) ), col='red' ) +
+            geom_vline( xintercept=c( log2(covLeftHalf) ), col='blue')+
+            geom_vline( xintercept=c( log2(covRightHalf) ), col='blue' ) +
             theme(legend.position="none")
 
 
   pLength <- ggplot(data=segments, aes(log2(tcnMean), dhMax) ) +
             geom_point() + 
-	    ggtitle( qq("errorLength>distTcn") ) + 
+	    ggtitle( "errorLength>distTcn" ) + 
             scale_color_manual(values=c('red','blue'), name='neighbourMain' ) +
-            geom_vline( x=c( log2(covLeftFull) ), col='red')+
-            geom_vline( x=c( log2(covRightFull) ), col='red' ) +
-            geom_vline( x=c( log2(covLeftHalf) ), col='blue')+
-            geom_vline( x=c( log2(covRightHalf) ), col='blue' ) +
+            geom_vline( xintercept=c( log2(covLeftFull) ), col='red')+
+            geom_vline( xintercept=c( log2(covRightFull) ), col='red' ) +
+            geom_vline( xintercept=c( log2(covLeftHalf) ), col='blue')+
+            geom_vline( xintercept=c( log2(covRightHalf) ), col='blue' ) +
             theme(legend.position="none")
 
   if ( length(selIdentical) > 0 ){
