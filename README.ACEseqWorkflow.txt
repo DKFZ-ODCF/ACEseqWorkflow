@@ -16,6 +16,12 @@ runWithoutControl	        false   Run analysis with matching control and estimat
 
 == Changelist
 
+* Version update to 3.0.0
+- fixed 'artifact-1' artifact (allow for low purity solutions in this case)
+- work with old (version < 2.x) ACEseq result files on rerun
+- introduced ymaxcov_threshold for maximum TCN count represented in segment plots
+- fixed bug in creation of json file (doubled first solution)
+
 
 * Version update to 2.0.0
 - add contours in 2D plots
