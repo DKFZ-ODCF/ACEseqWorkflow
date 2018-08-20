@@ -25,7 +25,7 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
     }
 
     private boolean runWithSV(ExecutionContext context) {
-        return getflag(context, "runWithSv", true);
+        return getflag(context, "SV", true);
     }
 
     @Override

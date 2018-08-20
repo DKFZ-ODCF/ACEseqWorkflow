@@ -5,7 +5,7 @@ Some description
 == Run flags / switches
 
 Switch                      Default Description
-runWithSv                   true    By default, the workflow will try to use an SV file for breakpoints
+SV                          true    By default, the workflow will try to use an SV file for breakpoints
 allowMissingSVFile          false   Allows the workflow to stop without an error, if the SV file does not exist
 
 runWithCrest          		false   Run with crest output
