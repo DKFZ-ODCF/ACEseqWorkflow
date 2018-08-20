@@ -27,6 +27,4 @@ public class UnphasedGenotypeFileGroupByChromosome extends IndexedFileObjects {
     public Map<String, UnphasedGenotypeFile> getFiles() {
         return files;
     }
-
-    
 }

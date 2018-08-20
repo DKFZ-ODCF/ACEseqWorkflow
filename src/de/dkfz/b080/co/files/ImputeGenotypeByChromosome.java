@@ -7,7 +7,6 @@
 package de.dkfz.b080.co.files;
 
 import de.dkfz.roddy.core.ExecutionContext;
-import de.dkfz.roddy.knowledge.files.FileObject;
 import de.dkfz.roddy.knowledge.files.IndexedFileObjects;
 import de.dkfz.roddy.knowledge.files.Tuple2;
 
@@ -30,7 +29,7 @@ public class ImputeGenotypeByChromosome extends IndexedFileObjects {
         super(indexedFileObjects.getIndices(), indexedFileObjects.getIndexedFileObjects(), executionContext);
         Map<String, PhasedGenotypeFile> _phasedSnpFiles = new LinkedHashMap<>();
         Map<String, HaploblockGroupFile> _haploblockFiles = new LinkedHashMap<>();
-        for (String chr : (List<String>)indices) {
+        for (String chr : (List<String>) indices) {
             Tuple2<PhasedGenotypeFile, HaploblockGroupFile> tuple = (Tuple2<PhasedGenotypeFile, HaploblockGroupFile>) indexedFileObjects.getIndexedFileObjects().get(chr);
             _phasedSnpFiles.put(chr, tuple.value0);
             _haploblockFiles.put(chr, tuple.value1);

@@ -89,8 +89,7 @@ final class ACESeqMethods {
         for (String chrIndex : keyset) {
             UnphasedGenotypeFile unphasedGenotypeFile = (UnphasedGenotypeFile) BaseFile.constructManual(UnphasedGenotypeFile.class, genotypeSNPFile);
             String path = unphasedGenotypeFile.getAbsolutePath();
-            unphasedGenotypeFile.setPath(new File(path.replace("#CHROMOSOME_INDEX#", chrIndex)));
-//            unphasedGenotypeFile.setPath(new File(path.replace('${fgindex}', chrIndex)));
+            unphasedGenotypeFile.setPath(new File(path.replace('${fgindex}', chrIndex)));
             listOfFiles.put(chrIndex, unphasedGenotypeFile);
             filesToCheck.add(unphasedGenotypeFile);
         }
@@ -222,8 +221,8 @@ final class ACESeqMethods {
                     otherFile,
                     indexMap)
             )
-        } as Map<String, FileObject>
-
+        }.toList().collectEntries() //as Map<String, FileObject>
+//        Map<String, FileObject> map2 = (Map<String, FileObject>) map;
         return new IndexedFileObjects(indices, map, fileGroup.getExecutionContext());
     }
 

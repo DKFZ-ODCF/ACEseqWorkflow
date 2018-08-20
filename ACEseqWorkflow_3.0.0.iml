@@ -38,25 +38,12 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../Roddy/dist/bin/develop/Roddy.jar!/" />
+          <root url="jar:///icgc/ngs_share/ngsPipelines/RoddyStable/dist/bin/3.2.3/Roddy.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
           <root url="file://$MODULE_DIR$/../../Roddy/RoddyCore/src" />
         </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="file://$MODULE_DIR$/../../Roddy/dist/bin/develop/lib" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/../../Roddy/dist/bin/develop/lib" />
-        </SOURCES>
-        <jarDirectory url="file://$MODULE_DIR$/../../Roddy/dist/bin/develop/lib" recursive="false" />
-        <jarDirectory url="file://$MODULE_DIR$/../../Roddy/dist/bin/develop/lib" recursive="false" type="SOURCES" />
       </library>
     </orderEntry>
   </component>
