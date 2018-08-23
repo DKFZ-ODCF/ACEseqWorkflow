@@ -3,10 +3,10 @@
 # Copyright (c) 2017 The ACEseq workflow developers.
 # Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 
-
-source ${TOOL_ANALYZE_BAM_HEADER}
-getRefGenomeAndChrPrefixFromHeader ${FILE_CONTROL_BAM} # Sets CHR_PREFIX and REFERENCE_GENOME
-
+if [[ ${runWithoutControl} == false ]]; then
+    source ${TOOL_ANALYZE_BAM_HEADER}
+    getRefGenomeAndChrPrefixFromHeader ${FILE_CONTROL_BAM} # Sets CHR_PREFIX and REFERENCE_GENOME
+fi
 
 CHR_NAME=X
 CHR_NR=${CHR_PREFIX}${CHR_NAME}

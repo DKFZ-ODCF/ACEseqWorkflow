@@ -4,12 +4,6 @@
 # Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 
 
-
-source ${TOOL_ANALYZE_BAM_HEADER}
-getRefGenomeAndChrPrefixFromHeader ${FILE_CONTROL_BAM} # Sets CHR_PREFIX and REFERENCE_GENOME
-
-CHR_NR=${CHR_PREFIX}${CHR_NAME:?CHR_NAME is not set}
-
 #DEFINE FILE NAMES
 
 PHASED_GENOTYPE="${FILE_PHASED_GENOTYPE}${CHR_NAME}.${FILE_TXT_SUF}"
@@ -26,6 +20,11 @@ UNPHASED_GENOTYPE="${FILE_UNPHASED_GENOTYPE}${CHR_NAME}.${FILE_TXT_SUF}"
 
 if [[ ${runWithoutControl} == false ]]
 then
+
+    source ${TOOL_ANALYZE_BAM_HEADER}
+    getRefGenomeAndChrPrefixFromHeader ${FILE_CONTROL_BAM} # Sets CHR_PREFIX and REFERENCE_GENOME
+
+    CHR_NR=${CHR_PREFIX}${CHR_NAME:?CHR_NAME is not set}
 
          ${SAMTOOLS_BINARY} mpileup ${CNV_MPILEUP_OPTS} -u \
          	    -f "${REFERENCE_GENOME}" \
