@@ -349,7 +349,7 @@
 
         <tool name="getGenotypes" value="estimateGenotypes.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="1" cores="1" nodes="1" walltime="3"/>
+                <rset size="l" memory="2" cores="1" nodes="1" walltime="3"/>
             </resourcesets>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_SNP_POSITIONS_WG"/>
             <output type="file" typeof="TextFile" scriptparameter="FILENAME_SNP_POSITIONS_WG_FAKE"/>
