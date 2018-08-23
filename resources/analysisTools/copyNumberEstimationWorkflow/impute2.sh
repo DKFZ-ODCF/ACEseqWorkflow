@@ -18,7 +18,7 @@ tmpHaploblocks="${FILENAME_HAPLOBLOCK_GROUPS}_tmp"
 UNPHASED="${FILE_UNPHASED_PRE}${CHR_NAME}.${FILE_VCF_SUF}"
 UNPHASED_GENOTYPE="${FILE_UNPHASED_GENOTYPE}${CHR_NAME}.${FILE_TXT_SUF}"
 
-if [[ ${runWithoutControl} == false ]]
+if [[ ${isNoControlWorkflow} == false ]]
 then
 
     source ${TOOL_ANALYZE_BAM_HEADER}

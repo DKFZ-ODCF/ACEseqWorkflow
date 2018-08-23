@@ -3,7 +3,7 @@
 # Copyright (c) 2017 The ACEseq workflow developers.
 # Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 
-if [[ ${runWithoutControl} == false ]]; then
+if [[ ${isNoControlWorkflow} == false ]]; then
     source ${TOOL_ANALYZE_BAM_HEADER}
     getRefGenomeAndChrPrefixFromHeader ${FILE_CONTROL_BAM} # Sets CHR_PREFIX and REFERENCE_GENOME
 fi
@@ -34,7 +34,7 @@ if grep -Pv 'female|klinefelter'  "${FILENAME_SEX}"
    exit 0
  fi
 
-if [[ ${runWithoutControl} == false ]]
+if [[ ${isNoControlWorkflow} == false ]]
 then
 
         ${SAMTOOLS_BINARY} mpileup ${CNV_MPILEUP_OPTS} -u \

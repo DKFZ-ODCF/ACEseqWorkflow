@@ -10,7 +10,7 @@ X_FILE="${SNP_VCF_CNV_PATH}X.${CNV_SUFFIX}"
 
 tmp_sex_file=${FILENAME_SEX}_tmp
 
-if [[ ${runWithoutControl} != "true" ]]
+if [[ ${isNoControlWorkflow} != "true" ]]
 then
 	${RSCRIPT_BINARY} ${TOOL_ESTIMATE_SEX} \
 	 --file_dataY ${Y_FILE} \

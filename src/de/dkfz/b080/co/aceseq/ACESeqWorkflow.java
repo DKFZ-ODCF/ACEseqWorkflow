@@ -35,7 +35,7 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         boolean runWithCrest = getFlag("runWithCrest", false);
         boolean runQualityCheckOnly = getFlag("runQualityCheckOnly", false);
         boolean runWithFakeControl = getFlag("runWithFakeControl", false);
-        boolean runWithoutControl = getFlag("runWithoutControl", false);
+
 
         BamFile bamControlMerged = new BamFile(_bamControlMerged);
         BamFile bamTumorMerged = new BamFile(_bamTumorMerged);
@@ -49,7 +49,7 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         CoverageWindowsFileAnnotationResult annotationResult = resultByType.getCoverageWindowsFiles().annotate();
         TextFile replaceControlFile;
         TextFile mergedAndFilteredCoverageWindowFiles;
-        if (runWithFakeControl || runWithoutControl) {
+        if (runWithFakeControl || isNoControlWorkflow()) {
             replaceControlFile = ACESeqMethods.replaceControl(annotationResult.getGenderFile());
             mergedAndFilteredCoverageWindowFiles = GenericMethod.callGenericTool("mergeAndFilterCnvFiles_withReplaceBadControl", replaceControlFile, new GenericFileGroup(annotationResult.getListOfFiles()));
         } else {
@@ -65,7 +65,7 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         Tuple2<PhasedGenotypeFile, HaploblockGroupFile> phasedGenotypeX;
         TextFile haplotypedSNPFile;
 
-        if (runWithoutControl) {
+        if (isNoControlWorkflow()) {
             TextFile genotypeSNPFile = ACESeqMethods.getGenotypes(mergedAndFilteredSNPFile);
             UnphasedGenotypeFileGroupByChromosome unphasedGenotypeFile = ACESeqMethods.createUnphased(genotypeSNPFile);
             imputedGenotypeByChromosome = ACESeqMethods.imputeGenotypes(unphasedGenotypeFile);

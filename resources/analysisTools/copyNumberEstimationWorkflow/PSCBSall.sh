@@ -5,7 +5,7 @@
 
 
 tmpSegments=${FILENAME_SEGMENTS}_tmp
-nocontrol=${runWithoutControl^^}
+nocontrol=${isNoControlWorkflow^^}
 
 ${RSCRIPT_BINARY} --vanilla "${TOOL_PSCBS_SEGMENTATION}" \
 	--file_data         "${FILE_PSCBS_DATA}" \

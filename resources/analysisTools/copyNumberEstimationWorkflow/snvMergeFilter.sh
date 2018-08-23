@@ -5,7 +5,7 @@
 
 
 #do not set minimum coverage in case no control is used
-if [[ ${runWithoutControl} == true ]]
+if [[ ${isNoControlWorkflow} == true ]]
 then
 	snp_min_coverage=0
 fi

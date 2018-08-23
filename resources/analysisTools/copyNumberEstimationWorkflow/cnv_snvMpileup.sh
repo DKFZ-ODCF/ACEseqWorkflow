@@ -12,9 +12,9 @@ source ${TOOL_ANALYZE_BAM_HEADER}
 getRefGenomeAndChrPrefixFromHeader ${FILE_TUMOR_BAM} # Sets CHR_PREFIX and REFERENCE_GENOME
 
 CHR_NR=${CHR_PREFIX}${CHR_NAME:?CHR_NAME is not set}
-runWithoutControl=${runWithoutControl^}
+isNoControlWorkflow=${isNoControlWorkflow^}
 
-if [[ $runWithoutControl == "True" ]]
+if [[ $isNoControlWorkflow == "True" ]]
 then
      $SAMTOOLS_BINARY mpileup ${CNV_MPILEUP_OPTS} \
 	-f "${REFERENCE_GENOME}" \
@@ -26,7 +26,7 @@ then
 	--infile - \
 	--outsnps ${tmpFileSnpPos} \
         --outcov ${tmpFileCovWin} \
-	--withoutcontrol ${runWithoutControl} 
+	--withoutcontrol ${isNoControlWorkflow}
 else
      $SAMTOOLS_BINARY mpileup ${CNV_MPILEUP_OPTS} \
 	-f "${REFERENCE_GENOME}" \

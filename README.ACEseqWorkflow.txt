@@ -11,7 +11,7 @@ runWithCrest          		false   Run with crest output
 runQualityCheckOnly      	false   Stop the workflow after the gc correction.
 runMetaCNVGeneration        false   Run a meta step for the cnv generation. This submits a single,
 									slightly optimized step instead of several (per chromosome) jobs.
-runWithoutControl	        false   Run analysis with matching control and estimate control genotypes based on tumor BAF
+isNoControlWorkflow	        false   Run analysis with matching control and estimate control genotypes based on tumor BAF
 
 == Changelist
 
