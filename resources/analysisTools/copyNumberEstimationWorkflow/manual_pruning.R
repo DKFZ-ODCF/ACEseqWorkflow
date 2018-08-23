@@ -734,7 +734,7 @@ write.table(dataAll[[1]], pipe(paste0("bgzip >", newFile) ), sep='\t', col.names
 # append chr 2 - 24
 writetable <- function(data, newFile){
   format = format(data, scientific = FALSE, trim = TRUE)
-  write.table(format, pipe( paste0( "bgzip >>",newFile ) ), append=TRUE, sep='\t', col.names=FALSE,  row.names=FALSE, quote=FALSE)
+  write.table(format, pipe( paste0( "bgzip >>",newFile ) ), ap0end=TRUE, sep='\t', col.names=FALSE,  row.names=FALSE, quote=FALSE)
 }
 
 lapply(dataAll[-1], writetable, newFile = newFile)

@@ -48,7 +48,7 @@ source( file.path(pipelineDir, "annotateCNA.R") )
 cat("reading \n\n")
 
 #read data and set variables
-if (sv_YN == "yes") {
+if (sv_YN == "true") {
 	sv <- try( read.table(svFile, sep = "\t", header = FALSE, as.is = TRUE, stringsAsFactors = TRUE)[1:6], silent=TRUE )
 	if ( is.data.frame(sv) ){
 		colnames(sv) = c("chromosome", "start", "end", "length", "type", "chr2")

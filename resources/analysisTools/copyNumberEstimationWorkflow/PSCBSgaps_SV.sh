@@ -9,7 +9,7 @@ echo "starting to merge PSCBS breakpoints and sv points"
 tmp_breakpoints=${FILENAME_BREAKPOINTS}_tmp
 tmp_svPoints=${FILENAME_SV_POINTS}_tmp
 
-if [[ "${SV}" == 'yes' ]]
+if [[ "${SV}" == 'true' ]]
 then
 
 	${PYTHON_BINARY} "${TOOL_ADD_SV_TO_PSCBS_GAPS}" \

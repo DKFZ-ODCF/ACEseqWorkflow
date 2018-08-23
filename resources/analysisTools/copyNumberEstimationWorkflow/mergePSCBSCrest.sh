@@ -8,7 +8,7 @@ set -o pipefail
 tmp_breakpoints=${FILENAME_BREAKPOINTS}.tmp
 svPoints_tmp=${FILENAME_SV_POINTS}.tmp
 
-if [[ "${SV}" == 'yes' ]]
+if [[ "${SV}" == 'true' ]]
 then
 	${PYTHON_BINARY} "${TOOL_ADD_CREST_TO_PSCBS_GAPS}" \
             --crest_deldupinv "${FILENAME_CREST_DELDUPINV}" \

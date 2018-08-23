@@ -18,14 +18,14 @@ trim      = 1e-6
 alphaTCN  = 1e-6
 alphaDH   = 1e-6
 h         = 0
-sv        = "yes"
+sv        = "true"
 nocontrol = FALSE 
 ################################################################################
 ## description field should be filled here
 ################################################################################
 spec <- matrix(c('file_data',        'd', 1, "character", #"", # input
                  'file_breakpoints', 'b', 1, "character", #"", # input
-		 'chrLengthFile',    'x', 1, "character", #"chromosome length file",
+		         'chrLengthFile',    'x', 1, "character", #"chromosome length file",
                  'file_fit',         'f', 2, "character", #"", # output
                  'nperm',            'p', 2, "numeric"  , #  "",
                  'minwidth',         'w', 2, "integer"  , #  "",
@@ -34,9 +34,9 @@ spec <- matrix(c('file_data',        'd', 1, "character", #"", # input
                  'alphaTCN',         'T', 2, "numeric"  , #  "",
                  'alphaDH',          'D', 2, "numeric"  , #  "",
                  'h',                'h', 2, "numeric"  , #  "",
-                 'sv',             'c', 0, "character", #"whether svs are used, should be specified",
+                 'sv',               'c', 0, "character", #"whether svs are used, should be specified",
                  'libloc',           'l', 2, "character", #"location of package",
-		 'nocontrol',	     'n', 2, "logical"    #"is the sample run without control"
+		         'nocontrol',	     'n', 2, "logical"    #"is the sample run without control"
                 ), ncol = 4, byrow = TRUE)
  
 opt = getopt(spec);
@@ -57,6 +57,8 @@ cat(paste0("alphaTCN: ", alphaTCN, "\n\n"))
 cat(paste0("alphaDH: ", alphaDH, "\n\n"))
 cat(paste0("h: ", h, "\n\n"))
 cat(paste0("sv: ", sv, "\n\n"))
+cat(paste0("libloc: ", libloc, "\n\n"))
+cat(paste0("nocontrol: ", nocontrol, "\n\n"))
 cat("\n")
 
 if( libloc == ""  | libloc == TRUE )
