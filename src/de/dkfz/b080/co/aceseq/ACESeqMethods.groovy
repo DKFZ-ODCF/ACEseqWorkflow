@@ -40,8 +40,8 @@ final class ACESeqMethods {
                 tumorBam,
                 controlBam,
                 ACEseqConstants.PARM_CHR_INDEX,
-                getGlobalJobSpecificParameters(controlBam.executionContext.configuration))
-        return new CnvSnpGeneratorResultByType(indexedFileObjects, controlBam.getExecutionContext())
+                getGlobalJobSpecificParameters(tumorBam.executionContext.configuration))
+        return new CnvSnpGeneratorResultByType(indexedFileObjects, tumorBam.getExecutionContext())
     }
 
     static ImputeGenotypeByChromosome imputeGenotypes(BamFile controlBam) {

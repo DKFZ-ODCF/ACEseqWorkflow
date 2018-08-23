@@ -87,7 +87,7 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
 
 
         if (runWithSV(context)) {
-            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0, _bamTumorMerged);
+            mergedSvs = ACESeqMethods.mergeSv(breakpoints.value0, bamTumorMerged);
             if (mergedSvs == null) {
                 return allowMissingSVFile(context); // Here, exit with error (false) is possible
             }
