@@ -36,13 +36,16 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         boolean runQualityCheckOnly = getFlag("runQualityCheckOnly", false);
         boolean runWithFakeControl = getFlag("runWithFakeControl", false);
 
-
-        BamFile bamControlMerged = new BamFile(_bamControlMerged);
         BamFile bamTumorMerged = new BamFile(_bamTumorMerged);
         context.getConfigurationValues().add(new ConfigurationValue("tumorSample", ((COFileStageSettings) _bamTumorMerged.getFileStage()).getSample().getName()));
-        context.getConfigurationValues().add(new ConfigurationValue("controlSample", ((COFileStageSettings) _bamControlMerged.getFileStage()).getSample().getName()));
 
         CnvSnpGeneratorResultByType resultByType;
+        BamFile bamControlMerged = null;
+        if (isControlWorkflow()) {
+            bamControlMerged = new BamFile(_bamControlMerged);
+            context.getConfigurationValues().add(new ConfigurationValue("controlSample", ((COFileStageSettings) _bamControlMerged.getFileStage()).getSample().getName()));
+        }
+
         resultByType = ACESeqMethods.generateCNVSNPs(bamControlMerged, bamTumorMerged);
 
         //TODO The annotate job tool id is not visible in the jobstate logfile.
@@ -118,11 +121,14 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         if (!runWithSV(context))
             return true;
 
+        if (isControlWorkflow()) {
+            BasicBamFile bamControlMerged = new BasicBamFile(loadInitialBamFilesForDataset(context)[0]);
+            context.getConfigurationValues().add(new ConfigurationValue("controlSample", ((COFileStageSettings) bamControlMerged.getFileStage()).getSample().getName()));
+        }
 
-        BasicBamFile bamControlMerged = new BasicBamFile(loadInitialBamFilesForDataset(context)[0]);
         BasicBamFile bamTumorMerged = new BasicBamFile(loadInitialBamFilesForDataset(context)[1]);
         context.getConfigurationValues().add(new ConfigurationValue("tumorSample", ((COFileStageSettings) bamTumorMerged.getFileStage()).getSample().getName()));
-        context.getConfigurationValues().add(new ConfigurationValue("controlSample", ((COFileStageSettings) bamControlMerged.getFileStage()).getSample().getName()));
+
 
 
         // Check, if the file exists

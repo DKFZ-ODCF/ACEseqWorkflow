@@ -14,31 +14,23 @@ getRefGenomeAndChrPrefixFromHeader ${FILE_TUMOR_BAM} # Sets CHR_PREFIX and REFER
 CHR_NR=${CHR_PREFIX}${CHR_NAME:?CHR_NAME is not set}
 isNoControlWorkflow=${isNoControlWorkflow^}
 
-if [[ $isNoControlWorkflow == "True" ]]
-then
-     $SAMTOOLS_BINARY mpileup ${CNV_MPILEUP_OPTS} \
-	-f "${REFERENCE_GENOME}" \
-	-r ${CHR_NR} \
-	"${FILE_TUMOR_BAM}" \
-	| ${PYTHON_BINARY} ${TOOL_SNP_POS_CNV_WIN_GENERATOR} \
-	--quality $mpileup_qual \
-	--dbsnp "${dbSNP_FILE}" \
-	--infile - \
-	--outsnps ${tmpFileSnpPos} \
-        --outcov ${tmpFileCovWin} \
-	--withoutcontrol ${isNoControlWorkflow}
+if [[ $isNoControlWorkflow == "True" ]]; then
+    BAM_FILES=${FILE_TUMOR_BAM}
 else
-     $SAMTOOLS_BINARY mpileup ${CNV_MPILEUP_OPTS} \
-	-f "${REFERENCE_GENOME}" \
-	-r ${CHR_NR} \
-	"${FILE_CONTROL_BAM}" "${FILE_TUMOR_BAM}" \
-	| ${PYTHON_BINARY} ${TOOL_SNP_POS_CNV_WIN_GENERATOR} \
-	--quality $mpileup_qual \
-	--dbsnp "${dbSNP_FILE}" \
-	--infile - \
-	--outsnps ${tmpFileSnpPos} \
-        --outcov ${tmpFileCovWin}
+    BAM_FILES=${FILE_CONTROL_BAM} ${FILE_TUMOR_BAM}
 fi
+
+ $SAMTOOLS_BINARY mpileup ${CNV_MPILEUP_OPTS} \
+-f "${REFERENCE_GENOME}" \
+-r ${CHR_NR} \
+"${BAM_FILES}" \
+| ${PYTHON_BINARY} ${TOOL_SNP_POS_CNV_WIN_GENERATOR} \
+--quality $mpileup_qual \
+--dbsnp "${dbSNP_FILE}" \
+--infile - \
+--outsnps ${tmpFileSnpPos} \
+--outcov ${tmpFileCovWin} \
+--withoutcontrol ${isNoControlWorkflow}
 
 if [[ "$?" != 0 ]]
 then
