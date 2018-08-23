@@ -7,7 +7,6 @@ Some description
 Switch                      Default Description
 SV                          true    By default, the workflow will try to use an SV file for breakpoints
 allowMissingSVFile          false   Allows the workflow to stop without an error, if the SV file does not exist
-
 runWithCrest          		false   Run with crest output
 runQualityCheckOnly      	false   Stop the workflow after the gc correction.
 runMetaCNVGeneration        false   Run a meta step for the cnv generation. This submits a single,
@@ -22,6 +21,9 @@ runWithoutControl	        false   Run analysis with matching control and estimat
 - introduced ymaxcov_threshold for maximum TCN count represented in segment plots
 - fixed bug in creation of json file (doubled first solution)
 - fixed noControl filegroup bug
+- fixed noControl control-bam file access issue
+- run without SV in noControl cases
+- use true|false for SV cvalue and not yes|no
 
 
 * Version update to 2.0.0

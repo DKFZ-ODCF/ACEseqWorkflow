@@ -21,11 +21,11 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
 
 
     private boolean allowMissingSVFile(ExecutionContext context) {
-        return getflag(context, "allowMissingSVFile", false);
+        return getFlag("allowMissingSVFile", false);
     }
 
     private boolean runWithSV(ExecutionContext context) {
-        return getflag(context, "SV", true);
+        return getFlag("SV", true);
     }
 
     @Override
@@ -60,21 +60,18 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         if (runQualityCheckOnly)
             return true;
 
+        TextFile mergedAndFilteredSNPFile = resultByType.getPositionFiles().mergeAndFilter();
         ImputeGenotypeByChromosome imputedGenotypeByChromosome;
         Tuple2<PhasedGenotypeFile, HaploblockGroupFile> phasedGenotypeX;
         TextFile haplotypedSNPFile;
 
         if (runWithoutControl) {
-            TextFile mergedAndFilteredSNPFile = resultByType.getPositionFiles().mergeAndFilter();
             TextFile genotypeSNPFile = ACESeqMethods.getGenotypes(mergedAndFilteredSNPFile);
             UnphasedGenotypeFileGroupByChromosome unphasedGenotypeFile = ACESeqMethods.createUnphased(genotypeSNPFile);
             imputedGenotypeByChromosome = ACESeqMethods.imputeGenotypes(unphasedGenotypeFile);
             phasedGenotypeX = ACESeqMethods.imputeGenotypeX(annotationResult.getGenderFile(), unphasedGenotypeFile);
             haplotypedSNPFile = ACESeqMethods.addHaploTypes(genotypeSNPFile, imputedGenotypeByChromosome.getPhasedSnpFiles(), phasedGenotypeX.value0);
-
         } else {
-
-            TextFile mergedAndFilteredSNPFile = resultByType.getPositionFiles().mergeAndFilter();
             imputedGenotypeByChromosome = ACESeqMethods.imputeGenotypes(bamControlMerged);
             phasedGenotypeX = ACESeqMethods.imputeGenotypeX(annotationResult.getGenderFile(), bamControlMerged);
             haplotypedSNPFile = ACESeqMethods.addHaploTypes(mergedAndFilteredSNPFile, imputedGenotypeByChromosome.getPhasedSnpFiles(), phasedGenotypeX.value0);
@@ -96,8 +93,11 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
             if (mergedSvs == null)
                 return false;  // Getting no merged SVs from the Crest step is always wrong.
         } else {
-            ACESeqMethods.mergeNoSv(breakpoints.value0);
-            return true;
+            mergedSvs = ACESeqMethods.mergeNoSv(breakpoints.value0);
+            if (mergedSvs == null) {
+                return allowMissingSVFile(context); // Here, exit with error (false) is possible
+            }
+//            return true;
         }
 
         TextFile pscbsSegments = ACESeqMethods.getSegmentAndGetSnps(mergedSvs.value0, breakpoints.value1);

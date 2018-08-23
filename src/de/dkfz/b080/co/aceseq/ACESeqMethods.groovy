@@ -142,7 +142,8 @@ final class ACESeqMethods {
     }
 
     static Tuple2<BreakpointsFile, TextFile> mergeNoSv(TextFile knownSegmentsFile) {
-        return (Tuple2<BreakpointsFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_WITHOUT_SV, knownSegmentsFile)
+        Tuple2<BreakpointsFile, TextFile> resultTuple = (Tuple2<BreakpointsFile, TextFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_BREAKPOINTS_WITHOUT_SV, knownSegmentsFile)
+        return resultTuple
     }
 
     static Tuple2<BreakpointsFile, TextFile> mergeCrest(TextFile knownSegmentsFile) {
