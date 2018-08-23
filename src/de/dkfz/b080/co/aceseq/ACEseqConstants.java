@@ -15,6 +15,7 @@ public final class ACEseqConstants {
      * Tool entries
      */
     public static final String TOOL_CNV_SNP_GENERATION = "cnvSnpGeneration";
+    public static final String TOOL_CNV_SNP_GENERATION_WITHOUT_CONTROL = "cnvSnpGeneration_withoutControl";
     public static final String TOOL_REPLACE_BAD_CONTROL = "replaceBadControl";
     public static final String TOOL_MERGE_AND_FILTER_SNP_FILES = "mergeAndFilterSnpFiles";
     public static final String TOOL_MERGE_AND_FILTER_CNV_FILES = "mergeAndFilterCnvFiles";

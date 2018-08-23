@@ -300,6 +300,18 @@
             </output>
         </tool>
 
+        <tool name="cnvSnpGeneration_withoutControl" value="cnv_snvMpileup.sh" basepath="copyNumberEstimationWorkflow">
+            <resourcesets>
+                <rset size="l" memory="2" cores="2" nodes="1" walltime="15"/>
+            </resourcesets>
+            <input type="file" typeof="BamFile" scriptparameter="FILE_TUMOR_BAM"/>
+            <input type="string" setby="callingCode" scriptparameter="PARM_CHR_INDEX"/>
+            <output type="filegroup" typeof="CnvSnpGeneratorResultFileGroup">
+                <output type="file" typeof="SNPPositionFile" scriptparameter="FILENAME_SNP_POS"/>
+                <output type="file" typeof="CoverageWindowsFile" scriptparameter="FILENAME_COV_WIN"/>
+            </output>
+        </tool>
+
         <tool name="annotateCnvFiles" value="vcfAnno.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="0.2" cores="2" nodes="1" walltime="4"/>

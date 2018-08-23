@@ -33,12 +33,23 @@ final class ACESeqMethods {
                 (ACEseqConstants.KNOWN_HAPLOTYPES_LEGEND_FILE): config.configurationValues.getString(ACEseqConstants.KNOWN_HAPLOTYPES_LEGEND_FILE))
     }
 
-    static CnvSnpGeneratorResultByType generateCNVSNPs(BamFile controlBam, BamFile tumorBam) {
+    static CnvSnpGeneratorResultByType generateCNVSNPs(BamFile tumorBam, BamFile controlBam) {
         IndexedFileObjects indexedFileObjects = ParallelizationHelper.runParallel(
                 COConstants.CVALUE_CHROMOSOME_INDICES,
                 ACEseqConstants.TOOL_CNV_SNP_GENERATION,
                 tumorBam,
                 controlBam,
+                ACEseqConstants.PARM_CHR_INDEX,
+                getGlobalJobSpecificParameters(tumorBam.executionContext.configuration))
+        return new CnvSnpGeneratorResultByType(indexedFileObjects, tumorBam.getExecutionContext())
+    }
+
+    static CnvSnpGeneratorResultByType generateCNVSNPs(BamFile tumorBam) {
+        IndexedFileObjects indexedFileObjects = ParallelizationHelper.runParallel(
+                COConstants.CVALUE_CHROMOSOME_INDICES,
+                ACEseqConstants.TOOL_CNV_SNP_GENERATION_WITHOUT_CONTROL,
+                tumorBam,
+                null,
                 ACEseqConstants.PARM_CHR_INDEX,
                 getGlobalJobSpecificParameters(tumorBam.executionContext.configuration))
         return new CnvSnpGeneratorResultByType(indexedFileObjects, tumorBam.getExecutionContext())

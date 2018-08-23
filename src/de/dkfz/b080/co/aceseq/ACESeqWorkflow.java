@@ -44,9 +44,12 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         if (isControlWorkflow()) {
             bamControlMerged = new BamFile(_bamControlMerged);
             context.getConfigurationValues().add(new ConfigurationValue("controlSample", ((COFileStageSettings) _bamControlMerged.getFileStage()).getSample().getName()));
+            resultByType = ACESeqMethods.generateCNVSNPs(bamTumorMerged, bamControlMerged);
+        } else {
+            resultByType = ACESeqMethods.generateCNVSNPs(bamTumorMerged);
         }
 
-        resultByType = ACESeqMethods.generateCNVSNPs(bamControlMerged, bamTumorMerged);
+
 
         //TODO The annotate job tool id is not visible in the jobstate logfile.
         CoverageWindowsFileAnnotationResult annotationResult = resultByType.getCoverageWindowsFiles().annotate();
