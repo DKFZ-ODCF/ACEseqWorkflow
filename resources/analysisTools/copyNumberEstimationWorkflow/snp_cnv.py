@@ -157,7 +157,10 @@ def mod_snp_cnv(sysargv):
 			b_ref = zip( [b1[ref]], [b2[ref]] )
 			b1 = [ b1[i] for i in range(len(b1)) if i != ref ]
 			b2 = [ b2[i] for i in range(len(b2)) if i != ref ]
-			b  = sorted(zip(b1, b2), key=lambda a: a[0])							# determine allele A (higher base count) and B in control, applies to tumor
+			if withoutControl:
+				b  = sorted(zip(b1, b2), key=lambda a: a[1])							# determine allele A (higher base count) and B in control, applies to tumor
+			else
+				b  = sorted(zip(b1, b2), key=lambda a: a[0])							# determine allele A (higher base count) and B in tumor due to missing control
 #			if b[2][0] != 0 and b_ref[0][0] != 0: 		#control has alternative allele count
 			fout.write("%s\t%i\t%s\t%i\t%i\t%i\t%i\n" % (r, l[1], dp[l[1]], b_ref[0][0], b[2][0], b_ref[0][1], b[2][1]))
 		
