@@ -146,21 +146,21 @@ def mod_snp_cnv(sysargv):
 		
 		l[1] = int(l[1])
 		
-		if l[1] in dp:
-			if not withoutControl:														# if in dbSNP
-				[b1, ref] = mp2bc(l[4], l[5], l[2], bq)									# calculate base count
-				b2 = mp2bc(l[7], l[8], l[2], bq)[0]
-			else:
+		if l[1] in dp:															# if in dbSNP
+			if withoutControl:
 				b1	 = [ 0 ,0 ,0 ,0 ]
-				[b2,ref] = mp2bc(l[4], l[5], l[2], bq)
-			
+				[b2,ref] = mp2bc(l[4], l[5], l[2], bq)							# calculate base count for tumor
+			else:
+				[b1, ref] = mp2bc(l[4], l[5], l[2], bq)							# calculate base count for control
+				b2 = mp2bc(l[7], l[8], l[2], bq)[0]								# calculate base count for tumor
+
 			b_ref = zip( [b1[ref]], [b2[ref]] )
 			b1 = [ b1[i] for i in range(len(b1)) if i != ref ]
 			b2 = [ b2[i] for i in range(len(b2)) if i != ref ]
 			if withoutControl:
-				b  = sorted(zip(b1, b2), key=lambda a: a[1])							# determine allele A (higher base count) and B in control, applies to tumor
-			else
-				b  = sorted(zip(b1, b2), key=lambda a: a[0])							# determine allele A (higher base count) and B in tumor due to missing control
+				b  = sorted(zip(b1, b2), key=lambda a: a[1])					# determine allele A (higher base count) and B in tumor instead of control (due to missing control)
+			else:
+				b  = sorted(zip(b1, b2), key=lambda a: a[0])					# determine allele A (higher base count) and B in control, applies to tumor
 #			if b[2][0] != 0 and b_ref[0][0] != 0: 		#control has alternative allele count
 			fout.write("%s\t%i\t%s\t%i\t%i\t%i\t%i\n" % (r, l[1], dp[l[1]], b_ref[0][0], b[2][0], b_ref[0][1], b[2][1]))
 		
