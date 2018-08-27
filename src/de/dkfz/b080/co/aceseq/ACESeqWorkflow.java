@@ -53,11 +53,10 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
 
         //TODO The annotate job tool id is not visible in the jobstate logfile.
         CoverageWindowsFileAnnotationResult annotationResult = resultByType.getCoverageWindowsFiles().annotate();
-        TextFile replaceControlFile;
         TextFile mergedAndFilteredCoverageWindowFiles;
         if (runWithFakeControl || isNoControlWorkflow()) {
-            replaceControlFile = ACESeqMethods.replaceControl(annotationResult.getGenderFile());
-            mergedAndFilteredCoverageWindowFiles = GenericMethod.callGenericTool("mergeAndFilterCnvFiles_withReplaceBadControl", replaceControlFile, new GenericFileGroup(annotationResult.getListOfFiles()));
+            TextFile replaceControlFile = ACESeqMethods.replaceControl(annotationResult.getGenderFile());
+            mergedAndFilteredCoverageWindowFiles = GenericMethod.callGenericTool(ACEseqConstants.TOOL_MERGE_AND_FILTER_CNV_FILES_WITH_REPLACE_BAD_CONTROL, replaceControlFile, new GenericFileGroup(annotationResult.getListOfFiles()));
         } else {
             mergedAndFilteredCoverageWindowFiles = annotationResult.mergeAndFilterCoverageWindowFiles();
         }

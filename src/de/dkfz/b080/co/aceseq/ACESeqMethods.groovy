@@ -131,7 +131,7 @@ final class ACESeqMethods {
     }
 
     static TextFile replaceControl(GenderFile genderFile) {
-        return (TextFile) GenericMethod.callGenericTool("replaceBadControl", genderFile);
+        return (TextFile) GenericMethod.callGenericTool(ACEseqConstants.TOOL_REPLACE_BAD_CONTROL, genderFile);
     }
 
     static Tuple3<TextFile, TextFile, TextFile> correctGC(TextFile mergedAndFilteredCovWinFile) {

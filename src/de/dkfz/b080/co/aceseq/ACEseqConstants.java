@@ -19,6 +19,7 @@ public final class ACEseqConstants {
     public static final String TOOL_REPLACE_BAD_CONTROL = "replaceBadControl";
     public static final String TOOL_MERGE_AND_FILTER_SNP_FILES = "mergeAndFilterSnpFiles";
     public static final String TOOL_MERGE_AND_FILTER_CNV_FILES = "mergeAndFilterCnvFiles";
+    public static final String TOOL_MERGE_AND_FILTER_CNV_FILES_WITH_REPLACE_BAD_CONTROL = "mergeAndFilterCnvFiles_withReplaceBadControl";
     public static final String TOOL_ANNOTATE_COV_WIN = "annotateCnvFiles";
     public static final String TOOL_GET_GENOTYPES = "getGenotypes";
     public static final String TOOL_CREATE_UNPHASED_GENOTYPE = "createUnphasedGenotype";
