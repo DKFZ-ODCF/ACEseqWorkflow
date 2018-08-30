@@ -23,7 +23,7 @@ fi
  $SAMTOOLS_BINARY mpileup ${CNV_MPILEUP_OPTS} \
 -f "${REFERENCE_GENOME}" \
 -r ${CHR_NR} \
-"${BAM_FILES}" \
+${BAM_FILES} \
 | ${PYTHON_BINARY} ${TOOL_SNP_POS_CNV_WIN_GENERATOR} \
 --quality $mpileup_qual \
 --dbsnp "${dbSNP_FILE}" \
