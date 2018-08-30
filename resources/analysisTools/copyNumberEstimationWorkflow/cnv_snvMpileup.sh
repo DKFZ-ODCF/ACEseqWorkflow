@@ -16,8 +16,10 @@ isNoControlWorkflow=${isNoControlWorkflow^}
 
 if [[ $isNoControlWorkflow == "True" ]]; then
     BAM_FILES=${FILE_TUMOR_BAM}
+    WITHOUT_CONTROL_PARAMETER="--withoutcontrol"
 else
     BAM_FILES="${FILE_CONTROL_BAM} ${FILE_TUMOR_BAM}"
+    WITHOUT_CONTROL_PARAMETER=""
 fi
 
  $SAMTOOLS_BINARY mpileup ${CNV_MPILEUP_OPTS} \
@@ -30,7 +32,7 @@ ${BAM_FILES} \
 --infile - \
 --outsnps ${tmpFileSnpPos} \
 --outcov ${tmpFileCovWin} \
---withoutcontrol ${isNoControlWorkflow}
+${WITHOUT_CONTROL_PARAMETER}
 
 if [[ "$?" != 0 ]]
 then
