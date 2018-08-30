@@ -34,7 +34,7 @@ def mod_snp_cnv(sysargv):
 	#print sysargv
 	#print len(sysargv) 
 	parser=argparse.ArgumentParser(description = "Parse mpileup output for ACEseq raw data")
-	parser.add_argument('--withoutcontrol', '-w', default=False, type = bool, help = "")
+	parser.add_argument('--withoutcontrol', '-w', action='store_true', default=False, help = "")
 	parser.add_argument('--dbsnp',   '-d', required=1, type = str, help = "dbSNP position vcf")
 	parser.add_argument('--outsnps', '-s', required=1, help = "Output file for snp coverage")
 	parser.add_argument('--outcov',  '-c', required=1, help = 'Output file for coverage window output')
@@ -48,6 +48,8 @@ def mod_snp_cnv(sysargv):
 		sys.exit("not all parameters set, please use option -h for mor information")
 	
 	withoutControl = args.withoutcontrol
+	print("withoutControl: ")
+	print(withoutControl)
 	tabixPositions = pysam.Tabixfile( args.dbsnp, "r")
 	fin   = args.infile
 	fout  = gzip.open( args.outsnps, "wb" )
