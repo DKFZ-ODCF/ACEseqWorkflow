@@ -17,7 +17,7 @@ isNoControlWorkflow=${isNoControlWorkflow^}
 if [[ $isNoControlWorkflow == "True" ]]; then
     BAM_FILES=${FILE_TUMOR_BAM}
 else
-    BAM_FILES=${FILE_CONTROL_BAM} ${FILE_TUMOR_BAM}
+    BAM_FILES="${FILE_CONTROL_BAM} ${FILE_TUMOR_BAM}"
 fi
 
  $SAMTOOLS_BINARY mpileup ${CNV_MPILEUP_OPTS} \
