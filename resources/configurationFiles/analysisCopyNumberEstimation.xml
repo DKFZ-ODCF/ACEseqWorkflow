@@ -698,6 +698,7 @@
 
         <!-- SV file used with the runSV flag. Always the same name, derives from any file type. -->
         <filename class="SVFile" derivedFrom="BasicBamFile" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>
+        <filename class="SVFile" derivedFrom="BamFile" pattern='${svOutputDirectory}/svs_${pid}_filtered_somatic_minEventScore3.tsv'/>
     </filenames>
 
 </configuration>
