@@ -123,12 +123,14 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         if (!runWithSV(context))
             return true;
 
+        BasicBamFile bamTumorMerged;
         if (isControlWorkflow()) {
             BasicBamFile bamControlMerged = new BasicBamFile(loadInitialBamFilesForDataset(context)[0]);
             context.getConfigurationValues().add(new ConfigurationValue("controlSample", ((COFileStageSettings) bamControlMerged.getFileStage()).getSample().getName()));
+            bamTumorMerged = new BasicBamFile(loadInitialBamFilesForDataset(context)[1]);
+        } else {
+            bamTumorMerged = new BasicBamFile(loadInitialBamFilesForDataset(context)[0]);
         }
-
-        BasicBamFile bamTumorMerged = new BasicBamFile(loadInitialBamFilesForDataset(context)[1]);
         context.getConfigurationValues().add(new ConfigurationValue("tumorSample", ((COFileStageSettings) bamTumorMerged.getFileStage()).getSample().getName()));
 
 
