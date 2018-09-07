@@ -159,7 +159,7 @@ checkControl <- function(coverage, covIndex){
     
     #check for second Peak
     maxPeak <- which(dens$y==max(dens$y[zeroCrossings])) 
-    secondPeak <- which( dens$y[maximaInCross] >= 0.1*dens$y[maxPeak] & dens$y[maximaInCross] != dens$y[maxPeak] )[1]
+    secondPeak <- maximaInCross[ which( dens$y[maximaInCross] >= 0.1*dens$y[maxPeak] & dens$y[maximaInCross] != dens$y[maxPeak] )[1] ]
     
     if (  0.5*( round(2*dens$x[maxPeak])) != 1  | ( ! is.na( secondPeak ) ) ) {
       cat( paste(chr, "warning indicator for contaminated sample or sample swap!\n") )
