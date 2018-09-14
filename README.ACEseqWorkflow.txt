@@ -24,6 +24,7 @@ isNoControlWorkflow	        false   Run analysis with matching control and estim
 - fixed noControl control-bam file access issue
 - run without SV in noControl cases
 - use true|false for SV cvalue and not yes|no
+- fixed bug contamination/sample swap detection (secondPeak index)
 
 
 * Version update to 2.0.0
