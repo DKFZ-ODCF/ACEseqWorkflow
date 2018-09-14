@@ -20,6 +20,7 @@ do
 	done
 	combProFile=${aceseqOutputDirectory}/${pid}_comb_pro_extra${ploidyFactor}_${tcc}.txt
 	HRDFile=${aceseqOutputDirectory}/${pid}_HRDscore_${ploidyFactor}_${tcc}.txt
+	HRD_DETAILS_FILE=${aceseqOutputDirectory}/${pid}_HRDscore_contributingSegments_${ploidyFactor}_${tcc}.txt
 	echo $combProFile
 
 	mostImportantFile=${aceseqOutputDirectory}/${pid}_comb_pro_extra${ploidyFactor}_${tcc}.txt
@@ -98,6 +99,7 @@ do
 		 $tcc \
 		 $pid \
 		 $HRDFile.tmp \
+		 ${HRD_DETAILS_FILE}.tmp \
 		 $PIPELINE_DIR/${centromerFilename} \
 		 $PIPELINE_DIR 
 
@@ -117,7 +119,8 @@ do
 	fi
 
 	mv $HRDFile.tmp $HRDFile
-	rm $combProFile.tmp 
+	mv ${HRD_DETAILS_FILE}.tmp ${HRD_DETAILS_FILE}
+	rm $combProFile.tmp
 done
 if [[ "$?" != 0 ]]
 then

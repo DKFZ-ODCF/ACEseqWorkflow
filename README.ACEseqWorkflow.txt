@@ -15,6 +15,9 @@ isNoControlWorkflow	        false   Run analysis with matching control and estim
 
 == Changelist
 
+* Version update to 3.1.0
+- write out file with segments contributing to HRD score
+
 * Version update to 3.0.0
 - fixed 'artifact-1' artifact (allow for low purity solutions in this case)
 - work with old (version < 2.x) ACEseq result files on rerun

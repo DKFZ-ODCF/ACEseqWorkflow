@@ -17,10 +17,11 @@ ploidy <- as.integer(args[4])
 tcc <- as.numeric(args[5])
 pid <- args[6]
 outfile <- args[7]
-centromerFile <- args[8]
-pipelineDir <- args[9]
-if( length(args[10])>9 ){
-	cutoff <- as.numeric(args[10])
+contributingSegmentsFile <- args[8]
+centromerFile <- args[9]
+pipelineDir <- args[10]
+if( length(args)>10 ){
+	cutoff <- as.numeric(args[11])
 }else{
 	cutoff <- 0.7
 }
@@ -66,9 +67,10 @@ numberHomoDel    <- length( which(grepl("HomoDel", segments.df$CNA.type) ) )
 
 if(length(selNoChangeChr) != length(unique(merged.df$chromosome)) ){
   merged.df <- merged.df[! merged.df$chromosome %in% selNoChangeChr,]
+  index.HRDSmooth = which(grepl("LOH", merged.df$CNA.type) & merged.df$length>15000000 )
+  numberHRDSmooth  <- length( index.HRDSmooth )
+  write.table( merged.df[index.HRDSmooth,], contributingSegmentsFile, sep="\t", row.names=FALSE, quote=FALSE )
 
-  numberHRDSmooth  <- length( which(grepl("LOH", merged.df$CNA.type) & 
-                             merged.df$length>15000000 ) )
   numberHRDLoss    <- length( which(grepl("(LOH)|(DEL)", merged.df$CNA.type) & 
                                    merged.df$length>15000000 ) )
 
