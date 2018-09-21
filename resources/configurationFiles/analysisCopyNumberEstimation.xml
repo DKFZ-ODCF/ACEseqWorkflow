@@ -219,6 +219,7 @@
         <!--generateVCF opts-->
         <cvalue name="blacklistFileName" value='artifact.homoDels.potentialArtifacts.txt' type="string"/>
         <cvalue name="centromerFilename" value='centromers.hg19.txt' type="string"/>
+        <cvalue name="cytobandsFile" value='/icgc/ngs_share/annovar/annovar_common_humandb/hg19_cytoBand.txt' type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_PRE' value="${pid}_most_important_info" type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_POST' value=".txt" type="string"/>
         <cvalue name='FILE_SEGMENT_VCF_PRE' value="${aceseqOutputDirectory}/${pid}" type="path"/>

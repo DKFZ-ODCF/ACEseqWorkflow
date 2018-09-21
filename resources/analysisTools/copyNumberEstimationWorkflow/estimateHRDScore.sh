@@ -101,6 +101,7 @@ do
 		 $HRDFile.tmp \
 		 ${HRD_DETAILS_FILE}.tmp \
 		 $PIPELINE_DIR/${centromerFilename} \
+		 ${cytobandsFile} \
 		 $PIPELINE_DIR 
 
 	if [[ "$?" != 0 ]]

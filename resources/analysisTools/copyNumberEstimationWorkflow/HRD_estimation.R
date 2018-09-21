@@ -19,18 +19,39 @@ pid <- args[6]
 outfile <- args[7]
 contributingSegmentsFile <- args[8]
 centromerFile <- args[9]
-pipelineDir <- args[10]
-if( length(args)>10 ){
-	cutoff <- as.numeric(args[11])
+cytobandsFile <- args[10]
+pipelineDir <- args[11]
+if( length(args)>11 ){
+	cutoff <- as.numeric(args[12])
 }else{
 	cutoff <- 0.7
 }
+
+
+# define subtelomericCytobands which contains telomeric regions as they are defined in TelomereHunter.
+cytoband.df <- read.table(cytobandsFile, header=F, stringsAsFactor=FALSE)
+colnames(cytoband.df) = c("chrom","start", "end","cytoband","giemsa")
+cytoband.df$chrom = gsub("chr", "", cytoband.df$chrom)
+
+#cytoband.df$chrom = gsub("X", 23, cytoband.df$chrom)
+#cytoband.df$chrom = gsub("Y", 24, cytoband.df$chrom)
+cytoband.df$chrom = as.character(cytoband.df$chrom)
+cytoband.df = cytoband.df[order(cytoband.df$chrom, cytoband.df$start),]
+
+cytobandPerChr <- split(cytoband.df, cytoband.df$chrom)
+subtelomericCytobands = lapply(cytobandPerChr, function(currentBands) {
+	return(rbind(currentBands[1,],currentBands[nrow(currentBands),]))
+})
+
+
 
 source( file.path(pipelineDir, "annotateCNA.R") )
 
 segments.df <- read.table(segmentfile, header=TRUE, stringsAsFactor=FALSE)
 centromers <- read.table(centromerFile, header=FALSE, sep="\t", stringsAsFactor=FALSE)
 colnames(centromers) <- c("chromosome", "start","end", "arm", "cytoband")
+
+
 
 #calculate aberrant fractions
 totallength <- sum( as.numeric(segments.df$length) )
@@ -78,20 +99,34 @@ if(length(selNoChangeChr) != length(unique(merged.df$chromosome)) ){
   segmentsPerChr <- split(merged.df, merged.df$chromosome)
   TAI <- sum( sapply( segmentsPerChr, function(segs){
 		TAI_chr = 0
-
-		if( segs$end[1] <
-			centromers$end[centromers$chromosome == segs$chromosome[1]][1] &
-		    segs$start[1] <
-			centromers$end[centromers$chromosome == segs$chromosome[1]][1] ) {
-			TAI_chr <- TAI_chr + sum( grepl( "(DEL)|(DUP)|(LOH)", segs$CNA.type[1]) )
+		segs$A = as.character(segs$A)
+		segs$B = as.character(segs$B)
+		# minimum length of TAI candidate regions: 11 Mbp
+		# (according to Suppl. Doc1; Timms et al., Myriad Genetics Inc., Association of BRCA1/2 Defects with Genomic Scores Predictive of DNA Damage Repair Deficiency Among Breast Cancer Subtypes
+		currentChrom = segs$chromosome[1]
+  		endOfpArmSubtelomericRegion = subtelomericCytobands[[currentChrom]][1,"end"]
+  		startOfqArmSubtelomericRegion = subtelomericCytobands[[currentChrom]][2,"start"]
+		if( # segment starts in telomeric region
+			segs[1,"start"] < endOfpArmSubtelomericRegion &
+			# segment does not cross centromere
+			segs[1,"end"] < centromers$end[centromers$chromosome == currentChrom][1] &
+			segs[1,"length"] >= 11000000 &
+			# imbalanced ?
+			!is.na(segs[1,"A"]) & !is.na(segs[1,"B"]) &
+			segs[1,"A"] != segs[1,"B"] ) {
+					TAI_chr <- TAI_chr + 1
 		}
-		if( segs$start[nrow(segs)] >
-			centromers$start[centromers$chromosome == segs$chromosome[1]][2] & 
-		    segs$end[nrow(segs)] >
-			centromers$start[centromers$chromosome == segs$chromosome[1]][2] ) {
-			TAI_chr <- TAI_chr + sum( grepl( "(DEL)|(DUP)|(LOH)", segs$CNA.type[nrow(segs)]) )
+		if( # segment starts after centromeric region
+			segs[nrow(segs),"start"] > centromers$start[centromers$chromosome == currentChrom][2] &
+			# segment ends within subtelomeric region
+		    segs[nrow(segs),"end"] > startOfqArmSubtelomericRegion &
+			segs$length[nrow(segs)] >= 11000000 &
+			# imbalanced ?
+			!is.na(segs[nrow(segs),"A"]) & !is.na(segs[nrow(segs),"B"]) &
+			segs[nrow(segs),"A"] != segs[nrow(segs),"B"] ) {
+					TAI_chr <- TAI_chr + 1
 		}
-		TAI_chr
+		return(TAI_chr)
   }) )
 
   # LST score
@@ -111,10 +146,12 @@ if(length(selNoChangeChr) != length(unique(merged.df$chromosome)) ){
   	}
   	i=i+1
   }
-}else{
-  numberHRDSmooth <- 0
-  numberHRDLoss <- 0
-  LST <- 0
+} else {
+	# all chromosomes have only 1 state
+	numberHRDSmooth <- 0
+	numberHRDLoss <- 0
+	LST <- 0
+	TAI=0
 }
 
 out.data <- data.frame( pid, fractionAberrant, fractionGain, fractionLoss, 
