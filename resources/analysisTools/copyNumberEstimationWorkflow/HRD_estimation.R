@@ -57,8 +57,8 @@ merged.df$roundTCN <- round(merged.df$tcnMean)
 
 tcnStatePerChrom <- sapply(unique(merged.df$chromosome), function(i){
 		sel <- which(merged.df$chromosome==i)
-		length(unique( merged.df[sel, c("CNA.type", "roundTCN")]))
-		})
+		nrow(unique( merged.df[sel, c("CNA.type", "roundTCN")]))
+})
 names(tcnStatePerChrom) <- unique(merged.df$chromosome)
 selNoChangeChr <- names(tcnStatePerChrom)[which(tcnStatePerChrom==1)]
 
