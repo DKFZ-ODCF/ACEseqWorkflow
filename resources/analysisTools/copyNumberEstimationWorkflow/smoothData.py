@@ -138,11 +138,11 @@ def merge_gap( priorGap_line, afterGap_line ):
 		if ( distance > maxLen ):
 			return( [priorGap_line, afterGap_line] )
 
-                priorGap_line["end"]  = int(int(priorGap_line["end"]) + round( (distance/2)-0.5 ) )
-                priorGap_line["length"]  = int(int(priorGap_line["end"]) - int(priorGap_line["start"]) + 1 )
-                afterGap_line["start"]= int(int(afterGap_line["start"]) - round( distance/2 ) )
-                afterGap_line["length"]  = int(int(afterGap_line["end"]) - int(afterGap_line["start"]) + 1 )
-                return( [priorGap_line, afterGap_line] )
+		priorGap_line["end"]  = int(int(priorGap_line["end"]) + round( (distance/2)-0.5 ) )
+		priorGap_line["length"]  = int(int(priorGap_line["end"]) - int(priorGap_line["start"]) + 1 )
+		afterGap_line["start"]= int(int(afterGap_line["start"]) - round( distance/2 ) )
+		afterGap_line["length"]  = int(int(afterGap_line["end"]) - int(afterGap_line["start"]) + 1 )
+		return( [priorGap_line, afterGap_line] )
 
 def merge_first_segment(prior_line, newline):
 		if( float(prior_line["length"]) < float( newline["length"] ) ):

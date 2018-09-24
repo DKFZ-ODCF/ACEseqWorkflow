@@ -6,6 +6,7 @@
 
 library(getopt)
 
+
 script_dir = dirname(get_Rscript_filename())
 
 ################################################################################
@@ -23,12 +24,13 @@ libloc=""
 # I add the fifth column because it can explain the options in the first column
 spec <- matrix( c('file_cnv',           'c', 1, "character", #"input coverage data, 1 kb windows", 
                  'file_snp',           's', 1, "character", #"input coverage data, dbSNP",               # input
-		 'file_sex',	       'g','1',"character", #"file with sex of patient",		# input 
+                 'file_sex',	       'g','1',"character", #"file with sex of patient",		               # input
                  'file_beta',          'p', 2, "character", #"control plots path, should be .pdf file",  # output
                  'file_knownSegments', 'k', 2, "character", #"output file for known segments",           # output
+                 'file_centromeres', 'm', 1, "character", #"output file for known segments",             # input  Could be "/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/stats/hg19_gaps.txt"
                  'file_data',          'd', 2, "character", #"output file for SNPS",                     # output
                  'min_gap_length',     'l', 2, "numeric",   #"minimal gap length, default is 500000",
-		 'libloc',		'o',2, "character" #"location of PSCBS package"
+				 'libloc',		'o',2, "character" #"location of PSCBS package"
                 ), ncol = 4, byrow = TRUE)
       
 opt = getopt(spec);
@@ -36,20 +38,23 @@ for(item in names(opt)){
        assign( item, opt[[item]])
 }
 
+
 cat(paste0("file_cnv:  ",file_cnv, "\n\n"))
 cat(paste0("file_snp:  ",file_snp, "\n\n"))
 cat(paste0("file_beta: ",file_beta, "\n\n"))
 cat(paste0("file_knownSegments: ", file_knownSegments, "\n\n"))
+cat(paste0("file_centromeres: ", file_centromeres, "\n\n"))
 cat(paste0("file_data: ", file_data, "\n\n"))
 cat(paste0("file_sex: ", file_sex, "\n\n"))
 cat(paste0("min_gap_length: ", min_gap_length, "\n\n"))
-cat("\n")
-
 if ( libloc == "" | libloc == TRUE ){
 	libloc = NULL
 }
+cat(paste0("libloc: ", libloc, "\n\n"))
+cat("\n")
 
 library(PSCBS, lib.loc=libloc)
+library(GenomicRanges)
 
 #input coverage data, 1 kb windows
 cat(paste0("reading ", file_cnv, "...\n\n"))
@@ -143,8 +148,8 @@ completeTable <- merge(  x=tableallele,
 completeTable <- completeTable[order(completeTable$chromosome, completeTable$x),] 
 
 cat("generating control plots.\n")       
- 
-#control plots of betaT and betaN 
+
+#control plots of betaT and betaN
 ################################################################################
 ## I put two density plot in one figure. Also the format of figure output is
 ## changed. I prefer PDF format but PNG can also be generated according to 
@@ -166,6 +171,45 @@ data = dropSegmentationOutliers(completeTable) #removes single outliers
 gaps = findLargeGaps(data, minLength = min_gap_length) #regions larger than 5 Mb that do not contain enough data points (SNPs) are detected (e.g. centromeres)
 knownSegments = gapsToSegments(gaps) #the gaps are stored as predefined segments in "knownSegments)
 
-write.table(knownSegments, file = file_knownSegments, sep = "\t", row.names = FALSE, quote = FALSE )
 
+# idea: use different gap regions file which contains also centromere regions,
+# for each centromere, search for a matching region in gaps (which overlaps with the centromere).
+# This region can be larger than the static centromere region.
+# If so, widen the centromer region to contain the whole gap region stored in 'gap'
+# Save this dynamically generated centromere regions data to a file.
+# NOT USED AT THE MOMENT...
+
+df.centromers = read.table(file = file_centromeres, stringsAsFactors = F, comment.char = "", check.names = F, header = T)
+df.centromers = df.centromers[df.centromers$type=="centromere",]
+df.centromers$chrom = gsub("chr", "", df.centromers$chrom)
+df.centromers[df.centromers$chrom=="X","chrom"] = 23
+df.centromers[df.centromers$chrom=="Y","chrom"] = 24
+df.centromers$chrom = as.integer(df.centromers$chrom)
+df.centromers = df.centromers[,2:4]
+df.centromers = df.centromers[order(df.centromers$chrom),]
+
+
+gr.gaps = makeGRangesFromDataFrame(gaps, seqnames.field = "chromosome")
+gr.centromerRegion = makeGRangesFromDataFrame(df.centromers, seqnames.field = "chrom", start.field = "chromStart", end.field = "chromEnd")
+
+overlaps = findOverlaps(gr.centromerRegion, gr.gaps)
+
+gr.centromerRegion.widened = (lapply(seq_along(overlaps), function(i) {
+  x = gr.centromerRegion[queryHits(overlaps[i])]
+  y = gr.gaps[subjectHits(overlaps[i])]
+  reduce(c(x,y))
+}))
+gr.centromerRegion.widened = do.call("c", gr.centromerRegion.widened)
+
+CentromersNotFoundInGapsFile = as.character(df.centromers$chrom[!df.centromers$chrom %in% as.integer((seqnames(gr.centromerRegion.widened))@"values")])
+index.untouchedCentromerRegions = which(as.character(seqnames(gr.centromerRegion)@"values") %in% CentromersNotFoundInGapsFile)
+
+gr.centromerRegion.widened = reduce(c(gr.centromerRegion.widened, gr.centromerRegion[index.untouchedCentromerRegions]))
+
+unique(as.integer(seqnames(gr.centromerRegion.widened)))
+df.centromerRegion.widened = as.data.frame(gr.centromerRegion.widened)[,1:3]
+colnames(df.centromerRegion.widened) = c("chrom","start","end")
+
+
+write.table(knownSegments, file = file_knownSegments, sep = "\t", row.names = FALSE, quote = FALSE )
 write.table(data, file = pipe( paste0("bgzip >", file_data) ), sep = "\t", row.names = FALSE, quote = FALSE )

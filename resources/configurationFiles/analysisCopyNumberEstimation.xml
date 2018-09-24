@@ -135,7 +135,7 @@
         <cvalue name='FEMALE_FAKE_CONTROL_PRE' value="/icgc/dkfzlsdf/analysis/mmml/whole_genome_pcawg/results_per_pid/4109142/ACEseq/cnv_snp/4109142.chr" type='path'
                 description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for female patients" />
         <cvalue name='FAKE_CONTROL_POST' value=".cnv.anno.tab.gz" type='string' description="suffix for chromosome wise 1kb coverage files used for fake control workflow"/>
-    	<cvalue name='PATIENTSEX' value="male" type='string' description="patient sex used in case of no control workflow (male|female|klinefelter)" />
+        <cvalue name='PATIENTSEX' value="male" type='string' description="patient sex used in case of no control workflow (male|female|klinefelter)" />
 
         <!--annotateCnvFiles Opts-->
         <cvalue name='CNV_ANNO_SUFFIX' value='cnv.anno.tab.gz' type="string"
@@ -167,6 +167,7 @@
         <cvalue name='FILE_DENSITYBETA' value='${aceseqOutputDirectory}/densityBeta.pdf' type="path"/>
         <cvalue name='min_DDI_length' value='1000' type="integer" description="minimum length for DEL/DUP/INV to be considered for breakpoint integration"/>
         <cvalue name='selSVColumn' value='eventScore' type="string" description="column from bedpe file to be recored in ${pid}_sv_points.txt file"/>
+        <cvalue name="FILENAME_CENTROMERES" value='/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/stats/hg19_gaps.txt' type="string"/>
 
         <!--getSegmentsAndSnps/pscbsAll Opts-->
         <cvalue name='min_seg_width' value='2000' type="integer" description="segmentByPairedPSCBS() minwidth parameter in PSCBS R package"/>
@@ -218,7 +219,7 @@
 
         <!--generateVCF opts-->
         <cvalue name="blacklistFileName" value='artifact.homoDels.potentialArtifacts.txt' type="string"/>
-        <cvalue name="centromerFilename" value='centromers.hg19.txt' type="string"/>
+        <cvalue name="cytobandsFile" value='/icgc/ngs_share/annovar/annovar_common_humandb/hg19_cytoBand.txt' type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_PRE' value="${pid}_most_important_info" type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_POST' value=".txt" type="string"/>
         <cvalue name='FILE_SEGMENT_VCF_PRE' value="${aceseqOutputDirectory}/${pid}" type="path"/>
@@ -465,6 +466,7 @@
             <output type="tuple">
                 <output type="file" selectiontag="knownsegments" typeof="TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
                 <output type="file" selectiontag="snpPositions" typeof="TextFile" scriptparameter="FILE_PSCBS_DATA"/>
+                <!--<output type="file" selectiontag="knowncentromereregions" typeof="TextFile" scriptparameter="FILENAME_KNOWNCENTROMEREREGIONS"/>-->
             </output>
         </tool>
 
@@ -603,6 +605,7 @@
             </resourcesets>
             <input type="file"  typeof="GenderFile" scriptparameter="FILENAME_SEX"/>
             <input type="file"  typeof="TextFile" scriptparameter="FILENAME_PARAMETER_JSON"/>
+            <!--<input type="file"  typeof="TextFile" scriptparameter="FILENAME_KNOWNCENTROMEREREGIONS"/>-->
             <output type="file" typeof="TextFile" scriptparameter="FILENAME_CHECKPOINT_HRD"/>
         </tool>
 
@@ -668,6 +671,7 @@
         <filename class="TextFile" onMethod="ACESeqMethods.correctGC" selectiontag="tabSlim" pattern='${plotOutputDirectory}/${pid}_qc_gc_corrected.json'/>
         <filename class="TextFile" onMethod="ACESeqMethods.correctGC" selectiontag="tab" pattern='${plotOutputDirectory}/${pid}_qc_gc_corrected.tsv'/>
         <filename class="TextFile" onMethod="ACESeqMethods.pscbsGaps" selectiontag="knownsegments" pattern='${aceseqOutputDirectory}/${pid}_knownsegments.txt'/>
+        <!--<filename class="TextFile" onMethod="ACESeqMethods.pscbsGaps" selectiontag="knowncentromereregions" pattern='${aceseqOutputDirectory}/${pid}_knownCentromereRegions.txt'/>-->
         <filename class="TextFile" onMethod="ACESeqMethods.pscbsGaps" selectiontag="snpPositions" pattern='${aceseqOutputDirectory}/${pid}_pscbs_data.txt.gz'/>
         <filename class="TextFile" onMethod="ACESeqMethods.mergeCrest" selectiontag="crestDelDupInvFileTag" pattern='${crestOutputDirectory}/tumor_${pid}.${cvalue,name="crestDelDupInvSuffix",default="DELDUPINV"}'/>
         <filename class="TextFile" onMethod="ACESeqMethods.mergeCrest" selectiontag="crestTranslocFileTag" pattern='${crestOutputDirectory}/tumor_${pid}.${cvalue,name="crestTransSuffix",default="TX"}'/>

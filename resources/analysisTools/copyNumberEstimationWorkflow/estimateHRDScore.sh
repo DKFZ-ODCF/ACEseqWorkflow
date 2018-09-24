@@ -20,6 +20,7 @@ do
 	done
 	combProFile=${aceseqOutputDirectory}/${pid}_comb_pro_extra${ploidyFactor}_${tcc}.txt
 	HRDFile=${aceseqOutputDirectory}/${pid}_HRDscore_${ploidyFactor}_${tcc}.txt
+	HRD_DETAILS_FILE=${aceseqOutputDirectory}/${pid}_HRDscore_contributingSegments_${ploidyFactor}_${tcc}.txt
 	echo $combProFile
 
 	mostImportantFile=${aceseqOutputDirectory}/${pid}_comb_pro_extra${ploidyFactor}_${tcc}.txt
@@ -43,6 +44,8 @@ do
 	${INTERSECTBED_BINARY} -header -v -f 0.7 \
 				     -a $combProFile -b $PIPELINE_DIR/$blacklistFileName \
 				     >${COMBPROFILE_FIFO}
+
+
 	if [[ "$?" != 0 ]]
 	then
 		echo "There was a non-zero exit code intersecting with bedfile" 
@@ -98,8 +101,10 @@ do
 		 $tcc \
 		 $pid \
 		 $HRDFile.tmp \
-		 $PIPELINE_DIR/${centromerFilename} \
-		 $PIPELINE_DIR 
+		 ${HRD_DETAILS_FILE}.tmp \
+		 ${FILENAME_CENTROMERES} \
+		 ${cytobandsFile} \
+		 $PIPELINE_DIR
 
 	if [[ "$?" != 0 ]]
 	then
@@ -117,7 +122,8 @@ do
 	fi
 
 	mv $HRDFile.tmp $HRDFile
-	rm $combProFile.tmp 
+	mv ${HRD_DETAILS_FILE}.tmp ${HRD_DETAILS_FILE}
+	rm $combProFile.tmp
 done
 if [[ "$?" != 0 ]]
 then

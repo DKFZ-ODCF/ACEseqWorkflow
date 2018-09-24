@@ -7,12 +7,15 @@
 tmp_knownsegments=${FILENAME_KNOWNSEGMENTS}_tmp
 tmp_pscbsData=${FILE_PSCBS_DATA}_tmp
 
+
+
 ${RSCRIPT_BINARY}  --vanilla "${TOOL_DEFINE_BREAKPOINTS}" \
 	      --file_cnv           "${FILENAME_GC_CORRECTED_WINDOWS}" \
 	      --file_snp           "${FILENAME_SNP_POSITIONS_HAPLO_WG}" \
 	      --file_beta          "${FILE_DENSITYBETA}" \
 	      --file_sex	       "${FILENAME_SEX}" \
 	      --file_knownSegments "${tmp_knownsegments}" \
+	      --file_centromeres   "${FILENAME_CENTROMERES}" \
 	      --file_data          "${tmp_pscbsData}" \
 	      --libloc             "${libloc_PSCBS}"
 
@@ -33,3 +36,6 @@ then
 fi
 
 mv ${tmp_knownsegments} ${FILENAME_KNOWNSEGMENTS}
+
+
+exit 0
