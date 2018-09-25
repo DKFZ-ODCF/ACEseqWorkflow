@@ -106,6 +106,7 @@ do
 		 ${cytobandsFile} \
 		 $PIPELINE_DIR
 
+
 	if [[ "$?" != 0 ]]
 	then
 		echo "There was a non-zero exit code while estimating HRD score" 

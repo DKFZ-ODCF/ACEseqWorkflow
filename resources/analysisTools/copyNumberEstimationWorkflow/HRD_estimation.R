@@ -27,6 +27,24 @@ if( length(args)>11 ){
 	cutoff <- 0.7
 }
 
+
+# define subtelomericCytobands which contains telomeric regions as they are defined in TelomereHunter.
+cytoband.df <- read.table(cytobandsFile, header=F, stringsAsFactor=FALSE)
+colnames(cytoband.df) = c("chrom","start", "end","cytoband","giemsa")
+cytoband.df$chrom = gsub("chr", "", cytoband.df$chrom)
+
+#cytoband.df$chrom = gsub("X", 23, cytoband.df$chrom)
+#cytoband.df$chrom = gsub("Y", 24, cytoband.df$chrom)
+cytoband.df$chrom = as.character(cytoband.df$chrom)
+cytoband.df = cytoband.df[order(cytoband.df$chrom, cytoband.df$start),]
+
+cytobandPerChr <- split(cytoband.df, cytoband.df$chrom)
+subtelomericCytobands = lapply(cytobandPerChr, function(currentBands) {
+	return(rbind(currentBands[1,],currentBands[nrow(currentBands),]))
+})
+
+
+
 source( file.path(pipelineDir, "annotateCNA.R") )
 
 
@@ -52,6 +70,8 @@ newCentromers = newCentromers[newCentromers$type == "centromere",]
 rownames(newCentromers) = newCentromers$chrom
 newCentromers = newCentromers[,c("chromStart","chromEnd")]
 colnames(newCentromers) = c("start","end")
+
+
 
 
 
@@ -90,6 +110,9 @@ numberHomoDel    <- length( which(grepl("HomoDel", segments.df$CNA.type) ) )
 
 if(length(selNoChangeChr) != length(unique(merged.df$chromosome)) ){
   merged.df <- merged.df[! merged.df$chromosome %in% selNoChangeChr,]
+  index.HRDSmooth = which(grepl("LOH", merged.df$CNA.type) & merged.df$length>15000000 )
+  numberHRDSmooth  <- length( index.HRDSmooth )
+  write.table( merged.df[index.HRDSmooth,], contributingSegmentsFile, sep="\t", row.names=FALSE, quote=FALSE )
 
   segmentsPerChr <- split(merged.df, merged.df$chromosome)
 
@@ -199,7 +222,7 @@ if(length(selNoChangeChr) != length(unique(merged.df$chromosome)) ){
   	}
   	i=i+1
   }
-  
+
   # LSTReduced score
   i=1
   LSTReduced=0
@@ -216,7 +239,7 @@ if(length(selNoChangeChr) != length(unique(merged.df$chromosome)) ){
       LSTReduced=LSTReduced+1
     }
     i=i+1
-  }  
+  }
 } else {
 	# all chromosomes have only 1 state
 	numberHRDSmooth <- 0

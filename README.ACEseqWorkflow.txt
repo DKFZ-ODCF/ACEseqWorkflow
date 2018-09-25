@@ -21,6 +21,7 @@ isNoControlWorkflow	        false   Run analysis with matching control and estim
 - introduced HRD score with gapped centromeres (numberHRDSmoothReduced)
 - corrected LST and TAI calculation (changed centromere regions file)
 
+
 * Version update to 3.0.0
 - fixed 'artifact-1' artifact (allow for low purity solutions in this case)
 - work with old (version < 2.x) ACEseq result files on rerun
