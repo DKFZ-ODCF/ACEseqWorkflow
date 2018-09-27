@@ -535,7 +535,7 @@ if (clustering_YN == "yes") {
     selSeg <- which(combi$chromosome==chr)
     if (length(selSeg) > 0){
       chrL = as.numeric(chrLength[chrLength$V1==chr,2]) 
-      pChr <- plotCov(combi[selSeg,],chrLen=chrL, colo)
+      pChr <- plotCov(combi[selSeg,],chrLen=chrL)
       pChr1 <- pChr[[1]]
       pChr2 <- pChr[[2]]
       hlinesDH <- geom_hline( yintercept= c(0, 0.2, 0.4, 0.6, 0.8, 1), col="lightgray", lty="dotted", lwd=0.4)
@@ -566,7 +566,7 @@ if (clustering_YN == "yes") {
     xoffsets = append( xoffsets, xoff/10 )
   }   
   
-  p  <-  plotCov(combi,chrLen=chrL, colo)
+  p  <-  plotCov(combi,chrLen=chrL)
   p1 <- p[[1]]    
   p2 <- p[[2]]
   

@@ -230,7 +230,7 @@ removeOutlierPoints_cmean <- function(data, cluster_mat, massCenter, mainCluster
 }
 
 
-plotCov <- function(seg, chrLen, colo ){
+plotCov <- function(seg, chrLen){
   xtotal  = chrLen/ 10
   len     = chrLen/1000000
   # scale values
