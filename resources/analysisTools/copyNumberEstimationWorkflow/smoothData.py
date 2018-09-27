@@ -19,6 +19,11 @@ parser.add_argument( '--out',	'-o', default=sys.stdout, type=str,  help='outputf
 parser.add_argument( '--maxDistToNext',	'-m', default=1000, type=int,  help='maximum allowed distance between segments to be merged' )
 # maxDistToNext is used only used for first segments [in chromosome | after large gap]
 
+
+# comment by warsow on 2018-09-27: TCN levels are never compared when merging segments (compare_TCN/compare_ACN is never used...)
+# Schlesner and Warsow agreed on not taking TCN/ACN levels into account as otherwise focal events may introduce gaps which lead
+# to separating of otherwise merged segments which in turn increases the HRD score although most likely only 1 LOH event took place
+
 args = parser.parse_args()
 maxDistToNext=args.maxDistToNext
 out = args.out
@@ -92,10 +97,10 @@ def merge_lines_CN(prior_line, newline, next_line):
 	return ( [prior_line, newline] )
 
 def find_closer_match_CN(prior_line, newline, next_line):
-	"Find closest match according to tcn and sv definition"
+	# function had comment that TCN counts are considered here, but no evidence of TCN consideration was found...
+	# in agreement with comments at the beginning of this script, TCN counts will not be taken into account for merging decision
 	neighbours =  [ next_line, prior_line ]
-	#considered for merging if segments are directly neighboured and central segment is either homozygous Deletion or less than 0.3 different from neighbour TCN
-	#additional criteria: segment is exceptionally short (<101)
+	#considered for merging if segments are directly neighboured
 	diffPriorTcn = abs( float(prior_line["tcnMean"]) - float(newline["tcnMean"]) )
 	diffNextTcn = abs( float(next_line["tcnMean"]) - float(newline["tcnMean"]) )
 	if( prior_line["c1Mean"] == "NA" or newline["c1Mean"] == "NA" ):
