@@ -118,7 +118,7 @@ if(length(selNoChangeChr) != length(unique(merged.df$chromosome)) ){
 
   cat("\nLoop over chromosomes to potentially merge segments on both sides of centromere.\n")
   mergedReduced.df.List = lapply( names(segmentsPerChr), function(currentChrom) {
-    print(currentChrom)
+#    print(currentChrom)
 	  currentSegments.merged.df = segmentsPerChr[[currentChrom]]
 	  currentCentromereRegion = newCentromers[currentChrom,]
 

@@ -17,6 +17,7 @@ parser = argparse.ArgumentParser(description ="list all genes with their CNV sta
 parser.add_argument( '--file',	'-f', type=file, help="segment file with copy number information" )
 parser.add_argument( '--out',	'-o', default=sys.stdout, type=str,  help='outputfile' )
 parser.add_argument( '--maxDistToNext',	'-m', default=1000, type=int,  help='maximum allowed distance between segments to be merged' )
+# maxDistToNext is used only used for first segments [in chromosome | after large gap]
 
 args = parser.parse_args()
 maxDistToNext=args.maxDistToNext
@@ -172,7 +173,9 @@ if __name__ == "__main__":
 	#loop over all lines and check whether newline is shorter than 900kb and might be merged
 	for next_line in infile:
 		#merge first segments per chromosome in case it is too short
-		if ( newline != None and prior_line["chromosome"] != newline["chromosome"] ):
+		# also merge first segment after long gap (e.g. centromere)
+		# last segments before long gap will be handlet via merge_lines_CN
+		if ( newline != None and (prior_line["chromosome"] != newline["chromosome"] or (int(newline["start"]) - int(prior_line["end"]) > maxLen)) ):
 			out.write( "\t".join( str(prior_line[key]) for key in infile.header ) + "\n" ) 
 			prior_line = newline
 			newline = next_line
@@ -196,9 +199,11 @@ if __name__ == "__main__":
 		#check for merging
 		if ( next_line != None) :
 			if  ( int(newline["start"]) - int(prior_line["end"]) > 1 and prior_line["chromosome"] == newline["chromosome"] ) :
-				if(int(newline["start"]) - int(prior_line["end"]) <= maxLen): 
+				distanceToPriorSegment = int(newline["start"]) - int(prior_line["end"])
+				if(distanceToPriorSegment  <= maxLen):
 					prior_line, newline = merge_gap( prior_line, newline )
 				else:
+
 					out.write( "\t".join( str(prior_line[key]) for key in infile.header ) + "\n" ) 
 					prior_line=newline
 					newline=next_line
@@ -206,6 +211,9 @@ if __name__ == "__main__":
 			elif  ( int(next_line["start"])-int(newline["end"]) > 1 and next_line["chromosome"] == newline["chromosome"] ) :
 				if(int(newline["start"]) - int(next_line["end"]) <= maxLen): 
 					newline, next_line = merge_gap( newline, next_line )
+
+
+
 			if ( float(newline["length"]) <= maxLen):
 				prior_line, newline = merge_lines_CN(prior_line, newline, next_line)
 			else:
