@@ -214,7 +214,10 @@ if __name__ == "__main__":
 					newline=next_line
 					continue
 			elif  ( int(next_line["start"])-int(newline["end"]) > 1 and next_line["chromosome"] == newline["chromosome"] ) :
-				if(int(newline["start"]) - int(next_line["end"]) <= maxLen): 
+				# was:      if(int(newline["start"]) - int(next_line["end"]) <= maxLen):
+				# but must be as follows.
+				# otherwise, the difference will be always negative and the if-condition would be ALWAYS fulfilled. thus,this cannot be the intention...
+				if(int(next_line["start"]) - int(newline["end"]) <= maxLen):
 					newline, next_line = merge_gap( newline, next_line )
 
 
