@@ -187,7 +187,8 @@ if __name__ == "__main__":
 			while( float(prior_line["length"]) <= maxLen and int(newline["start"])-int(prior_line["end"]) <= maxDistToNext):
 				prior_line=merge_first_segment(prior_line, newline)
 				newline = infile.readline()
-			next_line = infile.readline()
+			continue
+
 
 		#last segment can only be merged to single prior
 		if ( next_line != None and next_line["chromosome"] != newline["chromosome"] ) :
