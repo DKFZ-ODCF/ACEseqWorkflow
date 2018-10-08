@@ -130,9 +130,9 @@
         <cvalue name='SNP_SUFFIX' value='snp.tab.gz' type="string"/>
         <cvalue name='snp_min_coverage' value='5' type="integer"/>
 
-        <cvalue name='MALE_FAKE_CONTROL_PRE' value="/icgc/dkfzlsdf/analysis/mmml/whole_genome_pcawg/results_per_pid/4128477/ACEseq/cnv_snp/4128477.chr" type='path'
+        <cvalue name='MALE_FAKE_CONTROL_PRE' value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/LocalControls/ACEseq_Male_FakeControl/MaleFakeControl.chr" type='path'
                 description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for male patients" />
-        <cvalue name='FEMALE_FAKE_CONTROL_PRE' value="/icgc/dkfzlsdf/analysis/mmml/whole_genome_pcawg/results_per_pid/4109142/ACEseq/cnv_snp/4109142.chr" type='path'
+        <cvalue name='FEMALE_FAKE_CONTROL_PRE' value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/LocalControls/ACEseq_Female_FakeControl/FemaleFakeControl.chr" type='path'
                 description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for female patients" />
         <cvalue name='FAKE_CONTROL_POST' value=".cnv.anno.tab.gz" type='string' description="suffix for chromosome wise 1kb coverage files used for fake control workflow"/>
         <cvalue name='PATIENTSEX' value="male" type='string' description="patient sex used in case of no control workflow (male|female|klinefelter)" />
