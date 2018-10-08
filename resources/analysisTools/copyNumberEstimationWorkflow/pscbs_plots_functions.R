@@ -235,12 +235,14 @@ completeSeg = function( comb, Ploidy, tcc, id, solutionPossible=NA, sex=sex) {
 	comb_withoutXY = comb[comb$chromosome %in% seq(22),]
 	fullPloidyLength <- sapply(unique(round(comb_withoutXY$tcnMean)), function(i) sum( as.numeric( comb_withoutXY[round(comb_withoutXY$tcnMean)==i, "length"] ) ) )
 	fullPloidyTab <- data.frame( ploidy=unique(round(comb_withoutXY$tcnMean)), length=fullPloidyLength )
-	sel <- which.max(fullPloidyTab$length)
-	fullPloidy <- fullPloidyTab[sel[1],"ploidy"]
-	if ( length(sel) > 1){
-		cat("WARNING two plausible full ploidies found, the selected solution might not be the correct one\n")
+	fullPloidyTab = fullPloidyTab[order(fullPloidyTab$length, decreasing=T),]
+	fullPloidy <- fullPloidyTab[1,"ploidy"]
+	if ( fullPloidyTab[2,"length"] / fullPloidyTab[1,"length"] > 0.90 ){
+		cat("WARNING more than one plausible full ploidy found, the selected solution might not be the correct one\n")
+		cat("Cannot clearly go for one full ploidy. Cumulative lengths of segments representing 2 most prominent ploidies are quite similar:\n")
+		cat(paste0("(",round(fullPloidyTab[1,"length"],1),"bp vs ",round(fullPloidyTab[2,"length"],1),"bp)\n"))
 	}
-	rm(sel)
+	rm(sel, comb_withoutXY)
 
 	comb$AF = NA
 	comb$BAF = NA
