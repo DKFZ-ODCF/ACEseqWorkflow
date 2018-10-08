@@ -15,6 +15,15 @@ isNoControlWorkflow	        false   Run analysis with matching control and estim
 
 == Changelist
 
+* Version update to 4.0.3
+- use fake controls from shared folder
+
+* Version update to 4.0.2
+- fixed several gap merging bugs (HRD score)
+
+* Version update to 4.0.1
+- smoothing: merge first segment after long gap
+
 * Version update to 4.0.0
 - fixed bug in HRD score determination (tcnStatePerChrom nrow vs length)
 - write out file with segments contributing to HRD score
