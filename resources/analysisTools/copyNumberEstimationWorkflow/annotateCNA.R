@@ -33,6 +33,16 @@ annotateCNA <- function( seg.df, ploidy=fullPloidy, cut.off = 0.7, TCN.colname =
                                    seg.df$chromosome== "Y" &
                                 seg.df[,TCN.colname] >= ( ploidy/2 + cut.off) ) )
 
+        selAmp <- which( seg.df[,TCN.colname] >= 2*ploidy + 1         |
+                            ( sex=="male" &
+                            (seg.df$chromosome =="X" |
+                            seg.df$chromosome== "Y" ) &
+                            seg.df[,TCN.colname] >= (ploidy + 1) )    |
+                            ( sex=="klinefelter" &
+                            seg.df$chromosome== "Y" &
+                            seg.df[,TCN.colname] >= ( 2*ploidy + 1) )
+                        )
+
         selLoss <- which( round(seg.df[,TCN.colname]) > 0 &
                             ( ( seg.df[,TCN.colname] <= ploidy -cut.off &
                                   seg.df$chromosome != "Y"  & 
@@ -52,6 +62,7 @@ annotateCNA <- function( seg.df, ploidy=fullPloidy, cut.off = 0.7, TCN.colname =
 
         seg.df$CNA.type[selNeutral] <- "TCNneutral"
         seg.df$CNA.type[selGain]    <- paste0( seg.df$CNA.type[selGain], ";DUP")
+#        seg.df$CNA.type[selAmp]    <- paste0( seg.df$CNA.type[selAmp], ";AMP")
         seg.df$CNA.type[selLoss]    <- paste0( seg.df$CNA.type[selLoss], ";DEL")
         seg.df$CNA.type[selLOH ]    <- paste0( seg.df$CNA.type[selLOH], ";LOH")
         seg.df$CNA.type[selHomoDel] <- paste0( seg.df$CNA.type[selHomoDel], ";HomoDel")
