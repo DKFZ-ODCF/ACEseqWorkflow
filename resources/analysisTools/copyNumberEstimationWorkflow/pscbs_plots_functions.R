@@ -232,20 +232,15 @@ completeSeg = function( comb, Ploidy, tcc, id, solutionPossible=NA, sex=sex) {
 	D = tcc * Ploidy + 2 * ( 1 - tcc )
 	comb$tcnMean = (comb$tcnMean - ( 2 *( 1-tcc ))/D ) / (tcc/D)
 
-	fullPloidyLength <- sapply(unique(round(comb$tcnMean)), function(i) sum( as.numeric( comb$length[round(comb$tcnMean)==i] ) ) )
-	fullPloidyTab <- data.frame( ploidy=unique(round(comb$tcnMean)), length=fullPloidyLength )
-	sel <- which(fullPloidyTab$length==max(fullPloidyTab$length))
-	fullPloidy <- fullPloidyTab$ploidy[sel[1]]
+	comb_withoutXY = comb[comb$chromosome %in% seq(22),]
+	fullPloidyLength <- sapply(unique(round(comb_withoutXY$tcnMean)), function(i) sum( as.numeric( comb_withoutXY[round(comb_withoutXY$tcnMean)==i, "length"] ) ) )
+	fullPloidyTab <- data.frame( ploidy=unique(round(comb_withoutXY$tcnMean)), length=fullPloidyLength )
+	sel <- which.max(fullPloidyTab$length)
+	fullPloidy <- fullPloidyTab[sel[1],"ploidy"]
 	if ( length(sel) > 1){
 		cat("WARNING two plausible full ploidies found, the selected solution might not be the correct one\n")
 	}
 	rm(sel)
-#	fullPloidy <- which(tabulate(round(comb$tcnMean)) == max(tabulate(round(comb$tcnMean))) )
-#	if ( length(fullPloidy) > 1 ){
-#		tmp <- fullPloidy - Ploidy
-#		sel <- which( tmp == min(tmp) )
-#		fullPloidy <- fullPloidy[sel]
-#	}
 
 	comb$AF = NA
 	comb$BAF = NA
