@@ -237,10 +237,12 @@ completeSeg = function( comb, Ploidy, tcc, id, solutionPossible=NA, sex=sex) {
 	fullPloidyTab <- data.frame( ploidy=unique(round(comb_withoutXY$tcnMean)), length=fullPloidyLength )
 	fullPloidyTab = fullPloidyTab[order(fullPloidyTab$length, decreasing=T),]
 	fullPloidy <- fullPloidyTab[1,"ploidy"]
+	fullPloidies = fullPloidy
 	if ( fullPloidyTab[2,"length"] / fullPloidyTab[1,"length"] > 0.90 ){
 		cat("WARNING more than one plausible full ploidy found, the selected solution might not be the correct one\n")
 		cat("Cannot clearly go for one full ploidy. Cumulative lengths of segments representing 2 most prominent ploidies are quite similar:\n")
 		cat(paste0("(",round(fullPloidyTab[1,"length"],1),"bp vs ",round(fullPloidyTab[2,"length"],1),"bp)\n"))
+		fullPloidies = c(fullPloidies, fullPloidyTab[2,"ploidy"])
 	}
 	rm(sel, comb_withoutXY)
 
@@ -385,57 +387,74 @@ completeSeg = function( comb, Ploidy, tcc, id, solutionPossible=NA, sex=sex) {
 		comb$c2Mean[sel] = NA
 	}
 
-	comb <- annotateCNA(seg.df = comb, ploidy=fullPloidy, cut.off = 0.7, TCN.colname = "tcnMean",
-                         c1Mean.colname = "c1Mean", c2Mean.colname = "c2Mean", sex=sex)
 
-	#format data so that no e-x is used and 0.5 is rounded to the next bigger value for start and next lower for end of a segment
-	comb$start	<- as.integer(ceiling(comb$start))
-	comb$end	<- as.integer(floor(comb$end))
-	comb		<- comb[order(comb$chromosome, comb$start),]
-	comb_out   	<- format(comb, scientific = FALSE, trim = TRUE)
-	colnames(comb_out)[1] <- "#chromosome"
+	combBeforeAnnotation = comb
+	resultList = lapply(seq(fullPloidies), function(i) {
+	  fullPloidy = fullPloidies[i]
+	  cat(paste0("Generating results for fullPloidy=",fullPloidy,"\n"))
+	  
+	  comb <- annotateCNA(seg.df = combBeforeAnnotation, ploidy=fullPloidy, cut.off = 0.7, TCN.colname = "tcnMean",
+	                      c1Mean.colname = "c1Mean", c2Mean.colname = "c2Mean", sex=sex)
+	  
+	  #format data so that no e-x is used and 0.5 is rounded to the next bigger value for start and next lower for end of a segment
+	  comb$start	<- as.integer(ceiling(comb$start))
+	  comb$end	<- as.integer(floor(comb$end))
+	  comb		<- comb[order(comb$chromosome, comb$start),]
+	  comb_out   	<- format(comb, scientific = FALSE, trim = TRUE)
+	  colnames(comb_out)[1] <- "#chromosome"
+	  
+	  if ( i==1 ) {
+	    filename.combProExtra = paste0("",outDir, "/",id, "_comb_pro_extra",round(Ploidy, digits = 3), "_",tcc, ".txt")
+	    importantFile = paste0("",outDir, "/",id, "_most_important_info",round(Ploidy, digits = 3), "_",tcc, ".txt")
+	    tabFileForJson = paste0("",outDir, "/",id, "_cnv_parameter_",round(Ploidy, digits = 3), "_",tcc, ".txt")
+	  } else {
+	    filename.combProExtra = paste0("",outDir, "/",id, "_comb_pro_extra",round(Ploidy, digits = 3), "_",tcc, ".roundPloidy",fullPloidy,".txt")
+	    importantFile = paste0("",outDir, "/",id, "_most_important_info",round(Ploidy, digits = 3), "_",tcc, ".roundPloidy",fullPloidy,".txt")
+	    tabFileForJson = paste0("",outDir, "/",id, "_cnv_parameter_",round(Ploidy, digits = 3), "_",tcc, ".roundPloidy",fullPloidy,".txt")
+	  }
+	  
+	  write.table(comb_out, filename.combProExtra, sep = "\t", row.names = FALSE, quote = FALSE)
+	  
+	  if(any(grepl("crest", colnames(comb_out))))  {
+	    names(comb_out)[names(comb_out)=="crest"] <- 'SV.Type'
+	  }
+	  
+	  important_cols <- c('#chromosome', 'start', 'end', 'length', 'tcnMeanRaw', 'tcnMean', 'SV.Type', 'c1Mean', 'c2Mean', 'dhMean', 'dhMax', 'genotype', 'CNA.type', 'tcnNbrOfHets','minStart', 'maxStart', 'minStop', 'maxStop')
+	  important_sub  <- comb_out[,important_cols]
+	  
+	  colnames(important_sub) <- sub("tcnMeanRaw", "covRatio", colnames(important_sub))
+	  colnames(important_sub) <- sub("tcnMean", "TCN", colnames(important_sub))
+	  colnames(important_sub) <- sub("SV.Type", "SV.Type", colnames(important_sub))
+	  colnames(important_sub) <- sub("dhMean", "dhEst", colnames(important_sub))
+	  colnames(important_sub) <- sub("dhMax", "dhSNPs", colnames(important_sub))
+	  colnames(important_sub) <- sub("tcnNbrOfHets", "NbrOfHetsSNPs", colnames(important_sub))
+	  
+	  important_sub 	    <- format(important_sub, scientific = FALSE, trim = TRUE)
+	  qual = sum( as.numeric(comb$length[abs(comb$tcnMean - round(comb$tcnMean)) <= 0.3])  ) / sum(as.numeric(comb$length))
+	  
+	  
+	  #change parameter names for json conversion output
+	  tcc= tcc
+	  goodnessOfFit=qual
+	  ploidyFactor=Ploidy
+	  #ploidy=fullPloidy
+	  caller = "ACEseq"
+	  gender = sex
+	  
+	  write.table( data.frame( tcc, ploidyFactor, fullPloidy, goodnessOfFit, gender, solutionPossible ), tabFileForJson, row.names=FALSE, col.names=TRUE, quote=FALSE, sep='\t' )
+	  
+	  write.table(paste0("#tcc:",tcc, "\n#ploidy:",ploidyFactor, "\n#roundPloidy:",fullPloidy, "\n#fullPloidy:",fullPloidy, "\n#quality:",qual, "\n#assumed sex:",sex, ""), importantFile, col.names=FALSE, row.names=FALSE, quote=FALSE )
+	  write.table( important_sub, importantFile, sep = "\t", row.names = FALSE, quote = FALSE, append=TRUE )
+	  
+	  comb$chromosome <- gsub("^X", "23", comb$chromosome)
+	  comb$chromosome <- gsub("^Y", "24", comb$chromosome)
+	  comb$chromosome <- as.integer(comb$chromosome)
+	  
+	  return(list(comb,fullPloidy))
+	})
 
 
-	write.table(comb_out, paste0("",outDir, "/",id, "_comb_pro_extra",round(Ploidy, digits = 3), "_",tcc, ".txt"), sep = "\t", row.names = FALSE, quote = FALSE)
-
-	if(any(grepl("crest", colnames(comb_out))))  {
-		names(comb_out)[names(comb_out)=="crest"] <- 'SV.Type'
-	}
-
-	important_cols <- c('#chromosome', 'start', 'end', 'length', 'tcnMeanRaw', 'tcnMean', 'SV.Type', 'c1Mean', 'c2Mean', 'dhMean', 'dhMax', 'genotype', 'CNA.type', 'tcnNbrOfHets','minStart', 'maxStart', 'minStop', 'maxStop')
-  	important_sub  <- comb_out[,important_cols]
-  
-	colnames(important_sub) <- sub("tcnMeanRaw", "covRatio", colnames(important_sub))
-	colnames(important_sub) <- sub("tcnMean", "TCN", colnames(important_sub))
-	colnames(important_sub) <- sub("SV.Type", "SV.Type", colnames(important_sub))
-	colnames(important_sub) <- sub("dhMean", "dhEst", colnames(important_sub))
-	colnames(important_sub) <- sub("dhMax", "dhSNPs", colnames(important_sub))
-	colnames(important_sub) <- sub("tcnNbrOfHets", "NbrOfHetsSNPs", colnames(important_sub))
-
-	important_sub 	    <- format(important_sub, scientific = FALSE, trim = TRUE)
-	qual = sum( as.numeric(comb$length[abs(comb$tcnMean - round(comb$tcnMean)) <= 0.3])  ) / sum(as.numeric(comb$length))
-	importantFile = paste0("",outDir, "/",id, "_most_important_info",round(Ploidy, digits = 3), "_",tcc, ".txt")
-
-	#change parameter names for json conversion output
-	tcc= tcc
-	goodnessOfFit=qual
-	ploidyFactor=Ploidy
-	ploidy=fullPloidy
-	caller = "ACEseq"
-	gender = sex
-	tabFileForJson = paste0("",outDir, "/",id, "_cnv_parameter_",round(Ploidy, digits = 3), "_",tcc, ".txt")
-	write.table( data.frame( tcc, ploidyFactor, ploidy, goodnessOfFit, gender, solutionPossible ), tabFileForJson, row.names=FALSE, col.names=TRUE, quote=FALSE, sep='\t' )
-
-	write.table(paste0("#tcc:",tcc, "\n#ploidy:",ploidyFactor, "\n#roundPloidy:",fullPloidy, "\n#fullPloidy:",fullPloidy, "\n#quality:",qual, "\n#assumed sex:",sex, ""), importantFile, col.names=FALSE, row.names=FALSE, quote=FALSE )
-	write.table( important_sub,
-		     importantFile,
-		     sep = "\t", row.names = FALSE, quote = FALSE, append=TRUE ) 
-
-	comb$chromosome <- gsub("^X", "23", comb$chromosome)
-	comb$chromosome <- gsub("^Y", "24", comb$chromosome)
-	comb$chromosome <- as.integer(comb$chromosome)
-
-	return(list(comb,fullPloidy))
+	return(list(resultList))
 }	
 
 

@@ -96,7 +96,7 @@ if (chrCount > maxChrCount) {
 
 
 #function wrappers to get chromosome wise plots of TCN, dh and BAF
-plotChromosomes = function (chrom, dat, comb,  TCC, ploi , roundPloi, svPoints=NULL) {
+plotChromosomes = function (chrom, dat, comb,  TCC, ploi , roundPloi, svPoints=NULL, secondChoicePloidyFilnameAddition="") {
 	#don't plot if data frame is empty
 	if (nrow(dat)<1)
 		return(NULL)
@@ -127,14 +127,14 @@ plotChromosomes = function (chrom, dat, comb,  TCC, ploi , roundPloi, svPoints=N
         plotTitle <- textGrob( paste0("",ID, "_chr_",chrom, " Ploidy=",roundPloi, ", corr=",round(ploi,digits=3), ", Tumor_cell_content=",round(TCC,digits=3), "") )
         p = arrangeGrob(plotTitle, p1, p2, p3, nrow=4, heights=c(1,7,7,7))
 
-	fileName=paste0(outfile,"_",round(ploi,digits=3),"extra_",round(TCC,digits=3),"_",chrom,".png")
+	fileName=paste0(outfile,"_",round(ploi,digits=3),"extra_",round(TCC,digits=3),"_",chrom,secondChoicePloidyFilnameAddition,".png")
         ggplot2::ggsave( fileName, p, width=15, height=9, type='cairo') 
 
 }  
 
 
 #function wrapper to get genome wide plot of TCN, dh and BAF
-plotAll <- function(dat, comb, ploi, TCC, roundPloi, chrCount) {
+plotAll <- function(dat, comb, ploi, TCC, roundPloi, chrCount, secondChoicePloidyFilnameAddition="") {
 				
 	chrL = sum( as.numeric(chrLength[1:chrCount,2]) )
 #	maxCov = 3*ploidy
@@ -199,7 +199,7 @@ plotAll <- function(dat, comb, ploi, TCC, roundPloi, chrCount) {
         plotTitle <- textGrob( paste0("",ID, "_Ploidy=",roundPloi, ", corr=",round(ploi,digits=3), ", Tumor_cell_content=",round(TCC,digits=3), ", sex=",sex, ""))
         p = arrangeGrob(plotTitle, p1, p2, p3, nrow=4, heights=c(1,7,7,7))
 
-	fileName= paste0( outfile, "_", round(ploi,digits=3), "_", round(TCC,digits=3), "_ALL", ".png" )
+	fileName= paste0( outfile, "_", round(ploi,digits=3), "_", round(TCC,digits=3), "_ALL", secondChoicePloidyFilnameAddition, ".png" )
         ggplot2::ggsave( fileName, p, width=15, height=9, type='cairo') 
 
 }
@@ -207,49 +207,55 @@ plotAll <- function(dat, comb, ploi, TCC, roundPloi, chrCount) {
 #read and complete SNP data and segments and create plots
 colNamesData <- c( "chromosome", "SNP", "start", "end", "SV.Type", "copyT", "covT", "meanTCN", "betaT","betaN", "Atumor", "Btumor", "Anormal", "Bnormal", "haplotype", "map" )
 
-for( index in seq_len( nrow(pp) ) ) {
-	cat(paste0("plotting ",index, "/",nrow(pp), "\n\n"))
 
-	ploidy      = pp[index, 2]
-	tcc      = pp[index, 3]
-#	roundPloidy = full_Ploidies[index]
-
-	#Read and complete data; get chromsome wise and genome wide plot
-	tmp <- completeSeg( combi, ploidy, tcc, ID, solutionPossible=nrow(pp), sex=sex )
-	combi.tmp <- tmp[[1]]
-	roundPloidy = tmp[[2]]
-
-	if (index==1) {
-		dataList = lapply( 1:chrCount, function(chr){
-
-				cat( "Reading chr ", chr," from ", SNPfile, "...\n" )
-				dataList.chr <- try( read.table( pipe( paste( "tabix", SNPfile, chr ) ), header=FALSE, sep='\t' ), silent=TRUE )
-				if ( is.data.frame(dataList.chr)  ){
-					colnames( dataList.chr ) = colNamesData
-					dataList.chr
-				}
-				else{
-					cat(chr," not found in ", SNPfile, "skipping!\n")
-					data.frame( matrix(vector(), 0, length(colNamesData), dimnames=list(c(), colNamesData)), stringsAsFactors=F)
-				}
-			    })
-
+dataList = lapply( 1:chrCount, function(chr){
+	cat( "Reading chr ", chr," from ", SNPfile, "...\n" )
+	dataList.chr <- try( read.table( pipe( paste( "tabix", SNPfile, chr ) ), header=FALSE, sep='\t' ), silent=TRUE )
+	if ( is.data.frame(dataList.chr)  ) {
+		colnames( dataList.chr ) = colNamesData
+		return(dataList.chr)
+	} else {
+		cat(chr," not found in ", SNPfile, "skipping!\n")
+		return(data.frame( matrix(vector(), 0, length(colNamesData), dimnames=list(c(), colNamesData)), stringsAsFactors=F))
 	}
-        dataList.tmp = lapply( 1:chrCount, function(chr){
-			cat("Plotting chromosome ",chr, "...\n")
-			dataList.chr <- completeSNP( chr, dataList[[chr]], ploidy, tcc, roundPloidy)
-			plotChromosomes( chr, dataList.chr, combi.tmp, tcc, ploidy, roundPloidy, svPoints=sv)
-			dataList.chr
-		} )
-	
-	gc()
-	cat("plotting All chromosomes...\n")
+})
 
-	#genome wide plot
-	plotAll(dataList.tmp, comb=combi.tmp, ploidy, tcc, roundPloidy, chrCount)
-	#remove tmp data.frame to free memory and use garbage collection
-	dataList.tmp <- NULL
-	tmp <- NULL
 
-	gc()
+for( index in seq_len( nrow(pp) ) ) {
+  cat(paste0("plotting ",index, "/",nrow(pp), "\n\n"))
+
+  ploidy      = pp[index, 2]
+  tcc      = pp[index, 3]
+
+  #Read and complete data; get chromsome wise and genome wide plot
+  tmp.list <- completeSeg( combi, ploidy, tcc, ID, solutionPossible=nrow(pp), sex=sex )
+  lapply(seq(tmp.list), function(i) {
+    secondChoicePloidyFilnameAddition = ""
+    tmp = tmp.list[[i]]
+    combi.tmp <- tmp[[1]]
+    roundPloidy = tmp[[2]]
+    if (i>1) {
+      cat("Processing second choice fullPloidy...\n")
+      secondChoicePloidyFilnameAddition = paste0(".fullPloidy",roundPloidy)
+    }
+
+    dataList.tmp = lapply( 1:chrCount, function(chr){
+      cat("Plotting chromosome ",chr, "...\n")
+      dataList.chr <- completeSNP( chr, dataList[[chr]], ploidy, tcc, roundPloidy)
+      plotChromosomes( chr, dataList.chr, combi.tmp, tcc, ploidy, roundPloidy, svPoints=sv)
+      return(dataList.chr)
+    } )
+
+    gc()
+    cat("plotting All chromosomes...\n")
+
+    #genome wide plot
+    plotAll(dataList.tmp, comb=combi.tmp, ploidy, tcc, roundPloidy, chrCount)
+    #remove tmp data.frame to free memory and use garbage collection
+    dataList.tmp <- NULL
+    tmp <- NULL
+
+    gc()
+  })
+
 }
