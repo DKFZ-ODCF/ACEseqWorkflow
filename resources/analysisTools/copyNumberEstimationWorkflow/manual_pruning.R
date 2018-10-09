@@ -81,9 +81,14 @@ segAll = read.table(segments, sep = "\t", as.is = TRUE, header = TRUE)
 segAll = segAll[segAll$map != "unmappable", ]
 
 #read in limits of main Cluster
-covWidthLimits <- read.table(gcCovWidthFile, header=F)[,2:3]
-covLeft <- covWidthLimits[,1]
-covRight <- covWidthLimits[,2]
+#fieldsIn_FILENAME_GC_CORRECTED_QUALITY=c(pid, half_max_pos_left, half_max_pos_right, GCcorrectQuant_string, mean_normal_slope, mean_abs_normal_slope,mean_tumor_slope,
+#mean_abs_tumor_slope, mean_normal_curvature, mean_abs_normal_curvature,mean_tumor_curvature, mean_abs_tumor_curvature,
+#main_cluster_width_n, main_cluster_width_t, main_cluster_FWHM_n, main_cluster_FWHM_t, mean_abs_delta_slope,
+#mean_delta_slope, mean_abs_delta_curvature, mean_delta_curvature, minimal_coverage_gcfit_normal, minimal_coverage_gcfit_tumor ),
+#sep="\t",file=outGCcorrectQuant_file, ncolumns=37 )
+covWidthLimits <- read.table(gcCovWidthFile, header=F)[,2:3] #half_max_pos_left, half_max_pos_right
+covLeft <- covWidthLimits[,1] #half_max_pos_left
+covRight <- covWidthLimits[,2] #half_max_pos_right
 covWidth <- covRight -covLeft
 
 sex <- read.table(sex, header=FALSE, stringsAsFactors=FALSE)[,1]

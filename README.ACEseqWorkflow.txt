@@ -18,6 +18,8 @@ isNoControlWorkflow	        false   Run analysis with matching control and estim
 * Version update to 5.0.0
 - introduced CNA.type 'AMP' (TCN>=2*ploidy + 1)
 - do not use ChrX/Y for round/full ploidy determination
+- fixed faulty assignment of 'neutral' to gonosomal segments in male samples
+- fixed pruning bug (combineNeighbours, homozygousDel)
 
 
 * Version update to 4.0.3

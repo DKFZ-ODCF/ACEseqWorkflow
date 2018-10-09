@@ -409,7 +409,7 @@ combineNeighbours <- function(segments){
     for (j in seq_len(nrow(chr))) {
       repeat{
         if (  j < nrow(chr) && 
-                chr$map != 'homozygousDel' &&
+                chr$map[ sel[j] ] != 'homozygousDel' &&
                 !is.na(chr$cluster[ sel[j] ]) &&
                 chr$cluster[ sel[j] ] != "NA" &&
                 !is.na(chr$cluster[ sel[j] + 1 ]) &&
@@ -417,7 +417,7 @@ combineNeighbours <- function(segments){
                 is.na(chr$SV.Type[ sel[j]+1 ]) &&
                 ( chr$end[ sel[j] ] == chr$start[sel[j+1]] | chr$end[sel[j]]+1 == chr$start[sel[j+1]] ) ) { 
           
-          cat(paste0("",chr$start[sel[j]], " ",chr$end[sel[j]], " -> prune\n\n"))
+          cat(paste0("",chr$start[sel[j]], " ",chr$end[sel[j]], " -> prune -> (",chr$start[sel[j]],":",chr$end[ sel[j + 1 ] ],")\n\n"))
           
           chr$end[ sel[j] ] = chr$end[ sel[j + 1 ] ]
           chr$length[ sel[j] ] = chr$length[ sel[j] ] + chr$length[ sel[j + 1] ]
