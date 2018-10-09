@@ -64,7 +64,7 @@ annotateCNA <- function( seg.df, ploidy=fullPloidy, cut.off = 0.7, TCN.colname =
 
         seg.df$CNA.type[selNeutral] <- "TCNneutral"
         seg.df$CNA.type[selGain]    <- paste0( seg.df$CNA.type[selGain], ";DUP")
-#        seg.df$CNA.type[selAmp]    <- paste0( seg.df$CNA.type[selAmp], ";AMP")
+        seg.df$CNA.type[selAmp]    <- paste0( seg.df$CNA.type[selAmp], ";AMP")
         seg.df$CNA.type[selLoss]    <- paste0( seg.df$CNA.type[selLoss], ";DEL")
         seg.df$CNA.type[selLOH ]    <- paste0( seg.df$CNA.type[selLOH], ";LOH")
         seg.df$CNA.type[selHomoDel] <- paste0( seg.df$CNA.type[selHomoDel], ";HomoDel")
