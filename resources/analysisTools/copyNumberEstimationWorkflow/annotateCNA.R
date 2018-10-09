@@ -12,8 +12,10 @@ annotateCNA <- function( seg.df, ploidy=fullPloidy, cut.off = 0.7, TCN.colname =
        seg.df$chromosome <- gsub("^23$", "X", seg.df$chromosome)
        seg.df$chromosome <- gsub("^24$", "Y", seg.df$chromosome)
 
-        selNeutral <- which( ( seg.df[,TCN.colname] >= (ploidy -(1 - cut.off)) &
-                                seg.df[,TCN.colname] <= (ploidy + (1 - cut.off)) ) |
+        selNeutral <- which( (  seg.df[,TCN.colname] >= (ploidy -(1 - cut.off)) &
+                                seg.df[,TCN.colname] <= (ploidy + (1 - cut.off)) &
+                                !(sex %in% c("klinefelter","male") & seg.df$chromosome =="X") &
+                                !(sex %in% c("male") & seg.df$chromosome =="Y")     ) |
                             ( sex=="male" &
                                 (seg.df$chromosome =="X" |
                                    seg.df$chromosome== "Y" ) &
