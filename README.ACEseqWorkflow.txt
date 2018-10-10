@@ -20,7 +20,7 @@ isNoControlWorkflow	        false   Run analysis with matching control and estim
 - do not use ChrX/Y for round/full ploidy determination
 - fixed faulty assignment of 'neutral' to gonosomal segments in male samples
 - fixed pruning bug (combineNeighbours, homozygousDel)
-- force gender to be set in coControl cases
+- force gender to be set in noControl cases
 
 
 * Version update to 4.0.3
