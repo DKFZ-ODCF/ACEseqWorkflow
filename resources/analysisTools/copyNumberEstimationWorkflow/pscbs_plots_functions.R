@@ -454,7 +454,7 @@ completeSeg = function( comb, Ploidy, tcc, id, solutionPossible=NA, sex=sex) {
 	})
 
 
-	return(list(resultList))
+	return(resultList)
 }	
 
 

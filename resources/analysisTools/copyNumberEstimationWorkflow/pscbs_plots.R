@@ -229,7 +229,7 @@ for( index in seq_len( nrow(pp) ) ) {
 
   #Read and complete data; get chromsome wise and genome wide plot
   tmp.list <- completeSeg( combi, ploidy, tcc, ID, solutionPossible=nrow(pp), sex=sex )
-  lapply(seq(tmp.list), function(i) {
+  lapply(seq_along(tmp.list), function(i) {
     secondChoicePloidyFilnameAddition = ""
     tmp = tmp.list[[i]]
     combi.tmp <- tmp[[1]]
