@@ -437,11 +437,11 @@ completeSeg = function( comb, Ploidy, tcc, id, solutionPossible=NA, sex=sex) {
 	  tcc= tcc
 	  goodnessOfFit=qual
 	  ploidyFactor=Ploidy
-	  #ploidy=fullPloidy
+	  ploidy=fullPloidy
 	  caller = "ACEseq"
 	  gender = sex
 	  
-	  write.table( data.frame( tcc, ploidyFactor, fullPloidy, goodnessOfFit, gender, solutionPossible ), tabFileForJson, row.names=FALSE, col.names=TRUE, quote=FALSE, sep='\t' )
+	  write.table( data.frame( tcc, ploidyFactor, ploidy, goodnessOfFit, gender, solutionPossible ), tabFileForJson, row.names=FALSE, col.names=TRUE, quote=FALSE, sep='\t' )
 	  
 	  write.table(paste0("#tcc:",tcc, "\n#ploidy:",ploidyFactor, "\n#roundPloidy:",fullPloidy, "\n#fullPloidy:",fullPloidy, "\n#quality:",qual, "\n#assumed sex:",sex, ""), importantFile, col.names=FALSE, row.names=FALSE, quote=FALSE )
 	  write.table( important_sub, importantFile, sep = "\t", row.names = FALSE, quote = FALSE, append=TRUE )
