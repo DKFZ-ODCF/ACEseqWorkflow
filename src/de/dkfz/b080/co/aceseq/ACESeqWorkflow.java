@@ -10,6 +10,7 @@ import de.dkfz.b080.co.common.*;
 import de.dkfz.b080.co.files.*;
 import de.dkfz.roddy.config.*;
 import de.dkfz.roddy.core.ExecutionContext;
+import de.dkfz.roddy.core.ExecutionContextError;
 import de.dkfz.roddy.knowledge.files.Tuple2;
 import de.dkfz.roddy.knowledge.files.Tuple3;
 import de.dkfz.roddy.knowledge.files.GenericFileGroup;
@@ -142,6 +143,19 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         return allowMissingSVFile(context) || fileIsAccessible;
     }
 
+
+    private boolean checkIfGenderValueIsSet(ExecutionContext context) {
+        if (isNoControlWorkflow()) {
+            // gender cannot be guessed from control sample
+            final String gender = context.getConfigurationValues().getString("PATIENTSEX");
+            if ( gender.equals("unknown") || !gender.equals("male") || !gender.equals("female") || !gender.equals("klinefelter") ) {
+                context.addErrorEntry(ExecutionContextError.EXECUTION_NOINPUTDATA.expand("Gender (cvalue:PATIENTSEX) has to be specified in noControl cases! [male|female|klinefelter]"));
+                return false;
+            }
+        }
+        return true;
+    }
+
 //    @Override
 //    public boolean setupExecution(ExecutionContext context) {
 //        return super.setupExecution(context);
@@ -151,6 +165,7 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
     public boolean checkExecutability(ExecutionContext context) {
         boolean executable = super.checkExecutability(context);
         executable &= checkSvFileIfNecessary(context);
+        executable &= checkIfGenderValueIsSet(context);
         return executable;
     }
 }

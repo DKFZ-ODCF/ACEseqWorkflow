@@ -135,7 +135,7 @@
         <cvalue name='FEMALE_FAKE_CONTROL_PRE' value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/LocalControls/ACEseq_GenericFemaleControl/GenericFemaleControl.chr" type='path'
                 description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for female patients" />
         <cvalue name='FAKE_CONTROL_POST' value=".cnv.anno.tab.gz" type='string' description="suffix for chromosome wise 1kb coverage files used for fake control workflow"/>
-        <cvalue name='PATIENTSEX' value="male" type='string' description="patient sex used in case of no control workflow (male|female|klinefelter)" />
+        <cvalue name='PATIENTSEX' value="unknown" type='string' description="patient sex used in case of no control workflow (male|female|klinefelter)" />
 
         <!--annotateCnvFiles Opts-->
         <cvalue name='CNV_ANNO_SUFFIX' value='cnv.anno.tab.gz' type="string"
