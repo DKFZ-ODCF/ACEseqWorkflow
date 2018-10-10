@@ -389,7 +389,7 @@ completeSeg = function( comb, Ploidy, tcc, id, solutionPossible=NA, sex=sex) {
 
 
 	combBeforeAnnotation = comb
-	resultList = lapply(seq(fullPloidies), function(i) {
+	resultList = lapply(seq_along(fullPloidies), function(i) {
 	  fullPloidy = fullPloidies[i]
 	  cat(paste0("Generating results for fullPloidy=",fullPloidy,"\n"))
 	  
