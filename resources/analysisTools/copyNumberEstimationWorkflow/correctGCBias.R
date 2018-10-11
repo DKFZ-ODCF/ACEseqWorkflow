@@ -487,7 +487,7 @@ if (plot_flag) {
   dev.off()
 
 write.table(out_table, outfile, row.names=FALSE, col.names=TRUE,sep='\t', quote=F)
-write.table(sub_order_file, paste0("gzip >",plotDir,"/all_corrected.txt"), row.names=FALSE, col.names=TRUE,sep='\t', quote=F)
+write.table(sub_order_file, pipe( paste0("gzip >",plotDir,"/all_corrected.txt.gz") ), row.names=FALSE, col.names=TRUE,sep='\t', quote=F)
 
 cat("creating plots...\n\n")
 png(file=outputfile_gc, width=1000, height=2000, type='cairo')
