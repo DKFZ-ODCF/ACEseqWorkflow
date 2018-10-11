@@ -36,7 +36,8 @@ spec <- matrix(c('file',                'f', 1, "character",
 				 'chrLengthFile',       'r', 1, "character",
 				 'gcCovWidthFile',      'y', 1, "character",
 				 'pid',			  		'v', 1, "character",
-				 'libloc',		  		'z', 2, 'character'
+				 'libloc',		  		'z', 2, 'character',
+				 'runInDebugMode',		'k', 2, 'character'
                 ), ncol = 4, byrow = TRUE)
 
 opt = getopt(spec);
@@ -361,6 +362,11 @@ if (clustering_YN == "yes") {
 	cat(paste0(Sys.time(),": Calling clusterboot...\n")
 	results = clusterboot(cbind(weights, cluster_matrix), B = 100, bootmethod = "jitter", clustermethod = cmeansCBI, k = m.best, seed = 15555, multipleboot = FALSE)
 	cat(paste0(Sys.time(),": finished clusterboot...\n")
+
+	if ( runInDebugMode == "true") {
+		save.image(paste0("",out, "/",pid, "_cluster_data.RData"))
+	}
+
 	CM <- results$result$result
 
     	massCenterX <- sapply(seq_along(CM$centers[,1]), function(i) {

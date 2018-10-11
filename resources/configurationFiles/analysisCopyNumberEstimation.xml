@@ -21,6 +21,8 @@
         <cvalue name="VCFTOOLS_VERSION" value="0.1.10" type="string"/>
         <cvalue name="SAMTOOLS_VERSION" value="0.1.19" type="string"/>
 
+        <cvalue name='runInDebugMode' value='false' type='boolean' description='additional files will be produced to allow for easier debugging (true|false)'/>
+
         <!--ENVIRONMENT (see tools section below for possible values) -->
         <cvalue name="workflowEnvironmentScript" value="workflowEnvironment_tbiCluster" type="string"
                 description="Use workflowEnvironment_conda for a generic Conda environment."/>

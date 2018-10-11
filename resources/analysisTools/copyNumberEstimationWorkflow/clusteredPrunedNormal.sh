@@ -28,7 +28,8 @@ ${RSCRIPT_BINARY} --vanilla 		  "${TOOL_MANUAL_PRUNING_SEGMENTS}" \
 	              --gcCovWidthFile    ${FILENAME_GC_CORRECTED_QUALITY} \
 	              --chrLengthFile     ${CHROMOSOME_LENGTH_FILE} \
 	              --pid               ${pid} \
-	              --libloc            "${libloc_flexclust}"
+	              --libloc            "${libloc_flexclust}" \
+	              --runInDebugMode    ${runInDebugMode}
 
 if [[ "$?" != 0 ]]
 then
