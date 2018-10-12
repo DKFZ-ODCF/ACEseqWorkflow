@@ -148,7 +148,7 @@ public class ACESeqWorkflow extends WorkflowUsingMergedBams {
         if (isNoControlWorkflow()) {
             // gender cannot be guessed from control sample
             final String gender = context.getConfigurationValues().getString("PATIENTSEX");
-            if ( gender.equals("unknown") || !gender.equals("male") || !gender.equals("female") || !gender.equals("klinefelter") ) {
+            if ( gender.equals("unknown") || (!gender.equals("male") && !gender.equals("female") && !gender.equals("klinefelter")) ) {
                 context.addErrorEntry(ExecutionContextError.EXECUTION_SETUP_INVALID.expand("Gender (cvalue:PATIENTSEX) has to be specified in noControl cases! [male|female|klinefelter]"));
                 return false;
             }
