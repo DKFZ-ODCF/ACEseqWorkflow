@@ -63,6 +63,7 @@ cat(paste0("min_distance: ",min_distance, "\n\n"))
 cat(paste0("min_membership: ",min_membership, "\n\n"))
 cat(paste0("chrLengthFile: ",chrLengthFile, "\n\n"))
 cat(paste0("gcCovWidthFile: ",gcCovWidthFile, "\n\n"))
+cat(paste0("runInDebugMode: ",runInDebugMode, "\n\n"))
 cat("\n")
 
 
