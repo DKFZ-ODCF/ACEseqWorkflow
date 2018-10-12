@@ -28,23 +28,6 @@ if( length(args)>11 ){
 }
 
 
-# define subtelomericCytobands which contains telomeric regions as they are defined in TelomereHunter.
-cytoband.df <- read.table(cytobandsFile, header=F, stringsAsFactor=FALSE)
-colnames(cytoband.df) = c("chrom","start", "end","cytoband","giemsa")
-cytoband.df$chrom = gsub("chr", "", cytoband.df$chrom)
-
-#cytoband.df$chrom = gsub("X", 23, cytoband.df$chrom)
-#cytoband.df$chrom = gsub("Y", 24, cytoband.df$chrom)
-cytoband.df$chrom = as.character(cytoband.df$chrom)
-cytoband.df = cytoband.df[order(cytoband.df$chrom, cytoband.df$start),]
-
-cytobandPerChr <- split(cytoband.df, cytoband.df$chrom)
-subtelomericCytobands = lapply(cytobandPerChr, function(currentBands) {
-	return(rbind(currentBands[1,],currentBands[nrow(currentBands),]))
-})
-
-
-
 source( file.path(pipelineDir, "annotateCNA.R") )
 
 
