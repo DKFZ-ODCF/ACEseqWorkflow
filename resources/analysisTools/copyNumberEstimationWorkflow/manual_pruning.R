@@ -354,15 +354,15 @@ if (clustering_YN == "yes") {
 	cat(paste0("cluster_matrix ncol: ",ncol(cluster_matrix),"\n"))
 	cat(paste0("min_num_cluster: ",min_num_cluster,"\n"))
 	d_clust <- Mclust(cluster_matrix, G=min_num_cluster:20)
-	cat(paste0(Sys.time(),": finished Mclust...\n")
+	cat(paste0(Sys.time(),": finished Mclust...\n"))
 	m.best  <- dim(d_clust$z)[2]
 
 	#cmeans to get clusters with m.best centers 
 	#resample clustering by jittering point B times)
 
-	cat(paste0(Sys.time(),": Calling clusterboot...\n")
+	cat(paste0(Sys.time(),": Calling clusterboot...\n"))
 	results = clusterboot(cbind(weights, cluster_matrix), B = 100, bootmethod = "jitter", clustermethod = cmeansCBI, k = m.best, seed = 15555, multipleboot = FALSE)
-	cat(paste0(Sys.time(),": finished clusterboot...\n")
+	cat(paste0(Sys.time(),": finished clusterboot...\n"))
 
 	if ( runInDebugMode == "true") {
 		save.image(paste0("",out, "/",pid, "_cluster_data.RData"))
@@ -401,7 +401,7 @@ if (clustering_YN == "yes") {
 	ggplot2::ggsave(paste0("",out, "/",pid, "_cluster_cmeans.png"), clusterPlot, width = 10, height = 10, type='cairo')
 
 	minTcnMean <- covLeftNorm
-	maxTCNmean <- covRightNorm
+	maxTcnMean <- covRightNorm
 	
   if ( ! is.null(centerMain)){
 	  CM_merged <- mergeClusters(CM, minTcnMean, maxTcnMean,cluster_matrix, maxCluster)

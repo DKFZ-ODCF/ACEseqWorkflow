@@ -284,7 +284,7 @@ mergeClusters <- function(CM.tmp, minTcnMean, maxTcnMean, cluster_mat, mainClust
   
       included <- sapply(sort(unique(CM.tmp$cluster)), function(cluster) {
         subCluster <- which(CM.tmp$cluster==cluster)
-        sum( minTcnMean < cluster_mat[subCluster,1] & cluster_mat[subCluster,1] < maxTCNmean)/length(subCluster)
+        sum( minTcnMean < cluster_mat[subCluster,1] & cluster_mat[subCluster,1] < maxTcnMean)/length(subCluster)
       })
       sel <- which(included >= minIncluded)
       if (length(sel) > 0 ){
