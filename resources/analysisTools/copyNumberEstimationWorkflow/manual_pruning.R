@@ -404,9 +404,9 @@ if (clustering_YN == "yes") {
 
 	minTcnMean <- covLeftNorm
 	maxTcnMean <- covRightNorm
-	
+
   if ( ! is.null(centerMain)){
-	  CM_merged <- mergeClusters(CM, minTcnMean, maxTcnMean,cluster_matrix, maxCluster)
+	  CM_merged <- mergeClusters(CM, minTcnMean, maxTcnMean,cluster_matrix, maxCluster, minIncluded = 0.80)
   }else{
     CM_merged <- CM
   }
