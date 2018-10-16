@@ -245,7 +245,7 @@ plotCov <- function(seg, chrLen){
   p <- p + geom_segment( data=seg, aes( x=start,y=tcnMean, xend=end, yend=tcnMean, col=as.character(cluster)), size = 1 )
   if (length(sel) >0)
     p <- p + geom_errorbar(data = seg[sel,], aes(x=start, ymin=tcnMean-0.01, ymax=tcnMean+0.01, col=as.character(cluster)))
-  p <- p + scale_color_manual(values=c(col[1:length(unique(seg$cluster))], "grey"), name="cluster")
+  p <- p + scale_color_manual(values=c(col, "grey"), name="cluster" )
   # labs, title, boundaries
   p <- p + theme( legend.position="none", panel.grid=element_blank() )
   p <- p + xlab('Genomic position') + ylab('coverage') + xlim( c(0,1) ) +ylim(c(0,2))
@@ -255,7 +255,7 @@ plotCov <- function(seg, chrLen){
   p1 <- p1 + geom_segment( data=seg, aes( x=start,y=dhMax, xend=end, yend=dhMax, col=as.character(cluster)), size = 1 )
   if (length(sel)>0)
     p1 <- p1 + geom_errorbar(data = seg[sel,], aes(x=start, ymin=dhMax-0.01, ymax=dhMax+0.01, col=as.character(cluster)))
-  p1 <- p1 + scale_color_manual(values=c(col[1:length(unique(seg$cluster))], "grey"), name="cluster")
+  p1 <- p1 + scale_color_manual(values=c(col, "grey"), name="cluster" )
   p1 <- p1 + xlab('Genomic position') + ylab('dhMax') + xlim( c(0,1) ) +ylim(c(0,1))
   p1 <- p1 + theme( legend.position="none", panel.grid=element_blank() )
   
