@@ -529,13 +529,41 @@ if (clustering_YN == "yes") {
 
   segAll.tmp[keep,] <- removeOutlierPoints_cmean_alt( segAll.tmp[keep,],  newCenters, deviationFactor = 2)
   
-  clusterPlotRmOutlier  <- ggplot( data.frame(segAll.tmp), aes(log2(tcnMean), dhMax, col=as.factor(cluster) ) )  +
+  segAll.tmp[keep,]$cluster[is.na(segAll.tmp[keep,]$cluster)] <- NA  #seem redundant and uneccesary
+
+  #determine centers by the point of highest density in x and y direction
+  centersAfterOutlierRemoval <- data.frame( t(sapply(seq(max(CM$cluster)), function(i){
+    s <-  which(segAll.tmp[keep,]$cluster==i)
+    tcnMean <- NaN
+    dhMax <- NaN
+    if(length(s)>4){
+      tcnMean <- density(segAll.tmp[keep,]$tcnMean[s] )
+      tcnMean <- tcnMean$x[which(tcnMean$y==max(tcnMean$y))[1]] # [1]: bugfix, more than one value possible. always take the first one
+      dhMax <- density(segAll.tmp[keep,]$dhMax[s])
+      dhMax <- dhMax$x[which(dhMax$y==max(dhMax$y))[1]] # [1]: bugfix, more than one value possible. always take the first one
+    }
+    c(tcnMean, dhMax)
+  })))
+  rownames(centersAfterOutlierRemoval) = seq(max(CM$cluster))
+  colnames(centersAfterOutlierRemoval) = c("tcnMean", "dhMax")
+
+  freqs <- sapply( as.numeric(rownames(centersAfterOutlierRemoval)),
+               function(i) sum(segAll.tmp[keep,]$cluster==i, na.rm=T) )
+  names(freqs) <- rownames(centersAfterOutlierRemoval)
+  set.seed(seed=15555)
+  maxCluster <- sample( names(which.max(freqs)), size= 1 )
+#  maxCluster <- as.numeric(maxCluster)
+  centerMain <- centersAfterOutlierRemoval[maxCluster,]
+
+  clusterPlotRmOutlier  <- ggplot( data.frame(segAll.tmp), aes(log2(tcnMean), dhMax, col=as.character(cluster) ) )  +
     geom_point(size=1.7, alpha=0.8) +
     geom_vline(xintercept=c(log2( covLeft) , log2(covRight) ), size=0.4, col="black", alpha=0.8) +
     geom_vline(xintercept=c(log2( covLeft -  covWidth), log2(covRight + covWidth) ),size=0.4, col="red", alpha=0.8) +
-    scale_color_manual(values=c(col[1:(length(unique(segAll.tmp$cluster))-1)]),name="cluster" ) +
+    geom_point(data=data.frame(centersAfterOutlierRemoval), aes(log2(tcnMean), dhMax), col='red', pch=3) +
+    geom_point(data=data.frame(centerMain), aes(log2(tcnMean), dhMax), col='orange', pch=9, size = 4) +
+    scale_color_manual(values=c(col, "grey"), name="cluster", na.translate=F ) +
     geom_point(data=data.frame(segAll.tmp[is.na(segAll.tmp$cluster),]), aes(log2(tcnMean), dhMax), col='grey')
-	ggplot2::ggsave(paste0("",out, "/",pid, "_cluster_cmeans_wo_outlier.png"), clusterPlotRmOutlier, width=10, height=10, type='cairo')
+  ggplot2::ggsave(paste0("",out, "/",pid, "_cluster_cmeans_after_clusterMerging_combinedNeighbors_outlierRemoval.png"), clusterPlotRmOutlier, width=10, height=10, type='cairo')
   
   segAll.tmp[keep,]$cluster[is.na(segAll.tmp[keep,]$cluster)] <- "NA"  #seem redundant and uneccesary
 
@@ -597,13 +625,15 @@ if (clustering_YN == "yes") {
   dev.off()
       
 
-  clusterPlotNewlog2 <- ggplot( data.frame(test_new), aes(log2(tcnMean), dhMax, col=as.factor(cluster) ) )  +
+  clusterPlotNewlog2 <- ggplot( data.frame(test_new), aes(log2(tcnMean), dhMax, col=as.character(cluster) ) )  +
     geom_point(size=1.7, alpha=0.8) +
     geom_point(data=data.frame(test_new[is.na(test_new$cluster),]), aes(log2(tcnMean), dhMax), col='grey') +
+    geom_point(data=data.frame(centersAfterOutlierRemoval), aes(log2(tcnMean), dhMax), col='red', pch=3) +
+    geom_point(data=data.frame(centerMainNew), aes(log2(tcnMean), dhMax), col='orange', pch=9, size = 4) +
     geom_vline(xintercept=c(log2( covLeft) , log2(covRight) ), size=0.4, col="black", alpha=0.8) +
     geom_vline(xintercept=c(log2( covLeft -  covWidth), log2(covRight + covWidth) ),size=0.4, col="red", alpha=0.8) +
-    scale_color_manual(values=c(col[1:(length(unique(test_new$cluster))-1)]),name="cluster" )
-	ggplot2::ggsave( paste0("",out, "/",pid, "_cluster_cmeans_merged_log2.png"), clusterPlotNewlog2, width=10, height=10, type='cairo' )
+    scale_color_manual(values=c(col, "grey"), name="cluster", na.translate=F )
+    ggplot2::ggsave( paste0("",out, "/",pid, "_cluster_cmeans_after_clusterMerging_combinedNeighbors_outlierRemoval_mergePoints.png"), clusterPlotNewlog2, width=10, height=10, type='cairo' )
 #	write.table(test, file = paste0("",out,"/clustered_and_pruned_BIC.txt"), sep = "\t", row.names = FALSE, quote = FALSE )
 
   combi <- test_new
