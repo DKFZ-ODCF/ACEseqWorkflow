@@ -75,297 +75,306 @@ source(functions)
 
 mclust.options(hcUse = "VARS") # set hcUse to use VARS-method (method will be changed to SVD mith mclust>=5.4 which leads to different results)
 
-cat(paste0("reading ",segments,"...\n\n"))
-segAll = read.table(segments, sep = "\t", as.is = TRUE, header = TRUE)
-
-#########################
-### remove umapped
-segAll = segAll[segAll$map != "unmappable", ]
-
-#read in limits of main Cluster
-#fieldsIn_FILENAME_GC_CORRECTED_QUALITY=c(pid, half_max_pos_left, half_max_pos_right, GCcorrectQuant_string, mean_normal_slope, mean_abs_normal_slope,mean_tumor_slope,
-#mean_abs_tumor_slope, mean_normal_curvature, mean_abs_normal_curvature,mean_tumor_curvature, mean_abs_tumor_curvature,
-#main_cluster_width_n, main_cluster_width_t, main_cluster_FWHM_n, main_cluster_FWHM_t, mean_abs_delta_slope,
-#mean_delta_slope, mean_abs_delta_curvature, mean_delta_curvature, minimal_coverage_gcfit_normal, minimal_coverage_gcfit_tumor ),
-#sep="\t",file=outGCcorrectQuant_file, ncolumns=37 )
-covWidthLimits <- read.table(gcCovWidthFile, header=F)[,2:3] #half_max_pos_left, half_max_pos_right
-covLeft <- covWidthLimits[,1] #half_max_pos_left
-covRight <- covWidthLimits[,2] #half_max_pos_right
-covWidth <- covRight -covLeft
-
-sex <- read.table(sex, header=FALSE, stringsAsFactors=FALSE)[,1]
-cat( paste0("sex: ", sex, "\n\n") )
-
-if (sex =='male'){
-	#in case the patient is male do not take X and Y chromosome into account as they are haploid
-	maxChr = 24
-	chromosomes = c(1:22)
-	segXY  <- segAll[ segAll$chromosome==23 | segAll$chromosome==24, ]
-	segAll <- segAll[ segAll$chromosome!=23 & segAll$chromosome!=24, ]
-}else if (sex== 'klinefelter'){
-	maxChr = 24
-	chromosomes = c(1:23)
-	segXY  <- segAll[ segAll$chromosome==24, ]
-	segAll <- segAll[ segAll$chromosome!=24, ]
-}else {
-	maxChr = 23
-	chromosomes = c(1:23)
-}
-
-cat(paste0("blocks: ",blockPre,"*",blockSuf,"\n\n"))
-for (chr in chromosomes) {
-	blockFile <- NULL
-	blockFile <- paste0( blockPre, chr, ".", blockSuf)
-	fileCheck <- file.exists(blockFile)
-	if ( fileCheck == FALSE ) {
-		cat( "haploblock file for ", chr, " not found!! Exiting..." )
-		quit( save="no", status=2 )	
-	}
-}
-
-#read chromosome length file
-chr = read.table(chrLengthFile, header = FALSE, as.is = TRUE)
-chrLength = data.frame(chr)
-chrLength$V1 <- gsub('chr','',chrLength$V1)
-sel = which(chrLength$V1 == "X")
-chrLength$V1[sel] = 23
-sel = which(chrLength$V1 == "Y")
-chrLength$V1[sel] = 24
-
-
-colNamesData <-  c( "chromosome", "SNP", "start", "end", "SV.Type", "copyT", "covT", "meanTCN", "betaT","betaN", "Atumor", "Btumor", "Anormal", "Bnormal", 'haplotype', "map" )
-
-dataAll = lapply( seq_len(maxChr), function(chr){
-		cat( "Reading chr ", chr," from ", file, "...\n" )
-		dataList.chr <- try( read.table( pipe( paste( "tabix", file, chr ) ), header=FALSE, sep='\t' )  )
-		if ( is.data.frame(dataList.chr)  ){
-			colnames( dataList.chr ) = colNamesData
-			dataList.chr
-		}else{
-			cat(chr," not found in ", file, "skipping!\n")
-			NULL
-		}
-	})
 
 
 
-# delete, attach or ignore very short segments
-if (min_seg_length != 0) {
-	
-	cat("delete, attach or ignore very short segments\n\n")
-	rows = rep(1:nrow(segAll))
-	nrows = nrow(segAll)
-	i = 0
-	for (r in seq_len(nrows)) {
-		
-		i = i + 1
-		#first segment in chromosome
-		if ( i != nrows && ( (segAll$length[i] < min_seg_length ||  segAll$tcnNbrOfHets[i] < min_num_SNPs ) && segAll$map[i] != 'homozygousDel'  ) && 
-		    (i == 1 || segAll$chromosome[i] != segAll$chromosome[i-1]) &&
-			 ( segAll$end[i]==segAll$start[i+1] | segAll$end[i]+1==segAll$start[i+1] ) ) { 
-		        
-			if ( segAll$chromosome[i] != segAll$chromosome[i+1] | segAll$map[i+1]=="homozygousDel"  )  { 
+if ( runInDebugMode != "true" || !file.exists(paste0("",out, "/",pid, "_cluster_data.RData")) ) {
 
-				cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment is smaller min_seg_length and only one in chromosome -> not attached to next segment\n\n"))
-				next
-			}
+    cat(paste0("reading ",segments,"...\n\n"))
+    segAll = read.table(segments, sep = "\t", as.is = TRUE, header = TRUE)
 
-			cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment is smaller min_seg_length and first in chromosome -> attached to next segment\n\n"))
-			
-			segAll$start[i + 1] = segAll$start[i]
-			segAll$length[i + 1] = segAll$length[i + 1] + segAll$length[i]
-			segAll = segAll[-i, , drop = FALSE]
+    #########################
+    ### remove umapped
+    segAll = segAll[segAll$map != "unmappable", ]
 
-			i = i-1
-			nrows = nrows-1
-		
-    #last segment in chromosome
-		} else if ( i != 1 && ( (segAll$length[i] < min_seg_length ||  segAll$tcnNbrOfHets[i] < min_num_SNPs ) && segAll$map[i] != 'homozygousDel' ) &&
-			    ( i == nrows || segAll$chromosome[i] != segAll$chromosome[i+1] ) &&
-				 ( segAll$end[i-1] == segAll$start[i] | segAll$end[i-1]+1==segAll$start[i] ) ) {
+    #read in limits of main Cluster
+    #fieldsIn_FILENAME_GC_CORRECTED_QUALITY=c(pid, half_max_pos_left, half_max_pos_right, GCcorrectQuant_string, mean_normal_slope, mean_abs_normal_slope,mean_tumor_slope,
+    #mean_abs_tumor_slope, mean_normal_curvature, mean_abs_normal_curvature,mean_tumor_curvature, mean_abs_tumor_curvature,
+    #main_cluster_width_n, main_cluster_width_t, main_cluster_FWHM_n, main_cluster_FWHM_t, mean_abs_delta_slope,
+    #mean_delta_slope, mean_abs_delta_curvature, mean_delta_curvature, minimal_coverage_gcfit_normal, minimal_coverage_gcfit_tumor ),
+    #sep="\t",file=outGCcorrectQuant_file, ncolumns=37 )
+    covWidthLimits <- read.table(gcCovWidthFile, header=F)[,2:3] #half_max_pos_left, half_max_pos_right
+    covLeft <- covWidthLimits[,1] #half_max_pos_left
+    covRight <- covWidthLimits[,2] #half_max_pos_right
+    covWidth <- covRight -covLeft
 
-			if (  segAll$chromosome[i] != segAll$chromosome[i-1] | segAll$map[i-1]== "homozygousDel" ) {
+    sex <- read.table(sex, header=FALSE, stringsAsFactors=FALSE)[,1]
+    cat( paste0("sex: ", sex, "\n\n") )
 
-				cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment is smaller min_seg_length and only one in chromosome -> not attached to next segment\n\n"))
-				next
-			}
-				
-			cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment is smaller min_seg_length and last in chromosome -> attached to former segment\n\n"))
-			
-			segAll$end[i - 1] = segAll$end[i]
-			segAll$length[i - 1] = segAll$length[i - 1] + segAll$length[i]
-			segAll = segAll[-i, , drop = FALSE]
-			
-			i = i-1
-			nrows =  nrows-1
-			
-		} else if (i != 1 && i != nrows && 
-		           ( (segAll$length[i] < min_seg_length ||  segAll$tcnNbrOfHets[i] < min_num_SNPs ) && segAll$map[i] != 'homozygousDel' )  && 
-				   segAll$chromosome[i] == segAll$chromosome[i - 1] && 
-				   segAll$chromosome[i] == segAll$chromosome[i + 1] ) {
-		
-			cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment is smaller min_seg_length and within chromosome\n\n"))
-			
-      #segment is only adjacent to prior segment or more similar to prior segment with regards to coverage
-			if (i != 1 && i != nrows && 
-			    is.na(segAll$SV.Type[i]) &&
-				 ( segAll$end[i-1] == segAll$start[i] | segAll$end[i-1]+1==segAll$start[i] ) &&
-           segAll$map[i-1]!="homozygousDel" &&
-					( (segAll$start[i+1] != segAll$end[i] & segAll$end[i]+1 != segAll$start[i+1] ) ||
-					  abs(segAll$tcnMean[i] - segAll$tcnMean[i - 1]) <= abs(segAll$tcnMean[i] - segAll$tcnMean[i + 1]) ) ) {
-			
-				cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment start not eq sv point and tcnMean differnence to former segment < to next segment -> attached to former segment\n\n"))
-			
-				segAll$end[i - 1] = segAll$end[i]
-				segAll$length[i - 1] = segAll$length[i - 1] + segAll$length[i]
-				segAll = segAll[-i, , drop = FALSE]
-				
-				i = i - 1
-				nrows = nrows - 1
-			
-      #segment is only adjacent to following segment or more similar to following segment with regards to coverage  
-			} else if (i != 1 && i != nrows && 
-			           is.na(segAll$SV.Type[i+1]) && 
-                 segAll$map[i+1]!="homozygousDel" &&
-					( segAll$end[i] == segAll$start[i+1] | segAll$end[i]+1==segAll$start[i+1] ) &&
-						( (segAll$start[i] != segAll$end[i-1] & segAll$end[i-1]+1 != segAll$start[i] ) ||
-						   abs(segAll$tcnMean[i] - segAll$tcnMean[i - 1]) > abs(segAll$tcnMean[i] - segAll$tcnMean[i + 1]) ) ) {
-			
-				cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment start not eq sv point and tcnMean differnence to former segment > to next segment -> attached to next segment\n\n"))
-			
-				segAll$start[i + 1] = segAll$start[i]
-				segAll$length[i + 1] = segAll$length[i + 1] + segAll$length[i]
-				segAll = segAll[-i, , drop = FALSE]
-				
-				i = i - 1
-				nrows = nrows - 1
-				
-			} else {
-			
-				cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment has sv point -> not attached\n\n"))
-				next
-				
-			} 
-			
-		} else {
-		
-			cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment longer min_seg_length -> not attached\n\n"))
-			next
-			
-		}
+    if (sex =='male'){
+        #in case the patient is male do not take X and Y chromosome into account as they are haploid
+        maxChr = 24
+        chromosomes = c(1:22)
+        segXY  <- segAll[ segAll$chromosome==23 | segAll$chromosome==24, ]
+        segAll <- segAll[ segAll$chromosome!=23 & segAll$chromosome!=24, ]
+    }else if (sex== 'klinefelter'){
+        maxChr = 24
+        chromosomes = c(1:23)
+        segXY  <- segAll[ segAll$chromosome==24, ]
+        segAll <- segAll[ segAll$chromosome!=24, ]
+    }else {
+        maxChr = 23
+        chromosomes = c(1:23)
     }
-    
+
+    cat(paste0("blocks: ",blockPre,"*",blockSuf,"\n\n"))
+    for (chr in chromosomes) {
+        blockFile <- NULL
+        blockFile <- paste0( blockPre, chr, ".", blockSuf)
+        fileCheck <- file.exists(blockFile)
+        if ( fileCheck == FALSE ) {
+            cat( "haploblock file for ", chr, " not found!! Exiting..." )
+            quit( save="no", status=2 )
+        }
+    }
+
+    #read chromosome length file
+    chr = read.table(chrLengthFile, header = FALSE, as.is = TRUE)
+    chrLength = data.frame(chr)
+    chrLength$V1 <- gsub('chr','',chrLength$V1)
+    sel = which(chrLength$V1 == "X")
+    chrLength$V1[sel] = 23
+    sel = which(chrLength$V1 == "Y")
+    chrLength$V1[sel] = 24
+
+
+    colNamesData <-  c( "chromosome", "SNP", "start", "end", "SV.Type", "copyT", "covT", "meanTCN", "betaT","betaN", "Atumor", "Btumor", "Anormal", "Bnormal", 'haplotype', "map" )
+
+    dataAll = lapply( seq_len(maxChr), function(chr){
+            cat( "Reading chr ", chr," from ", file, "...\n" )
+            dataList.chr <- try( read.table( pipe( paste( "tabix", file, chr ) ), header=FALSE, sep='\t' )  )
+            if ( is.data.frame(dataList.chr)  ){
+                colnames( dataList.chr ) = colNamesData
+                dataList.chr
+            }else{
+                cat(chr," not found in ", file, "skipping!\n")
+                NULL
+            }
+        })
+
+
+
+    # delete, attach or ignore very short segments
+    if (min_seg_length != 0) {
+
+        cat("delete, attach or ignore very short segments\n\n")
+        rows = rep(1:nrow(segAll))
+        nrows = nrow(segAll)
+        i = 0
+        for (r in seq_len(nrows)) {
+
+            i = i + 1
+            #first segment in chromosome
+            if ( i != nrows && ( (segAll$length[i] < min_seg_length ||  segAll$tcnNbrOfHets[i] < min_num_SNPs ) && segAll$map[i] != 'homozygousDel'  ) &&
+                (i == 1 || segAll$chromosome[i] != segAll$chromosome[i-1]) &&
+                 ( segAll$end[i]==segAll$start[i+1] | segAll$end[i]+1==segAll$start[i+1] ) ) {
+
+                if ( segAll$chromosome[i] != segAll$chromosome[i+1] | segAll$map[i+1]=="homozygousDel"  )  {
+
+                    cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment is smaller min_seg_length and only one in chromosome -> not attached to next segment\n\n"))
+                    next
+                }
+
+                cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment is smaller min_seg_length and first in chromosome -> attached to next segment\n\n"))
+
+                segAll$start[i + 1] = segAll$start[i]
+                segAll$length[i + 1] = segAll$length[i + 1] + segAll$length[i]
+                segAll = segAll[-i, , drop = FALSE]
+
+                i = i-1
+                nrows = nrows-1
+
+        #last segment in chromosome
+            } else if ( i != 1 && ( (segAll$length[i] < min_seg_length ||  segAll$tcnNbrOfHets[i] < min_num_SNPs ) && segAll$map[i] != 'homozygousDel' ) &&
+                    ( i == nrows || segAll$chromosome[i] != segAll$chromosome[i+1] ) &&
+                     ( segAll$end[i-1] == segAll$start[i] | segAll$end[i-1]+1==segAll$start[i] ) ) {
+
+                if (  segAll$chromosome[i] != segAll$chromosome[i-1] | segAll$map[i-1]== "homozygousDel" ) {
+
+                    cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment is smaller min_seg_length and only one in chromosome -> not attached to next segment\n\n"))
+                    next
+                }
+
+                cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment is smaller min_seg_length and last in chromosome -> attached to former segment\n\n"))
+
+                segAll$end[i - 1] = segAll$end[i]
+                segAll$length[i - 1] = segAll$length[i - 1] + segAll$length[i]
+                segAll = segAll[-i, , drop = FALSE]
+
+                i = i-1
+                nrows =  nrows-1
+
+            } else if (i != 1 && i != nrows &&
+                       ( (segAll$length[i] < min_seg_length ||  segAll$tcnNbrOfHets[i] < min_num_SNPs ) && segAll$map[i] != 'homozygousDel' )  &&
+                       segAll$chromosome[i] == segAll$chromosome[i - 1] &&
+                       segAll$chromosome[i] == segAll$chromosome[i + 1] ) {
+
+                cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment is smaller min_seg_length and within chromosome\n\n"))
+
+          #segment is only adjacent to prior segment or more similar to prior segment with regards to coverage
+                if (i != 1 && i != nrows &&
+                    is.na(segAll$SV.Type[i]) &&
+                     ( segAll$end[i-1] == segAll$start[i] | segAll$end[i-1]+1==segAll$start[i] ) &&
+               segAll$map[i-1]!="homozygousDel" &&
+                        ( (segAll$start[i+1] != segAll$end[i] & segAll$end[i]+1 != segAll$start[i+1] ) ||
+                          abs(segAll$tcnMean[i] - segAll$tcnMean[i - 1]) <= abs(segAll$tcnMean[i] - segAll$tcnMean[i + 1]) ) ) {
+
+                    cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment start not eq sv point and tcnMean differnence to former segment < to next segment -> attached to former segment\n\n"))
+
+                    segAll$end[i - 1] = segAll$end[i]
+                    segAll$length[i - 1] = segAll$length[i - 1] + segAll$length[i]
+                    segAll = segAll[-i, , drop = FALSE]
+
+                    i = i - 1
+                    nrows = nrows - 1
+
+          #segment is only adjacent to following segment or more similar to following segment with regards to coverage
+                } else if (i != 1 && i != nrows &&
+                           is.na(segAll$SV.Type[i+1]) &&
+                     segAll$map[i+1]!="homozygousDel" &&
+                        ( segAll$end[i] == segAll$start[i+1] | segAll$end[i]+1==segAll$start[i+1] ) &&
+                            ( (segAll$start[i] != segAll$end[i-1] & segAll$end[i-1]+1 != segAll$start[i] ) ||
+                               abs(segAll$tcnMean[i] - segAll$tcnMean[i - 1]) > abs(segAll$tcnMean[i] - segAll$tcnMean[i + 1]) ) ) {
+
+                    cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment start not eq sv point and tcnMean differnence to former segment > to next segment -> attached to next segment\n\n"))
+
+                    segAll$start[i + 1] = segAll$start[i]
+                    segAll$length[i + 1] = segAll$length[i + 1] + segAll$length[i]
+                    segAll = segAll[-i, , drop = FALSE]
+
+                    i = i - 1
+                    nrows = nrows - 1
+
+                } else {
+
+                    cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment has sv point -> not attached\n\n"))
+                    next
+
+                }
+
+            } else {
+
+                cat(paste0("",segAll$chromosome[i], "-",segAll$start[i], ": segment longer min_seg_length -> not attached\n\n"))
+                next
+
+            }
+        }
+
+    }
+
+    # determine maximum of dh distribution for each segment
+    cat("determine maximum of dh distribution for each segment\n\n")
+
+
+    i = 0
+    dhMax = seq_len(nrow(segAll))
+
+    for (chr in chromosomes) {
+
+        cat(paste0("processing ",chr, "...\n\n"))
+
+        dataAll[[chr]]$dh = 2 * (abs(dataAll[[chr]]$betaT - 0.5)) # dh value for each SNP
+        sel = which(segAll$chromosome == chr)
+        start = segAll$start[sel]		#the snps must be chosen according to SNP location not start, as it could be that relevant SNPs are missed otherwise!
+        end = segAll$end[sel]
+        j = 0
+
+        for (seg in start) {
+
+            i = i + 1
+            j = j + 1
+
+            selLoci <- which( dataAll[[chr]]$SNP >= start[j] &
+                      dataAll[[chr]]$SNP <= end[j] )
+
+            segAll$tcnNbrOfLoci[i] <-  length(selLoci)
+
+            s = which(  dataAll[[chr]]$betaN[selLoci] > 0.3 &
+                dataAll[[chr]]$betaN[selLoci] < 0.7 &
+                          ! is.na(dataAll[[chr]]$dh[selLoci]) )
+
+            if (length(s) > 0) {
+              h = kde(dataAll[[chr]]$dh[selLoci[s]], h = 0.05)	#dh distribution for each segment
+              dhMax[i] = h$eval.points[round(mean(which(h$estimate == max(h$estimate))))] # dh maximum for each segment
+              segAll$tcnNbrOfHets[i] <- length(s)
+            } else {
+              dhMax[i] = NA
+              segAll$tcnNbrOfHets[i] <- 0
+            }
+      }
+    }
+
+    dhMax_new = as.numeric(dhMax)
+    segAll$dhMax = dhMax_new
+    write.table(segAll, file = paste0("",out, "/minus_short_w_dh_BIC.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
+
+    tcnMean = segAll$tcnMean
+    dhMax = segAll$dhMax
+
+    png(paste0("",out, "/",pid, "_tcn_dh.png"), width=1200, height=1200, type='cairo')
+    plot(tcnMean,dhMax)
+    dev.off()
 }
-       
-# determine maximum of dh distribution for each segment
-cat("determine maximum of dh distribution for each segment\n\n")
 
-                         
-i = 0
-dhMax = seq_len(nrow(segAll)) 
-                         
-for (chr in chromosomes) {
-	
-    cat(paste0("processing ",chr, "...\n\n"))
-    
-    dataAll[[chr]]$dh = 2 * (abs(dataAll[[chr]]$betaT - 0.5)) # dh value for each SNP
-    sel = which(segAll$chromosome == chr)
-    start = segAll$start[sel]		#the snps must be chosen according to SNP location not start, as it could be that relevant SNPs are missed otherwise!
-    end = segAll$end[sel]
-    j = 0
-    
-    for (seg in start) {
-	
-	    i = i + 1
-	    j = j + 1
-			
-	    selLoci <- which( dataAll[[chr]]$SNP >= start[j] &
-			      dataAll[[chr]]$SNP <= end[j] )
-	    
-	    segAll$tcnNbrOfLoci[i] <-  length(selLoci) 
-	      
-	    s = which(  dataAll[[chr]]$betaN[selLoci] > 0.3 & 
-			dataAll[[chr]]$betaN[selLoci] < 0.7 & 
-                      ! is.na(dataAll[[chr]]$dh[selLoci]) )
-			
-	    if (length(s) > 0) {
-	      h = kde(dataAll[[chr]]$dh[selLoci[s]], h = 0.05)	#dh distribution for each segment
-	      dhMax[i] = h$eval.points[round(mean(which(h$estimate == max(h$estimate))))] # dh maximum for each segment
-	      segAll$tcnNbrOfHets[i] <- length(s)
-	    } else {
-	      dhMax[i] = NA
-	      segAll$tcnNbrOfHets[i] <- 0
-	    }     
-  }
-}
-                  
-dhMax_new = as.numeric(dhMax)
-segAll$dhMax = dhMax_new
-write.table(segAll, file = paste0("",out, "/minus_short_w_dh_BIC.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
-
-tcnMean = segAll$tcnMean
-dhMax = segAll$dhMax
-
-png(paste0("",out, "/",pid, "_tcn_dh.png"), width=1200, height=1200, type='cairo')
-plot(tcnMean,dhMax)
-dev.off()
-  
 if (clustering_YN == "yes") {
-	cat("clustering YN...\n")
-	# cluster_matrix is matrix of normalized/scaled tcnMean and dhMax values 
-	cluster_matrix_norm = cbind(log2.tcnMean=log2(tcnMean),dhMax= dhMax)
+    if ( runInDebugMode != "true" || !file.exists(paste0("",out, "/",pid, "_cluster_data.RData")) ) {
+        cat("clustering YN...\n")
+        # cluster_matrix is matrix of normalized/scaled tcnMean and dhMax values
+        cluster_matrix_norm = cbind(log2.tcnMean=log2(tcnMean),dhMax= dhMax)
 
-	rem = which(is.na(cluster_matrix_norm[,1]) | 
-	            is.na(cluster_matrix_norm[,2]) | 
-	            segAll$map == "unmappable" | 
-	            cluster_matrix_norm[ ,1] == "Inf" | 
-	            cluster_matrix_norm[ ,1] == "-Inf" | 
-	            cluster_matrix_norm[ ,2] == "Inf" | 
-	            cluster_matrix_norm[,2] == "-Inf")
+        rem = which(is.na(cluster_matrix_norm[,1]) |
+                    is.na(cluster_matrix_norm[,2]) |
+                    segAll$map == "unmappable" |
+                    cluster_matrix_norm[ ,1] == "Inf" |
+                    cluster_matrix_norm[ ,1] == "-Inf" |
+                    cluster_matrix_norm[ ,2] == "Inf" |
+                    cluster_matrix_norm[,2] == "-Inf")
 
-	cat(paste0("",length(rem), " lines dropped.\n\n")) #
-	if ( length(rem) > 0) {
-		# +1 as pseudo count to account for segments of length 1bp
-		weights = log2(segAll$length[-rem] + 1) #specify your size vector here
-												 #weights <- 1
-		cluster_matrix_norm = cluster_matrix_norm[-rem, ]
-		#convert limits to scaled coordinates
-		covLeftNorm  <- ( log2(covLeft)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
-		covRightNorm <- ( log2(covRight)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
-		covLeftFullNorm <- ( log2(covLeft-covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
-		covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+        cat(paste0("",length(rem), " lines dropped.\n\n")) #
+        if ( length(rem) > 0) {
+            # +1 as pseudo count to account for segments of length 1bp
+            weights = log2(segAll$length[-rem] + 1) #specify your size vector here
+                                                     #weights <- 1
+            cluster_matrix_norm = cluster_matrix_norm[-rem, ]
+            #convert limits to scaled coordinates
+            covLeftNorm  <- ( log2(covLeft)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+            covRightNorm <- ( log2(covRight)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+            covLeftFullNorm <- ( log2(covLeft-covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
+            covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean[-rem])) )/sd(log2(tcnMean[-rem]))
 
-  } else {
-		# +1 as pseudo count to account for segments of length 1bp
-		weights = log2(segAll$length + 1)
-		cluster_matrix_norm = cluster_matrix_norm
-		#convert limits to scaled coordinates
-		covLeftNorm  <- (log2(covLeft)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
-		covRightNorm <- (log2(covRight)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
-		covLeftFullNorm <- ( log2(covLeft-covWidth/2)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
-		covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
-  }
-  
-	cluster_matrix = scale(cluster_matrix_norm)
+      } else {
+            # +1 as pseudo count to account for segments of length 1bp
+            weights = log2(segAll$length + 1)
+            cluster_matrix_norm = cluster_matrix_norm
+            #convert limits to scaled coordinates
+            covLeftNorm  <- (log2(covLeft)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
+            covRightNorm <- (log2(covRight)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
+            covLeftFullNorm <- ( log2(covLeft-covWidth/2)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
+            covRightFullNorm <- ( log2(covRight+covWidth/2)-mean(log2(tcnMean)) ) / sd(log2(tcnMean))
+      }
 
-	#find optimal number of clusters using bayesian information criterion
-	cat(paste0(Sys.time(),": Calling Mclust...\n"))
-	cat(paste0("cluster_matrix nrow: ",nrow(cluster_matrix),"\n"))
-	cat(paste0("cluster_matrix ncol: ",ncol(cluster_matrix),"\n"))
-	cat(paste0("min_num_cluster: ",min_num_cluster,"\n"))
-	d_clust <- Mclust(cluster_matrix, G=min_num_cluster:20)
-	cat(paste0(Sys.time(),": finished Mclust...\n"))
-	m.best  <- dim(d_clust$z)[2]
+        cluster_matrix = scale(cluster_matrix_norm)
 
-	#cmeans to get clusters with m.best centers 
-	#resample clustering by jittering point B times)
+        #find optimal number of clusters using bayesian information criterion
+        cat(paste0(Sys.time(),": Calling Mclust...\n"))
+        cat(paste0("cluster_matrix nrow: ",nrow(cluster_matrix),"\n"))
+        cat(paste0("cluster_matrix ncol: ",ncol(cluster_matrix),"\n"))
+        cat(paste0("min_num_cluster: ",min_num_cluster,"\n"))
+        d_clust <- Mclust(cluster_matrix, G=min_num_cluster:20)
+        cat(paste0(Sys.time(),": finished Mclust...\n"))
+        m.best  <- dim(d_clust$z)[2]
 
-	cat(paste0(Sys.time(),": Calling clusterboot...\n"))
-	results = clusterboot(cbind(weights, cluster_matrix), B = 100, bootmethod = "jitter", clustermethod = cmeansCBI, k = m.best, seed = 15555, multipleboot = FALSE)
-	cat(paste0(Sys.time(),": finished clusterboot...\n"))
+        #cmeans to get clusters with m.best centers
+        #resample clustering by jittering point B times)
 
-	if ( runInDebugMode == "true") {
-		save.image(paste0("",out, "/",pid, "_cluster_data.RData"))
+        cat(paste0(Sys.time(),": Calling clusterboot...\n"))
+        results = clusterboot(cbind(weights, cluster_matrix), B = 100, bootmethod = "jitter", clustermethod = cmeansCBI, k = m.best, seed = 15555, multipleboot = FALSE)
+        cat(paste0(Sys.time(),": finished clusterboot...\n"))
+
+        save.image(paste0("",out, "/",pid, "_cluster_data.RData"))
+    } else {
+        cat(paste0(Sys.time(),": Restoring saved data...\n"))
+        load(paste0("",out, "/",pid, "_cluster_data.RData"))
 	}
 
 	CM <- results$result$result
@@ -406,7 +415,7 @@ if (clustering_YN == "yes") {
 	maxTcnMean <- covRightNorm
 
   if ( ! is.null(centerMain)){
-	  CM_merged <- mergeClusters(CM, minTcnMean, maxTcnMean,cluster_matrix, maxCluster, minIncluded = 0.80)
+	  CM_merged <- mergeClusters(CM, minTcnMean, maxTcnMean,cluster_matrix, maxCluster, minIncluded = 0.85)
   }else{
     CM_merged <- CM
   }
@@ -433,7 +442,50 @@ if (clustering_YN == "yes") {
     segAll$cluster[sel[i]] = CM_new$cluster[i]
   }     
   
-  segAll.tmp <- combineNeighbours(segAll)
+  CentersAfterMerging <- data.frame( t(sapply(seq(max(CM$cluster)), function(i){
+    s <-  which(segAll$cluster==i)
+    tcnMean <- NaN
+    dhMax <- NaN
+    tcnMeanl2 <- NaN
+    dhMaxl2 <- NaN
+    if(length(s)>4){
+      tcnMean <- density(segAll$tcnMean[s] )
+      tcnMean <- tcnMean$x[which(tcnMean$y==max(tcnMean$y))[1]] # [1]: bugfix, more than one value possible. always take the first one
+      dhMax <- density(segAll$dhMax[s])
+      dhMax <- dhMax$x[which(dhMax$y==max(dhMax$y))[1]] # [1]: bugfix, more than one value possible. always take the first one
+      
+      #now with log2 values
+      tcnMeanl2 <- density(log2(segAll$tcnMean[s] ))
+      # plot(tcnMeanl2)
+      # abline(h=max(tcnMeanl2$y))
+      tcnMeanl2 <- tcnMeanl2$x[which(tcnMeanl2$y==max(tcnMeanl2$y))[1]] # [1]: bugfix, more than one value possible. always take the first one
+      # abline(v=tcnMeanl2)
+      dhMaxl2 <- density(log2(segAll$dhMax[s]))
+      dhMaxl2 <- dhMaxl2$x[which(dhMaxl2$y==max(dhMaxl2$y))[1]] # [1]: bugfix, more than one value possible. always take the first one
+      
+    }
+    c(tcnMean, dhMax, tcnMeanl2, dhMaxl2)
+  })))
+  colnames(CentersAfterMerging) <- c("tcnMean", "dhMax", "log2_tcnMean", "log2_dhMax")
+  
+  frequencies <- table(CM_new$cluster)
+  clusterWithinLimits <- which(CentersAfterMerging$log2_tcnMean > log2(covLeft) & CentersAfterMerging$log2_tcnMean < log2(covRight) )
+  set.seed(seed=15555)
+  maxCluster <- sample( names( which(frequencies[clusterWithinLimits]==max(frequencies[clusterWithinLimits]) ) ), size= 1 )
+  centerMainAfterMerging <- CentersAfterMerging[maxCluster,]
+
+  
+  clusterPlot <- ggplot( data.frame(segAll), aes(log2(tcnMean), dhMax, col=as.character(cluster) ) )  +
+    geom_point(size=1.7, alpha=0.8) +
+    geom_vline(xintercept=c(log2( covLeft) , log2(covRight) ), size=0.4, col="black", alpha=0.8) +
+    geom_vline(xintercept=c(log2(covLeft- covWidth) , log2(covRight+ covWidth) ),size=0.4, col="red", alpha=0.8) +
+    geom_point(data=data.frame(CentersAfterMerging), aes((log2_tcnMean), dhMax), col='yellow', pch=3) +
+    geom_point(data=data.frame(CentersAfterMerging), aes(log2(tcnMean), dhMax), col='red', pch=3) +
+    geom_point(data=data.frame(centerMainAfterMerging), aes(log2(tcnMean), dhMax), col='orange', pch=9, size = 4) +
+    scale_color_manual(values=c(col, "grey"), name="cluster", na.translate=F ) 
+  ggplot2::ggsave(paste0("",out, "/",pid, "_cluster_cmeans_after_clusterMerging.png"), clusterPlot, width = 10, height = 10, type='cairo')
+  
+  segAll.tmp <- combineNeighbours(segments = segAll)
   keep <- (! is.na(segAll.tmp$tcnMean) & ! is.na(segAll.tmp$dhMax))
   
   #set clusters with less than 5 members to NA
@@ -459,6 +511,22 @@ if (clustering_YN == "yes") {
   })))
   
   colnames(newCenters) <- c("tcnMean", "dhMax")
+  
+  clusterWithinLimits <- which(log2(newCenters$tcnMean) > log2(covLeft) & log2(newCenters$tcnMean) < log2(covRight) )
+  set.seed(seed=15555)
+  maxCluster <- sample( names( which(frequencies[clusterWithinLimits]==max(frequencies[clusterWithinLimits]) ) ), size= 1 )
+  centerMainAfterMergingAndCombinedNeighbours <- newCenters[maxCluster,]
+  
+  clusterPlot <- ggplot( data.frame(segAll.tmp), aes(log2(tcnMean), dhMax, col=as.character(cluster) ) )  +
+    geom_point(size=1.7, alpha=0.8) +
+    geom_vline(xintercept=c(log2( covLeft) , log2(covRight) ), size=0.4, col="black", alpha=0.8) +
+    geom_vline(xintercept=c(log2( covLeft -  covWidth), log2(covRight + covWidth) ),size=0.4, col="red", alpha=0.8) +
+    geom_point(data=data.frame(newCenters), aes(log2(tcnMean), dhMax), col='red', pch=3) +
+    geom_point(data=data.frame(centerMainAfterMergingAndCombinedNeighbours), aes(log2(tcnMean), dhMax), col='orange', pch=9, size = 4) +
+    scale_color_manual(values=c(col, "grey"), name="cluster", na.translate=F ) 
+  ggplot2::ggsave(paste0("",out, "/",pid, "_cluster_cmeans_after_clusterMerging_combinedNeighbors.png"), clusterPlot, width = 10, height = 10, type='cairo')
+  
+  
   segAll.tmp[keep,] <- removeOutlierPoints_cmean_alt( segAll.tmp[keep,],  newCenters, deviationFactor = 2)
   keep <- (! is.na(segAll.tmp$tcnMean) & ! is.na(segAll.tmp$dhMax) & ! is.na(segAll.tmp$cluster))
   
@@ -496,7 +564,7 @@ if (clustering_YN == "yes") {
     geom_point(data=data.frame(centerMain), aes(log2(tcnMean), dhMax), col='orange', pch=9, size = 4) +
     scale_color_manual(values=c(col, "grey"), name="cluster", na.translate=F ) +
     geom_point(data=data.frame(segAll.tmp[is.na(segAll.tmp$cluster),]), aes(log2(tcnMean), dhMax), col='grey')
-  ggplot2::ggsave(paste0("",out, "/",pid, "_cluster_cmeans_wo_outlier.png"), clusterPlotRmOutlier, width=10, height=10, type='cairo')
+  ggplot2::ggsave(paste0("",out, "/",pid, "_cluster_cmeans_after_clusterMerging_combinedNeighbors_outlierRemoval.png"), clusterPlotRmOutlier, width=10, height=10, type='cairo')
   
   
   
@@ -563,7 +631,7 @@ if (clustering_YN == "yes") {
     geom_vline(xintercept=c(log2( covLeft) , log2(covRight) ), size=0.4, col="black", alpha=0.8) +
     geom_vline(xintercept=c(log2( covLeft -  covWidth), log2(covRight + covWidth) ),size=0.4, col="red", alpha=0.8) +
     scale_color_manual(values=c(col, "grey"), name="cluster", na.translate=F )
-    ggplot2::ggsave( paste0("",out, "/",pid, "_cluster_cmeans_merged_log2.png"), clusterPlotNewlog2, width=10, height=10, type='cairo' )
+    ggplot2::ggsave( paste0("",out, "/",pid, "_cluster_cmeans_after_clusterMerging_combinedNeighbors_outlierRemoval_mergePoints.png"), clusterPlotNewlog2, width=10, height=10, type='cairo' )
 #	write.table(test, file = paste0("",out,"/clustered_and_pruned_BIC.txt"), sep = "\t", row.names = FALSE, quote = FALSE )
 
   combi <- test_new
