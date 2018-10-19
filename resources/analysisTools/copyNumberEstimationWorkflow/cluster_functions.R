@@ -409,7 +409,7 @@ combineNeighbours <- function(segments){
     for (j in seq_len(nrow(chr))) {
       repeat{
         if (  j < nrow(chr) && 
-                chr$map != 'homozygousDel' &&
+                chr$map[ sel[j] ] != 'homozygousDel' &&
                 !is.na(chr$cluster[ sel[j] ]) &&
                 chr$cluster[ sel[j] ] != "NA" &&
                 !is.na(chr$cluster[ sel[j] + 1 ]) &&
