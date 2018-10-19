@@ -528,7 +528,11 @@ if (clustering_YN == "yes") {
 
 
   segAll.tmp[keep,] <- removeOutlierPoints_cmean_alt( segAll.tmp[keep,],  newCenters, deviationFactor = 2)
-  
+#  keep <- (! is.na(segAll.tmp$tcnMean) & ! is.na(segAll.tmp$dhMax) & ! is.na(segAll.tmp$cluster))
+
+
+
+
   segAll.tmp[keep,]$cluster[is.na(segAll.tmp[keep,]$cluster)] <- NA  #seem redundant and uneccesary
 
   #determine centers by the point of highest density in x and y direction
@@ -564,17 +568,14 @@ if (clustering_YN == "yes") {
     scale_color_manual(values=c(col, "grey"), name="cluster", na.translate=F ) +
     geom_point(data=data.frame(segAll.tmp[is.na(segAll.tmp$cluster),]), aes(log2(tcnMean), dhMax), col='grey')
   ggplot2::ggsave(paste0("",out, "/",pid, "_cluster_cmeans_after_clusterMerging_combinedNeighbors_outlierRemoval.png"), clusterPlotRmOutlier, width=10, height=10, type='cairo')
-  
-  segAll.tmp[keep,]$cluster[is.na(segAll.tmp[keep,]$cluster)] <- "NA"  #seem redundant and uneccesary
 
-  freqs <- sapply( as.numeric(rownames(newCenters)),
-               function(i) sum(segAll.tmp$cluster==i, na.rm=T) )
-  names(freqs) <- rownames(newCenters)
+
+
   minimalClusters <- names(which(freqs <5 ))
   for(i in as.numeric(minimalClusters)){
 	  selMin <- which(segAll.tmp$cluster==i )
 	  segAll.tmp$cluster[selMin] <- NA
-          newCenters[as.character(i),] <- NA
+	  centersAfterOutlierRemoval[as.character(i),] <- NA
   }
   # write.table(segAll, file = paste0("",out, "/clustered.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
   
@@ -582,12 +583,12 @@ if (clustering_YN == "yes") {
 	
   test <- combineNeighbours(segAll.tmp)
 
-  if ( any( is.na(newCenters)) ) {
-          newCenters <- newCenters[! is.na(newCenters[,1]),]
+  if ( any( is.na(centersAfterOutlierRemoval)) ) {
+    centersAfterOutlierRemoval <- centersAfterOutlierRemoval[! is.na(centersAfterOutlierRemoval[,1]),]
   }
   #name x direction for mainCluster estimation
-  newCentersTcnMean <- newCenters[,1]
-  names(newCentersTcnMean) <- rownames(newCenters)
+  newCentersTcnMean <- centersAfterOutlierRemoval[,1]
+  names(newCentersTcnMean) <- rownames(centersAfterOutlierRemoval)
 
   frequencies <- table(test$cluster)
   clusterWithinLimits <- names(which( newCentersTcnMean > covLeft & newCentersTcnMean < covRight ))
@@ -596,7 +597,7 @@ if (clustering_YN == "yes") {
     set.seed(seed=15555)
     maxCluster <- sample( names( which(frequencies[as.character(clusterWithinLimits)]==max(frequencies[as.character(clusterWithinLimits)])) ), size= 1 )
     maxCluster <- as.numeric(maxCluster)
-    centerMainNew <- data.frame( newCenters[as.character(maxCluster),])
+    centerMainNew <- data.frame( centersAfterOutlierRemoval[as.character(maxCluster),])
 
     test$neighbour <- findNeighbours(test, maxCluster)
     selIdentical <- which(test$neighbour=='identical')
