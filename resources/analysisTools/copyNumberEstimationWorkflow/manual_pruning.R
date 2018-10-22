@@ -370,8 +370,9 @@ if (clustering_YN == "yes") {
         cat(paste0(Sys.time(),": Calling clusterboot...\n"))
         results = clusterboot(cbind(weights, cluster_matrix), B = 100, bootmethod = "jitter", clustermethod = cmeansCBI, k = m.best, seed = 15555, multipleboot = FALSE)
         cat(paste0(Sys.time(),": finished clusterboot...\n"))
-
-        save.image(paste0("",out, "/",pid, "_cluster_data.RData"))
+        if (runInDebugMode == "true") {
+            save.image(paste0("",out, "/",pid, "_cluster_data.RData"))
+        }
     } else {
         cat(paste0(Sys.time(),": Restoring saved data...\n"))
         load(paste0("",out, "/",pid, "_cluster_data.RData"))
@@ -569,6 +570,7 @@ if (clustering_YN == "yes") {
     geom_point(data=data.frame(segAll.tmp[is.na(segAll.tmp$cluster),]), aes(log2(tcnMean), dhMax), col='grey')
   ggplot2::ggsave(paste0("",out, "/",pid, "_cluster_cmeans_after_clusterMerging_combinedNeighbors_outlierRemoval.png"), clusterPlotRmOutlier, width=10, height=10, type='cairo')
 
+  segAll.tmp[keep,]$cluster[is.na(segAll.tmp[keep,]$cluster)] <- "NA"  #seem redundant and uneccesary
 
 #    newCenters = centersAfterOutlierRemoval # will lead to scattered results!
     freqs <- sapply( as.numeric(rownames(newCenters)),
