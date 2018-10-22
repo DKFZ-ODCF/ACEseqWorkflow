@@ -400,7 +400,7 @@ if (clustering_YN == "yes") {
     maxCluster <- as.numeric(maxCluster)
     centerMain <- CM$centers[maxCluster,]
   }
-	col = c("#000000","#800000","#008000","#000080","#800080","#808080","#FF0000","#00FF00","#FFFF00","#0000FF","#FF00FF","#00FFFF","#DC143C","#FF8C00","#FF69B4","#FF4500", "#EE82EE", "#FFD700")
+	col = c("#000000","#800000","#008000","#000080","#800080","#808080","#FF0000","#00FF00","#FFFF00","#0000FF","#FF00FF","#00FFFF","#F00FFF","#DC143C","#FF8C00","#FF69B4","#FF4500", "#FF5040", "#EE82EE", "#FFD700")
     names(col) = seq_along(col)
 
 	clusterPlot <- ggplot( data.frame(cluster_matrix), aes(log2.tcnMean, dhMax, col=as.character(CM$cluster) ) )  +
