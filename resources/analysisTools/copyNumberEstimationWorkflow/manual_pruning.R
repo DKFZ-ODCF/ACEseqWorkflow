@@ -393,12 +393,12 @@ if (clustering_YN == "yes") {
 	frequencies <- table(CM$cluster)
 	clusterWithinLimits <- which(CM$centers[,1] > covLeftNorm & CM$centers[,1] < covRightNorm )
   centerMain <- NULL
-  if (length(clusterWithinLimits) >1 ){
+  if (length(clusterWithinLimits) > 0 ){
   #in case several samples fullfill criteria with equal amount of points
     set.seed(seed=15555)
     maxCluster <- sample( names( which(frequencies[clusterWithinLimits]==max(frequencies[clusterWithinLimits]) ) ), size= 1 )
-	  maxCluster <- as.numeric(maxCluster)
-	  centerMain <- CM$centers[maxCluster,]
+    maxCluster <- as.numeric(maxCluster)
+    centerMain <- CM$centers[maxCluster,]
   }
 	col = c("#000000","#800000","#008000","#000080","#800080","#808080","#FF0000","#00FF00","#FFFF00","#0000FF","#FF00FF","#00FFFF","#DC143C","#FF8C00","#FF69B4","#FF4500", "#EE82EE", "#FFD700")
     names(col) = seq_along(col)
