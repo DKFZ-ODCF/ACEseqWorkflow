@@ -125,8 +125,8 @@ plotChromosomes = function (chrom, dat, comb,  TCC, ploi , roundPloi, svPoints=N
 	X = which( (ratio$betaN > 0.3) & (ratio$betaN < 0.7) )
 	p3 <- plotRawBAF( ratio[X,], seg=segs, chrL ) 
 
-        plotTitle <- textGrob( paste0("",ID, "_chr_",chrom, " Ploidy=",roundPloi, ", corr=",round(ploi,digits=3), ", Tumor_cell_content=",round(TCC,digits=3), "") )
-        p = arrangeGrob(plotTitle, p1, p2, p3, nrow=4, heights=c(1,7,7,7))
+  plotTitle <- textGrob( paste0("",ID, "_chr_",chrom, " Ploidy=",roundPloi, ", corr=",round(ploi,digits=3), ", Tumor_cell_content=",round(TCC,digits=3), "") )
+  p = arrangeGrob(plotTitle, p1, p2, p3, nrow=4, heights=c(1,7,7,7))
 
 	fileName=paste0(outfile,"_",round(ploi,digits=3),"extra_",round(TCC,digits=3),"_",chrom,secondChoicePloidyFilnameAddition,".png")
         ggplot2::ggsave( fileName, p, width=15, height=9, type='cairo') 
@@ -135,7 +135,7 @@ plotChromosomes = function (chrom, dat, comb,  TCC, ploi , roundPloi, svPoints=N
 
 
 #function wrapper to get genome wide plot of TCN, dh and BAF
-plotAll <- function(dat, comb, ploi, TCC, roundPloi, chrCount, secondChoicePloidyFilnameAddition="") {
+plotAll <- function(dat, comb, ploi, TCC, roundPloi, chrCount, secondChoicePloidyFilnameAddition="", index) {
 				
 	chrL = sum( as.numeric(chrLength[1:chrCount,2]) )
 #	maxCov = 3*ploidy
@@ -188,7 +188,7 @@ plotAll <- function(dat, comb, ploi, TCC, roundPloi, chrCount, secondChoicePloid
 
 	p1 <- p1 + geom_hline( yintercept=seq(0, maxCov+0.8, 1), col='lightgray', lty='dotted', lwd=0.4 )
 	p1 <- p1 + vlines + labs(x=NULL) + theme( axis.text.x=element_blank() )
-	p1 <- p1 + geom_text( data=labels.data,aes( x=xPos, y=maxCov+0.8, label=chr),size=10 ) 
+	p1 <- p1 + geom_text( data=labels.data,aes( x=xPos, y=maxCov+0.8, label=chr), size=5 ) 
 
 	p2 <- p2 + hlinesDH 
 	p2 <- p2 + vlines + theme( axis.text.x=element_blank() )
@@ -205,32 +205,37 @@ plotAll <- function(dat, comb, ploi, TCC, roundPloi, chrCount, secondChoicePloid
 
 
 
-	# Plot combined 'coverage' and 'rawBAF'
-	chrLengthTab = chrLength
-	colnames(chrLengthTab)  <- c("chromosome", "length", "info")
-	chrLengthTab$chromosome <- as.numeric(chrLengthTab$chromosome)
-	chrLengthTab			<- chrLengthTab[order(chrLengthTab$chromosome),]
-	plotDir = paste0(outDir,"/plots")
-	sub_order_file = read.table(file = paste0(plotDir,"/all_corrected.txt.gz"), sep="\t", header = T)
-
-	coordinates <- adjustCoordinates( chrLengthTab, sub_order_file )
-	coverageTab    <- coordinates$coverageTab
-	coverageTab = coverageTab[coverageTab$chromosome %in% seq(chrCount),]
-	coverageTab$start = coverageTab$start/1000000
-
-	coveragePlot = ggplot( coverageTab, aes(start, log2(covR) ) )  +
-	geom_point(size=0.1) +
-	geom_text( data=labels.data,aes( x=xPos*max(coverageTab$start), y=3.8, label=chr),size=4 ) +
-	geom_hline(yintercept=c(-4,-3,-2,-1,1,2,3,4), col="#C0C0C0", lty="dotted", lwd=0.7) +
-	geom_hline(yintercept=0, col="red", lwd=0.6) +
-	geom_vline( xintercept= chromosomeBorders[seq(chrCount)+1]/1000000, col="#000000", lwd = 0.2 ) +
-	xlab("genomic coordinate (MB)") + ylab("log2 corrected normalized coverage ratio") +
-	ylim(ylims) + theme_bw()  +
-	theme( axis.title = element_text(size=9), legend.position="none", panel.grid=element_blank(), panel.background=element_blank(), panel.margin=unit(c(0,0,0,0), 'mm') )
-
-	p = arrangeGrob(plotTitle, coveragePlot, p3, nrow=3, heights=c(1,7,7))
-	fileName= paste0( outfile, "_", round(ploi,digits=3), "_", round(TCC,digits=3), "_CovBaf", secondChoicePloidyFilnameAddition, ".png" )
-	ggplot2::ggsave( fileName, p, width=15, height=7, type='cairo')
+  if (index == 1) {
+    # Plot combined 'coverage' and 'rawBAF' (only once, not the same plot for all pp solutions)
+    chrLengthTab = chrLength
+    colnames(chrLengthTab)  <- c("chromosome", "length", "info")
+    chrLengthTab$chromosome <- as.numeric(chrLengthTab$chromosome)
+    chrLengthTab <- chrLengthTab[order(chrLengthTab$chromosome),]
+    plotDir = paste0(outDir,"/plots")
+    sub_order_file = read.table(file = paste0(plotDir,"/all_corrected.txt.gz"), sep="\t", header = T)
+    
+    coordinates <- adjustCoordinates( chrLengthTab, sub_order_file )
+    coverageTab <- coordinates$coverageTab
+    chromosomeBorders <- coordinates$chromosomeBorders
+    
+    coverageTab = coverageTab[coverageTab$chromosome %in% seq(chrCount),]
+    coverageTab$start = coverageTab$start/1000000
+    
+    coveragePlot = ggplot( coverageTab, aes(start, log2(covR) ) )  +
+      geom_point(size=0.1) +
+      geom_text( data=labels.data, aes( x=xPos*max(coverageTab$start), y=3.8, label=chr),size=4 ) +
+      geom_hline(yintercept=c(-4,-3,-2,-1,1,2,3,4), col="#C0C0C0", lty="dotted", lwd=0.7) +
+      geom_hline(yintercept=0, col="red", lwd=0.6) +
+      geom_vline( xintercept= chromosomeBorders[seq(chrCount)+1]/1000000, col="#000000", lwd = 0.2 ) +
+      xlab("genomic coordinate (MB)") + ylab("log2 corrected normalized coverage ratio") +
+      ylim(c(-4,4)) + theme_bw()  +
+      theme( axis.title = element_text(size=9), legend.position="none", panel.grid=element_blank(), panel.background=element_blank(), panel.margin=unit(c(0,0,0,0), 'mm') )
+    
+    plotTitle <- textGrob( paste0(ID,", sex=",sex, ""))
+    p = arrangeGrob(plotTitle, coveragePlot, p3, nrow=3, heights=c(1,7,7))
+    fileName= paste0( outfile, "_CovBaf.png" )
+    ggplot2::ggsave( fileName, p, width=15, height=7, type='cairo')
+  }
 
 }
 
@@ -280,7 +285,7 @@ for( index in seq_len( nrow(pp) ) ) {
     cat("plotting All chromosomes...\n")
 
     #genome wide plot
-    plotAll(dataList.tmp, comb=combi.tmp, ploidy, tcc, roundPloidy, chrCount)
+    plotAll(dataList.tmp, comb=combi.tmp, ploidy, tcc, roundPloidy, chrCount, index=index)
     #remove tmp data.frame to free memory and use garbage collection
     dataList.tmp <- NULL
     tmp <- NULL
