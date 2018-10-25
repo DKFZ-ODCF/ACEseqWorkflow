@@ -21,6 +21,8 @@ isNoControlWorkflow	        false   Run analysis with matching control and estim
 - fixed faulty assignment of 'neutral' to gonosomal segments in male samples
 - fixed pruning bug (combineNeighbours, homozygousDel)
 - force gender to be set in noControl cases
+- enhanced cluster plots
+- added CovBaf plots
 
 
 * Version update to 4.0.3
