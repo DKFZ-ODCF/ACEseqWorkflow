@@ -396,7 +396,7 @@ if (clustering_YN == "yes") {
   if (length(clusterWithinLimits) > 0 ){
   #in case several samples fullfill criteria with equal amount of points
     set.seed(seed=15555)
-    maxCluster <- sample( names( which(frequencies[clusterWithinLimits]==max(frequencies[clusterWithinLimits]) ) ), size= 1 )
+    maxCluster <- sample( names( which(frequencies[as.character(clusterWithinLimits)]==max(frequencies[as.character(clusterWithinLimits)]) ) ), size= 1 )
     maxCluster <- as.numeric(maxCluster)
     centerMain <- CM$centers[maxCluster,]
   }
@@ -472,7 +472,7 @@ if (clustering_YN == "yes") {
   frequencies <- table(CM_new$cluster)
   clusterWithinLimits <- which(CentersAfterMerging$log2_tcnMean > log2(covLeft) & CentersAfterMerging$log2_tcnMean < log2(covRight) )
   set.seed(seed=15555)
-  maxCluster <- sample( names( which(frequencies[clusterWithinLimits]==max(frequencies[clusterWithinLimits]) ) ), size= 1 )
+  maxCluster <- sample( names( which(frequencies[as.character(clusterWithinLimits)]==max(frequencies[as.character(clusterWithinLimits)]) ) ), size= 1 )
   centerMainAfterMerging <- CentersAfterMerging[maxCluster,]
 
 
@@ -515,7 +515,7 @@ if (clustering_YN == "yes") {
 
   clusterWithinLimits <- which(log2(newCenters$tcnMean) > log2(covLeft) & log2(newCenters$tcnMean) < log2(covRight) )
   set.seed(seed=15555)
-  maxCluster <- sample( names( which(frequencies[clusterWithinLimits]==max(frequencies[clusterWithinLimits]) ) ), size= 1 )
+  maxCluster <- sample( names( which(frequencies[as.character(clusterWithinLimits)]==max(frequencies[as.character(clusterWithinLimits)]) ) ), size= 1 )
   centerMainAfterMergingAndCombinedNeighbours <- newCenters[maxCluster,]
 
   clusterPlot <- ggplot( data.frame(segAll.tmp), aes(log2(tcnMean), dhMax, col=as.character(cluster) ) )  +
