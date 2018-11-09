@@ -15,6 +15,9 @@ isNoControlWorkflow	        false   Run analysis with matching control and estim
 
 == Changelist
 
+* Version update to 5.0.1
+- fixed density(NA) bug in clustering step
+
 * Version update to 5.0.0
 - introduced CNA.type 'AMP' (TCN>=2*ploidy + 1)
 - do not use ChrX/Y for round/full ploidy determination

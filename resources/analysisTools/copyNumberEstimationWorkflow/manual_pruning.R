@@ -461,7 +461,7 @@ if (clustering_YN == "yes") {
       # abline(h=max(tcnMeanl2$y))
       tcnMeanl2 <- tcnMeanl2$x[which(tcnMeanl2$y==max(tcnMeanl2$y))[1]] # [1]: bugfix, more than one value possible. always take the first one
       # abline(v=tcnMeanl2)
-      dhMaxl2 <- density(log2(segAll$dhMax[s]))
+      dhMaxl2 <- density(log2(segAll$dhMax[s]), na.rm = T)
       dhMaxl2 <- dhMaxl2$x[which(dhMaxl2$y==max(dhMaxl2$y))[1]] # [1]: bugfix, more than one value possible. always take the first one
 
     }
