@@ -179,12 +179,12 @@ if __name__ == "__main__":
 	for next_line in infile:
 		#merge first segments per chromosome in case it is too short
 		# also merge first segment after long gap (e.g. centromere)
-		# last segments before long gap will be handlet via merge_lines_CN
+		# last segments before long gap will be handled via merge_lines_CN
 		if ( newline != None and (prior_line["chromosome"] != newline["chromosome"] or (int(newline["start"]) - int(prior_line["end"]) > maxLen)) ):
 			out.write( "\t".join( str(prior_line[key]) for key in infile.header ) + "\n" ) 
 			prior_line = newline
 			newline = next_line
-			while( float(prior_line["length"]) <= maxLen and int(newline["start"])-int(prior_line["end"]) <= maxDistToNext):
+			while( newline is not None and float(prior_line["length"]) <= maxLen and int(newline["start"])-int(prior_line["end"]) <= maxDistToNext):
 				prior_line=merge_first_segment(prior_line, newline)
 				newline = infile.readline()
 			continue
