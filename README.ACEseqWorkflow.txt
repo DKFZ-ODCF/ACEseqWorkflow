@@ -17,6 +17,9 @@ isNoControlWorkflow	        false   Run analysis with matching control and estim
 
 * Version update to 5.0.1
 - fixed density(NA) bug and index bug for frequencies (as.character) in clustering step
+- fixed empty line bug (newline) in smoothData script
+- switched to COWorkflowsBasePlugin:1.2.1 (sample name handling)
+- star plot: green (NCTN) and yellow (DH>1) line instead of common red line
 
 * Version update to 5.0.0
 - introduced CNA.type 'AMP' (TCN>=2*ploidy + 1)
