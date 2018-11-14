@@ -2,4 +2,5 @@ resources/analysisTools/copyNumberEstimationWorkflow/python_modules/Tabfile.pyc
 build/
 *~
 *.swp
-*.orig
+*.DS_Store
+#.+
