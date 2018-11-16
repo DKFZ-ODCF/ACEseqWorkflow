@@ -22,7 +22,7 @@ The complete installation instructions can be found in the [documentation](http:
 
 ## Further required software and plugins
 
-Additional necessary software like e.g. Roddy can be found in [here](https://github.com/TheRoddyWMS)
+Additional necessary software like e.g. Roddy can be found [here](https://github.com/TheRoddyWMS)
 
 ## Support us (indirectly)
 
