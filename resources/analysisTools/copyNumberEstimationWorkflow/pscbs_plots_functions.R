@@ -40,14 +40,14 @@ plotTCN = function (chromosome, ratio, seg, Ploidy, tcc, fullPloidy, chrLen, yma
 					colScale + theme_bw()
 		}
 		# allele specific and total copy numbers: c1Mean, c2Mean and tcnMean
-	        p <- p + geom_segment( data=seg, aes( x=start, xend=end, y=c1Mean, yend=c1Mean ), colour="#00BFFFFF", size = 1, na.rm=TRUE )
-		p <- p + geom_segment( data=seg, aes( x=start,xend=end, y=c2Mean, yend=c2Mean ), colour="#00BFFFFF", size = 1, na.rm =TRUE )
-		p <- p + geom_segment( data=seg, aes( x=start,y=tcnMean, xend=end, yend=tcnMean ), colour="#0000CDFF", size = 1 )
+		p <- p + geom_segment( data=seg, aes( x=start, xend=end, y=c1Mean, yend=c1Mean ), colour="#00BFFFFF", size = 1, na.rm=TRUE )
+		p <- p + geom_segment( data=seg, aes( x=start, xend=end, y=c2Mean, yend=c2Mean ), colour="#00BFFFFF", size = 1, na.rm =TRUE )
+		p <- p + geom_segment( data=seg, aes( x=start, y=tcnMean, xend=end, yend=tcnMean ), colour="#0000CDFF", size = 1 )
 
 		# labs, title, boundaries
 		p <- p + theme( legend.position="none", panel.grid=element_blank() )
 		p <- p + xlab('') + ylab('TCN') + xlim( c(0,1) )
-    		p <- p + scale_y_continuous(limits=c(0, ymaxcov + 1.2), breaks=seq(0, ymaxcov+1.2, 2), labels=as.character( seq( 0, (ymaxcov+1.2), 2 ) ) )
+		p <- p + scale_y_continuous(limits=c(0, ymaxcov + 1.2), breaks=seq(0, ymaxcov+1.2, 2), labels=as.character( seq( 0, (ymaxcov+1.2), 2 ) ) )
 
 		p <- p + theme( title = element_text(size=15), axis.title = element_text(size=12) ) 
 
@@ -69,7 +69,7 @@ plotTCN = function (chromosome, ratio, seg, Ploidy, tcc, fullPloidy, chrLen, yma
 		if (plots == 'single'){
 			# segment boundaries
 			p <- p + geom_vline( xintercept=seg$start, col = "#000000DD", lty=5, lwd =0.2 )
-      			p <- p + geom_vline( xintercept=seg$end, col = "#000000DD", lty=5, lwd =0.2 )
+			p <- p + geom_vline( xintercept=seg$end, col = "#000000DD", lty=5, lwd =0.2 )
 			# add axis
 			p <- p + scale_x_continuous( breaks=pretty(1:len, n=10)/len, labels=pretty(1:len, n=10) ) 
 
