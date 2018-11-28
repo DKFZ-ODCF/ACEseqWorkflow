@@ -310,6 +310,11 @@ for (ploidy in posPloidies) {
 	    		if (length(big) >0){
 				dh_matrix[, i] = max(as.numeric(DHmatrix[big, i]), na.rm=TRUE)
 			}
+        } else if (dh_Stop == "quantile") {
+            big = which(TCNmatrix[, 1] == 2 & DHmatrix[, 1] >= min_length_dh_stop)
+            if (length(big) >0){
+              dh_matrix[, i] = quantile(as.numeric(DHmatrix[big, i]), na.rm=TRUE, 0.975)
+            }
 		} else if (dh_Stop == "mean") {
 			dh_matrix[, i] = mean(as.numeric(DHmatrix[pos, i]), na.rm=TRUE)
 		}
@@ -535,7 +540,7 @@ NTCN = matrix(data = Ntcn_matrix[1, 2:matrix_col], nrow = length(posPloidies), n
 limitDHOrig = limitDH
 
   # max(which(NTCN)) because it is the first value to be >1 no lower purities than that should be allowed
-# that means the distance has bee significantly different from 0
+# that means the distance has been significantly different from 0
 limitNTCN = rep(NA, length(posPloidies))
 for (i in seq_along(posPloidies)) {
   if (any(NTCN>(1+1e-8))){
@@ -625,6 +630,11 @@ data[, ncol(data)] = 6
 data[seq(2, nrow(data) - 1, 1), seq(2, ncol(data) - 1, 1)] = data_limit
 data[which(is.na(data))] = 6
 
+
+  if (all(data==6)) {
+    cat("\n\nERROR: Did not find a single solution due to 'high purity issue'\n\n")
+    quit(save = "no", status = 13)
+  }
 
 count = 0
 ploidy_idx = c()
