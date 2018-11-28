@@ -233,7 +233,7 @@ plotAll <- function(dat, comb, ploi, TCC, roundPloi, chrCount, secondChoicePloid
     
     plotTitle <- textGrob( paste0(ID,", sex=",sex, ""))
     p = arrangeGrob(plotTitle, coveragePlot, p3, nrow=3, heights=c(1,7,7))
-    fileName= paste0( outfile, "_CovBaf.png" )
+	fileName = paste0(plotDir,"/",ID,"_CovBaf.png" )
     ggplot2::ggsave( fileName, p, width=15, height=7, type='cairo')
   }
 
