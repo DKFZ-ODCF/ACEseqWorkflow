@@ -32,13 +32,8 @@
 
         <!--outputMask-->
         <cvalue name='outputUMask' value='007' type='string'/>
-        <cvalue name='outputFileGroup' value='B080'/>
         <cvalue name='outputAccessRights' value='u+rw,g+rw,o-rwx'/>
         <cvalue name='outputAccessRightsForDirectories' value='u+rwx,g+rwx,o-rwx'/>
-
-        <cvalue name='possibleControlSampleNamePrefixes' value='( blood BLOOD normal control CONTROL buffy_coat GERMLINE )' type='bashArray'/>
-        <cvalue name='possibleTumorSampleNamePrefixes' value='( tumor TUMOR metastasis xenograft disease DISEASE relapse RELAPSE autopsy AUTOPSY metastasis METASTASIS )' type='bashArray'/>
-        <cvalue name='searchMergedBamWithSeparator' value='true' type='boolean' description='enforce complete sample name match (not just same prefix) (true|false)'/>
 
 
         <!-- Reference files -->
