@@ -17,12 +17,14 @@ ploidy <- as.integer(args[4])
 tcc <- as.numeric(args[5])
 pid <- args[6]
 outfile <- args[7]
-contributingSegmentsFile <- args[8]
-centromerFile <- args[9]
-cytobandsFile <- args[10]
-pipelineDir <- args[11]
-if( length(args)>11 ){
-	cutoff <- as.numeric(args[12])
+contributingSegmentsFile_HRD_File <- args[8]
+contributingSegments_LST_File <- args[9]
+merged_reduced_outputFile = args[10]
+centromerFile <- args[11]
+cytobandsFile <- args[12]
+pipelineDir <- args[13]
+if( length(args)>13 ){
+	cutoff <- as.numeric(args[14])
 }else{
 	cutoff <- 0.7
 }
@@ -95,7 +97,7 @@ if(length(selNoChangeChr) != length(unique(merged.df$chromosome)) ){
   merged.df <- merged.df[! merged.df$chromosome %in% selNoChangeChr,]
   index.HRDSmooth = which(grepl("LOH", merged.df$CNA.type) & merged.df$length>15000000 )
   numberHRDSmooth  <- length( index.HRDSmooth )
-  write.table( merged.df[index.HRDSmooth,], contributingSegmentsFile, sep="\t", row.names=FALSE, quote=FALSE )
+  write.table( merged.df[index.HRDSmooth,], contributingSegmentsFile_HRD_File, sep="\t", row.names=FALSE, quote=FALSE )
 
   segmentsPerChr <- split(merged.df, merged.df$chromosome)
 
@@ -142,13 +144,14 @@ if(length(selNoChangeChr) != length(unique(merged.df$chromosome)) ){
     return(currentSegments.merged.df)
   })
   mergedReduced.df = do.call(rbind, mergedReduced.df.List)
+	write.table( mergedReduced.df, merged_reduced_outputFile, sep="\t", row.names=FALSE, quote=FALSE )
 
   index.HRDSmooth = which(grepl("LOH", merged.df$CNA.type) & merged.df$length>15000000 )
   index.HRDSmoothReduced = which(grepl("LOH", mergedReduced.df$CNA.type) & mergedReduced.df$length>15000000 )
   numberHRDSmooth  <- length( index.HRDSmooth )
   numberHRDSmoothReduced  <- length( index.HRDSmoothReduced )
-  write.table( merged.df[index.HRDSmooth,], contributingSegmentsFile, sep="\t", row.names=FALSE, quote=FALSE )
-  write.table( mergedReduced.df[index.HRDSmoothReduced,], paste0(contributingSegmentsFile,".CentromerReduced.txt"), sep="\t", row.names=FALSE, quote=FALSE )
+  write.table( merged.df[index.HRDSmooth,], contributingSegmentsFile_HRD_File, sep="\t", row.names=FALSE, quote=FALSE )
+  write.table( mergedReduced.df[index.HRDSmoothReduced,], paste0(contributingSegmentsFile_HRD_File,".CentromerReduced.txt"), sep="\t", row.names=FALSE, quote=FALSE )
 
   index.HRDLoss = which(grepl("(LOH)|(DEL)", merged.df$CNA.type) & merged.df$length>15000000 )
   index.HRDLossReduced = which(grepl("(LOH)|(DEL)", mergedReduced.df$CNA.type) & mergedReduced.df$length>15000000 )
@@ -209,6 +212,7 @@ if(length(selNoChangeChr) != length(unique(merged.df$chromosome)) ){
   # LSTReduced score
   i=1
   LSTReduced=0
+	LST_SEGMENTS_INDICES=c()
   for( j in 2:nrow(mergedReduced.df) ){
     if( mergedReduced.df$chromosome[i] != mergedReduced.df$chromosome[j] | mergedReduced.df$length[i] < 10e6 | mergedReduced.df$length[j] <10e6 ){
       i=i+1
@@ -220,9 +224,13 @@ if(length(selNoChangeChr) != length(unique(merged.df$chromosome)) ){
     }
     if( abs(mergedReduced.df$tcnMean[j] - mergedReduced.df$tcnMean[i]) > cutoff){
       LSTReduced=LSTReduced+1
+			LST_SEGMENTS_INDICES=c(LST_SEGMENTS_INDICES,c(i,j))
     }
     i=i+1
   }
+	if (LSTReduced>0) {
+		write.table( mergedReduced.df[LST_SEGMENTS_INDICES,], contributingSegments_LST_File, sep="\t", row.names=FALSE, quote=FALSE )
+	}
 } else {
 	# all chromosomes have only 1 state
 	numberHRDSmooth <- 0

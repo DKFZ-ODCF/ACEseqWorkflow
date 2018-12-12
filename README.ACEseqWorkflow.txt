@@ -15,6 +15,9 @@ isNoControlWorkflow	        false   Run analysis with matching control and estim
 
 == Changelist
 
+* Version update to 5.1.0
+- added contributing segments file for LST
+
 * Version update to 5.0.1
 - fixed density(NA) bug and index bug for frequencies (as.character) in clustering step
 - fixed empty line bug (newline) in smoothData script
