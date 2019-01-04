@@ -17,7 +17,8 @@ ${RSCRIPT_BINARY} 	--vanilla "${TOOL_GENERATE_PLOTS}" \
 		--sv_YN $SV \
 		--ID ${PID} \
 		--pipelineDir `dirname ${TOOL_GENERATE_PLOTS}` \
-		--ymaxcov_threshold ${ymaxcov_threshold}
+		--ymaxcov_threshold ${ymaxcov_threshold} \
+		--annotatePlotsWithGenes ${annotatePlotsWithGenes}
 
 
 if [[ "$?" != 0 ]]

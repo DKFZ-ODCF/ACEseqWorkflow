@@ -19,7 +19,8 @@ spec <- matrix(c('SNPfile',       'f', 1, "character",
                  'sv_YN',         'y', 1, "character", 
                  'ID',            'i', 1, "character", 
 				 'pipelineDir',	  'd', 1, "character",
-				 'ymaxcov_threshold', 't', 1, "numeric"
+				 'ymaxcov_threshold', 't', 1, "numeric",
+				 'annotatePlotsWithGenes', 'a', 1, "character"
                 ), ncol = 4, byrow = TRUE)
                
  
@@ -62,6 +63,12 @@ if (sv_YN == "true") {
 	sv = NULL
 }
 
+if (annotatePlotsWithGenes == "true") {
+	annotatePlotsWithGenes = T
+} else {
+	annotatePlotsWithGenes = F
+}
+
 segments = read.table(segments, sep = "\t", header = TRUE, as.is = TRUE, stringsAsFactors = TRUE)
 segAll = data.frame(segments) 
 combi = segAll 
@@ -97,7 +104,7 @@ if (chrCount > maxChrCount) {
 
 
 #function wrappers to get chromosome wise plots of TCN, dh and BAF
-plotChromosomes = function (chrom, dat, comb,  TCC, ploi , roundPloi, svPoints=NULL, secondChoicePloidyFilnameAddition="") {
+plotChromosomes = function (chrom, dat, comb,  TCC, ploi , roundPloi, svPoints=NULL, secondChoicePloidyFilnameAddition="", annotatePlotsWithGenes=F) {
 	#don't plot if data frame is empty
 	if (nrow(dat)<1)
 		return(NULL)
@@ -119,7 +126,7 @@ plotChromosomes = function (chrom, dat, comb,  TCC, ploi , roundPloi, svPoints=N
 #	maxCov = 2*ploi
 	maxCov = max(comb$tcnMean, na.rm= TRUE)
 
-	p1 <- plotTCN( chrom, ratio, segs, ploi, TCC, roundPloi, chrL, ymaxcov=maxCov, svSub=svSub, ymaxcov_threshold=ymaxcov_threshold) + labs(x=NULL)
+	p1 <- plotTCN( chrom, ratio, segs, ploi, TCC, roundPloi, chrL, ymaxcov=maxCov, svSub=svSub, ymaxcov_threshold=ymaxcov_threshold, annotatePlotsWithGenes=annotatePlotsWithGenes) + labs(x=NULL)
 	p2 <- plotDHmeans( segs, chrL ) + theme( axis.text.x=element_blank() )
 
 	X = which( (ratio$betaN > 0.3) & (ratio$betaN < 0.7) )
@@ -277,7 +284,7 @@ for( index in seq_len( nrow(pp) ) ) {
     dataList.tmp = lapply( 1:chrCount, function(chr){
       cat("Plotting chromosome ",chr, "...\n")
       dataList.chr <- completeSNP( chr, dataList[[chr]], ploidy, tcc, roundPloidy)
-      plotChromosomes( chr, dataList.chr, combi.tmp, tcc, ploidy, roundPloidy, svPoints=sv)
+      plotChromosomes( chr, dataList.chr, combi.tmp, tcc, ploidy, roundPloidy, svPoints=sv, annotatePlotsWithGenes=annotatePlotsWithGenes)
       return(dataList.chr)
     } )
 

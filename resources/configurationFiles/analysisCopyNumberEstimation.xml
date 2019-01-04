@@ -45,6 +45,8 @@
         <cvalue name="CHROMOSOME_LENGTH_FILE" value="${baseDirectoryReference}/stats/chrlengths.txt" type="path"/>
         <cvalue name="REPLICATION_TIME_FILE" value="${baseDirectoryReference}/databases/ENCODE/ReplicationTime_10cellines_mean_10KB.Rda" type="path"/>
         <cvalue name="GC_CONTENT_FILE" value="${baseDirectoryReference}/stats/hg19_GRch37_100genomes_gc_content_10kb.txt" type="path"/>
+        <cvalue name='GENE_ANNOTATION_FILE' value='/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/tools_data/ACEseq/INFORM_druggable_genes.csv' type="path"/>
+        <cvalue name='annotatePlotsWithGenes' value='false' type="boolean"/>
 
         <!-- Impute -->
         <cvalue name='imputeBaseDirectory' value="${baseDirectoryReference}/databases/1000genomes/IMPUTE" type="path"/>
