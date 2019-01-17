@@ -128,8 +128,10 @@ fit = segmentByPairedPSCBS(data, knownSegments = knownSegments, tbn = FALSE,
 if (h != 0) {
         fit = pruneByHClust(fit, h = h, merge = TRUE, update = TRUE, verbose = -10)
 }
+cat("Finished segmentByPairedPSCBS")
 
 segments = getSegments(fit, simplify = TRUE)
+cat("Finished getSegments")
 
 #round coordinates with .5 to closest integer (down for end, up dor start)
 if( any( segments$start == -Inf, na.rm=TRUE ) ){
