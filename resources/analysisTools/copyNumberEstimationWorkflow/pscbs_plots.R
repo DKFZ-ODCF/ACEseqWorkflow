@@ -284,7 +284,7 @@ for( index in seq_len( nrow(pp) ) ) {
     dataList.tmp = lapply( 1:chrCount, function(chr){
       cat("Plotting chromosome ",chr, "...\n")
       dataList.chr <- completeSNP( chr, dataList[[chr]], ploidy, tcc, roundPloidy)
-      plotChromosomes( chr, dataList.chr, combi.tmp, tcc, ploidy, roundPloidy, svPoints=sv, annotatePlotsWithGenes=annotatePlotsWithGenes)
+      plotChromosomes( chr, dataList.chr, combi.tmp, tcc, ploidy, roundPloidy, svPoints=sv, secondChoicePloidyFilnameAddition=secondChoicePloidyFilnameAddition, annotatePlotsWithGenes=annotatePlotsWithGenes)
       return(dataList.chr)
     } )
 
@@ -292,7 +292,7 @@ for( index in seq_len( nrow(pp) ) ) {
     cat("plotting All chromosomes...\n")
 
     #genome wide plot
-    plotAll(dataList.tmp, comb=combi.tmp, ploidy, tcc, roundPloidy, chrCount, index=index)
+    plotAll(dataList.tmp, comb=combi.tmp, ploidy, tcc, roundPloidy, chrCount, secondChoicePloidyFilnameAddition=secondChoicePloidyFilnameAddition, index=index)
     #remove tmp data.frame to free memory and use garbage collection
     dataList.tmp <- NULL
     tmp <- NULL
