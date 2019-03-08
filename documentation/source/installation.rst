@@ -5,11 +5,13 @@ Installation & Run instructions
 
 To run the ACEseq-workflow multiple components are needed:
 
-  * ACEseq workflow plugin
   * The `Roddy workflow management framework <https://github.com/TheRoddyWMS/Roddy>`_
+  * ACEseq workflow plugin
+  * `COWorkflowsBasePlugin <https://github.com/TheRoddyWMS/COWorkflowsBasePlugin>`_
+  * `PluginBase <https://github.com/TheRoddyWMS/Roddy-Base-Plugin>`_
+  * `DefaultPlugin <https://github.com/TheRoddyWMS/Roddy-Default-Plugin>`_
   * Software stack
   * Reference data
-  * `COWorkflowsBasePlugin <https://github.com/TheRoddyWMS/COWorkflowsBasePlugin>`_
 
 The :ref:`standard way` to install the workflow is described below and involves the installation of each of these components. For the older 1.2.10 release we currently also provide prepackaged files and a Docker container. See :ref:`prepackaged-installation` below for instructions.
 
@@ -18,14 +20,17 @@ The :ref:`standard way` to install the workflow is described below and involves 
 The Standard Way
 ----------------
 
-The standard way to install the workflow is the manual installation of all components.
+The standard way to install the workflow is the manual installation of all components (sorry). The first step is to have a matching Roddy installation.
 
-1. Download the COWorkflowBasePlugin zip-archive from `Github-Releases`_. The version to download can be found in the `ACEseq buildinfo.txt <https://github.com/eilslabs/ACEseqWorkflow/blob/github/buildinfo.txt>`_.
-2. Download the ACEseq zip-archive from `Github-Releases`_. The archive already contains a Jar-archive with the compiled Java/Groovy code (JAR-file) for the given Roddy API version. No compilation of the plugin is therefore required.
-3. The file `ACEseq buildinfo.txt <https://github.com/eilslabs/ACEseqWorkflow/blob/github/buildinfo.txt>`_ in also shows you the Roddy API version that you need for the chosen ACEseq workflow version.
-4. Install the required Roddy version. Please see the `Roddy repository <https://github.com/TheRoddyWMS/Roddy>`_ for installation instructions for Roddy.
-5. Install the software stack (see :ref:`install-software-stack` below) via Conda
-6. Install the reference files (see :ref:`install-reference-files` below) via the preparation script.
+If you have not done so yet, please first read a bit about how Roddy requires the plugins to be installed. Please see `here <https://roddy-documentation.readthedocs.io/>`_. In short, the Roddy core component and the "PluginBase" and the "DefaultPlugin" are installed with a specific directory layout that you get by cloning the Roddy repository or from the zip-archive in the Roddy Github Releases ("dist/plugins/" directory).
+
+The file "buildinfo.txt" in the ACEseq repository shows you the Roddy API version that you need. We suggest you use the Roddy version with a matching major version number and the highest released minor number. For instance, if the plugin requires Roddy 3.0, use e.g. Roddy 3.5.1. To install that Roddy version please follow the instructions at the `Roddy repository <https://github.com/TheRoddyWMS/Roddy>`_ or documentation. Note that the installation also requires you to install the "PluginBase" plugin and the "DefaulPlugin" in the versions stated in the buildinfo.txt files of the plugins in the "dist/plugins/" directory of Roddy installation.
+
+With a Roddy installation you can install the ACEseq workflow and its dependencies. To manually resolve the plugin's versions you again need to look at the "buildinfo.txt". You start from the ACEseqWorkflow plugin and recurse to its dependencies. Usually, you will probably want to install the released versions of these plugins from the zip-archives that can be found in the Github-Releases of the respective plugin or component, but you can also use the cloned repositories with the correct release tag (or just commit) checked out.
+
+Note that the ACEseqWorkflow and the COWorkflowBasePlugin can be installed in any directory, as long as all subdirectories there match the pattern for plugin directories of Roddy. So ideally this directory should only contain installations of plugins.
+
+The following two sections show you how to install the Conda-based software stack and the reference data.
 
 .. _install-software-stack:
 
