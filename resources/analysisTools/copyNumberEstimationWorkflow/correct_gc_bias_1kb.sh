@@ -11,7 +11,7 @@ ${RSCRIPT_BINARY} ${TOOL_CORRECT_GC_BIAS_R} \
 	--timefile   ${REPLICATION_TIME_FILE} \
 	--chrLengthFile ${CHROMOSOME_LENGTH_FILE} \
 	--pid	     ${PID} \
-	--email      ${EMAIL} \
+	--email      "${EMAIL}" \
 	--outfile    ${tmp_corrected_windowfile} \
 	--corPlot    ${FILENAME_GC_CORRECT_PLOT} \
 	--gcFile     ${GC_CONTENT_FILE} \
