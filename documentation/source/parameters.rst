@@ -101,3 +101,8 @@ Multiple parameters can be set with ACEseq though not all are necessary to chang
  defaultMergedBamSuffix,${mergedBamSuffix},string,The default suffix for merged bam files when they are created by Roddy.
  libloc_PSCBS,,string,path to PSCBS library in R
  libloc_flexclust,,string,path to felxclust library in R
+ beagleBaseDirectory,${path}/,path,"directory for beagle files"
+ BEAGLE_REFERENCE_FILE,${beagleBaseDirectory}/chr${CHR_NAME}.1kg.phase3.v5a.b37.bref3,path
+ BEAGLE_REFERENCE_FILE_X,${beagleBaseDirectory}/chrX.1kg.phase3.v5a.b37.bref3,path
+ BEAGLE_GENETIC_MAP,${beagleBaseDirectory}/genetic_maps/hg19/plink.chr${CHR_NAME}.GRCh37.map,path
+ BEAGLE_GENETIC_MAP_X,${beagleBaseDirectory}/genetic_maps/hg19/plink.chrX.GRCh37.map,path
