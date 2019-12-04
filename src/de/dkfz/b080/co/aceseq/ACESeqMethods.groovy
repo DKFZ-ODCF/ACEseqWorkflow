@@ -55,7 +55,7 @@ final class ACESeqMethods {
     static PhaseGenotypeByChromosome phaseGenotypes(BamFile controlBam) {
         IndexedFileObjects indexedFileObjects = ParallelizationHelper.runParallel(
                 COConstants.CVALUE_AUTOSOME_INDICES,
-                ACEseqConstants.TOOL_IMPUTE_GENOTYPES,
+                ACEseqConstants.TOOL_PHASE_GENOTYPES,
                 controlBam,
                 null,
                 ACEseqConstants.PARM_CHR_INDEX,
@@ -68,7 +68,7 @@ final class ACESeqMethods {
         mapOfFiles += unphasedGenotypeFiles.getFiles()
         mapOfFiles.remove("X")
         IndexedFileObjects indexedFileObjects = runParallel(
-                ACEseqConstants.TOOL_IMPUTE_GENOTYPES_NOMPILEUP,
+                ACEseqConstants.TOOL_PHASE_GENOTYPES_NOMPILEUP,
                 new UnphasedGenotypeFileGroupByChromosome(mapOfFiles.keySet() as List<String>, mapOfFiles, unphasedGenotypeFiles.getExecutionContext()),
                 null,
                 ACEseqConstants.PARM_CHR_INDEX,
@@ -78,11 +78,11 @@ final class ACESeqMethods {
 
 
     static Tuple2<PhasedGenotypeFile, HaploblockGroupFile> phaseGenotypeX(GenderFile sexFile, BamFile controlBam) {
-        return (Tuple2<PhasedGenotypeFile, HaploblockGroupFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_IMPUTE_GENOTYPEX, controlBam, sexFile);
+        return (Tuple2<PhasedGenotypeFile, HaploblockGroupFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_PHASE_GENOTYPEX, controlBam, sexFile);
     }
 
     static Tuple2<PhasedGenotypeFile, HaploblockGroupFile> phaseGenotypeX(GenderFile sexFile, UnphasedGenotypeFileGroupByChromosome unphasedGenotypeFiles) {
-        return (Tuple2<PhasedGenotypeFile, HaploblockGroupFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_IMPUTE_GENOTYPEX_NOMPILEUP, unphasedGenotypeFiles.getFiles().get("X"), sexFile);
+        return (Tuple2<PhasedGenotypeFile, HaploblockGroupFile>) GenericMethod.callGenericTool(ACEseqConstants.TOOL_PHASE_GENOTYPEX_NOMPILEUP, unphasedGenotypeFiles.getFiles().get("X"), sexFile);
     }
 
     static TextFile getGenotypes(TextFile mergedAndFilteredSNPFile) {
