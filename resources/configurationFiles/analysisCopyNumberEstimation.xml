@@ -20,6 +20,7 @@
         <cvalue name='BEDTOOLS_VERSION' value='2.16.2' type='string'/>
         <cvalue name="VCFTOOLS_VERSION" value="0.1.10" type="string"/>
         <cvalue name="SAMTOOLS_VERSION" value="0.1.19" type="string"/>
+        <cvalue name="JAVA_VERSION" value="1.8.0_131" type="string"/> 
 
         <cvalue name='runInDebugMode' value='false' type='boolean' description='additional files will be produced to allow for easier debugging (true|false)'/>
 
@@ -50,14 +51,24 @@
         <cvalue name="CHROMOSOME_LENGTH_FILE" value="${baseDirectoryReference}/stats/chrlengths.txt" type="path"/>
         <cvalue name="REPLICATION_TIME_FILE" value="${baseDirectoryReference}/databases/ENCODE/ReplicationTime_10cellines_mean_10KB.Rda" type="path"/>
         <cvalue name="GC_CONTENT_FILE" value="${baseDirectoryReference}/stats/hg19_GRch37_100genomes_gc_content_10kb.txt" type="path"/>
+        <cvalue name='GENE_ANNOTATION_FILE' value='/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/tools_data/ACEseq/INFORM_druggable_genes.csv' type="path"/>
+        <cvalue name='annotatePlotsWithGenes' value='false' type="boolean"/>
+
+        <!-- Beagle references-->
+        <cvalue name='beagleBaseDirectory' value="/icgc/dkfzlsdf/analysis/mmml/kaufmanntom/Beagle_references/hg19" type="path"/>
+        <cvalue name='BEAGLE_REFERENCE_FILE' value="${beagleBaseDirectory}/chr${CHR_NAME}.1kg.phase3.v5a.b37.bref3" type="path"/>
+        <cvalue name='BEAGLE_REFERENCE_FILE_X' value="${beagleBaseDirectory}/chrX.1kg.phase3.v5a.b37.bref3" type="path"/>
+        <cvalue name='BEAGLE_GENETIC_MAP' value="${beagleBaseDirectory}/genetic_maps/hg19/plink.chr${CHR_NAME}.GRCh37.map" type="path"/>
+        <cvalue name='BEAGLE_GENETIC_MAP_X' value="${beagleBaseDirectory}/genetic_maps/hg19/plink.chrX.GRCh37.map" type="path"/>
+
 
         <!-- Impute -->
         <cvalue name='imputeBaseDirectory' value="${baseDirectoryReference}/databases/1000genomes/IMPUTE" type="path"/>
         <cvalue name='GENETIC_MAP_FILE' value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/genetic_map_chr${CHR_NAME}_combined_b37.txt" type="path"/>
+        <cvalue name='GENETIC_MAP_FILE_X' value="${imputeBaseDirectory}/ALL_1000G_phase1integrated_v3_impute/genetic_map_chrX_nonPAR_combined_b37.txt" type="path"/>
         <cvalue name='KNOWN_HAPLOTYPES_FILE' value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/ALL.chr${CHR_NAME}.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.nomono.haplotypes.gz" type="path"/>
         <cvalue name='KNOWN_HAPLOTYPES_LEGEND_FILE' value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/ALL.chr${CHR_NAME}.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.nomono.legend.gz"
                 type="path"/>
-        <cvalue name='GENETIC_MAP_FILE_X' value="${imputeBaseDirectory}/ALL_1000G_phase1integrated_v3_impute/genetic_map_chrX_nonPAR_combined_b37.txt" type="path"/>
         <cvalue name='KNOWN_HAPLOTYPES_FILE_X' value="${imputeBaseDirectory}/ALL_1000G_phase1integrated_v3_impute/ALL_1000G_phase1integrated_v3_chrX_nonPAR_impute.hap.gz" type="path"/>
         <cvalue name='KNOWN_HAPLOTYPES_LEGEND_FILE_X' value="${imputeBaseDirectory}/ALL_1000G_phase1integrated_v3_impute/ALL_1000G_phase1integrated_v3_chrX_nonPAR_impute.legend.gz" type="path"/>
 
@@ -252,6 +263,11 @@
         <tool name="mergeFilterCnv" value="merge_and_filter_cnv.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="getHetSnps" value="getHetSNPs.R" basepath="copyNumberEstimationWorkflow"/>
         <tool name="impute" value="impute2" basepath="copyNumberEstimationWorkflow"/>
+
+        <tool name="beagle" value="beagle.15Aug19.395.jar" basepath="copyNumberEstimationWorkflow"/>
+        <tool name="beagleCreateFakeSamples" value="beagle_create_fake_samples.py" basepath="copyNumberEstimationWorkflow"/>
+        <tool name="beagleEmbedHaplotypesVcf" value="beagle_embed_haplotypes_vcf.py" basepath="copyNumberEstimationWorkflow"/>
+
         <tool name="embedHaplotypesVcf" value="embed_haplotypes_vcf.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="extractGenotypeVcf" value="extract_genotype_vcf.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="groupHaplotypes" value="group_genotypes.py" basepath="copyNumberEstimationWorkflow"/>
