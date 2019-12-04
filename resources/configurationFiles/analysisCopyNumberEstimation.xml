@@ -395,7 +395,7 @@
             <output type="filegroup" typeof="UnphasedGenotypeFileGroupByChromosome" fileclass="UnphasedGenotypeFile" scriptparameter="FILENAME_UNPHASED_GENOTYPE" passas="array"/>
         </tool>
 
-        <tool name="imputeGenotypes_noMpileup" value="impute2.sh" basepath="copyNumberEstimationWorkflow">
+        <tool name="imputeGenotypes_noMpileup" value="phasing.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="10" cores="1" nodes="1" walltime="10"/>
             </resourcesets>
@@ -406,7 +406,7 @@
             </output>
         </tool>
 
-        <tool name="imputeGenotypes_X_noMpileup" value="impute2_X.sh" basepath="copyNumberEstimationWorkflow">
+        <tool name="imputeGenotypes_X_noMpileup" value="phasing_X.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="10" cores="1" nodes="1" walltime="10"/>
             </resourcesets>
@@ -418,7 +418,7 @@
             </output>
         </tool>
 
-        <tool name="imputeGenotypes" value="impute2.sh" basepath="copyNumberEstimationWorkflow">
+        <tool name="imputeGenotypes" value="phasing.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="10" cores="1" nodes="1" walltime="10"/>
             </resourcesets>
@@ -429,7 +429,7 @@
             </output>
         </tool>
 
-        <tool name="imputeGenotypes_X" value="impute2_X.sh" basepath="copyNumberEstimationWorkflow">
+        <tool name="imputeGenotypes_X" value="phasing_X.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
                 <rset size="l" memory="10" cores="1" nodes="1" walltime="10"/>
             </resourcesets>

@@ -41,7 +41,7 @@ then
         
         if [[ "$?" != 0 ]]
         then
-        	echo "Non zero exit status for mpileup in impute2_X.sh"
+        	echo "Non zero exit status for mpileup in phasing_X.sh"
         	exit 2
         fi
 fi
@@ -58,7 +58,7 @@ ${PYTHON_BINARY} "${TOOL_BEAGLE_CREATE_FAKE_SAMPLES}" \
 
 if [[ "$?" != 0 ]]
 then
-    echo "Non zero exit status while creating 2nd sample in vcf-file in impute2_X.sh" >> /dev/stderr
+    echo "Non zero exit status while creating 2nd sample in vcf-file in phasing_X.sh" >> /dev/stderr
 	exit 2
 fi
 
@@ -78,7 +78,7 @@ ${JAVA_BINARY} \
 
 if [[ "$?" != 0 ]]
 then
-    echo "Non zero exit status while phasing with Beagle in impute2_X.sh" >> /dev/stderr
+    echo "Non zero exit status while phasing with Beagle in phasing_X.sh" >> /dev/stderr
     exit 2
 fi
 
@@ -90,7 +90,7 @@ ${PYTHON_BINARY} "${TOOL_BEAGLE_EMBED_HAPLOTYPES_VCF}" \
 
 if [[ "$?" != 0 ]]
 then
-    echo "Non zero exit status while embedding haplotypes in impute2_X.sh" >> /dev/stderr
+    echo "Non zero exit status while embedding haplotypes in phasing_X.sh" >> /dev/stderr
 	exit 2
 fi
 
@@ -101,7 +101,7 @@ ${PYTHON_BINARY} "${TOOL_GROUP_HAPLOTYPES}" \
 	
 if [[ "$?" != 0 ]]
 then
-	echo "Non zero exit status while grouping haplotypes in impute2_X.sh"
+	echo "Non zero exit status while grouping haplotypes in phasing_X.sh"
 	exit 2
 fi
 
