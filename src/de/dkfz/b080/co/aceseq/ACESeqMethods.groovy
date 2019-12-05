@@ -27,10 +27,7 @@ final class ACESeqMethods {
     static LinkedHashMap<String, String> getGlobalJobSpecificParameters(Configuration config) {
         return new LinkedHashMap<String, String>(
                 (ACEseqConstants.CHR_NAME): config.configurationValues.getString(ACEseqConstants.CHR_NAME),
-                (ACEseqConstants.CHR_NR): config.configurationValues.getString(ACEseqConstants.CHR_NR),
-                (ACEseqConstants.GENETIC_MAP_FILE): config.configurationValues.getString(ACEseqConstants.GENETIC_MAP_FILE),
-                (ACEseqConstants.KNOWN_HAPLOTYPES_FILE): config.configurationValues.getString(ACEseqConstants.KNOWN_HAPLOTYPES_FILE),
-                (ACEseqConstants.KNOWN_HAPLOTYPES_LEGEND_FILE): config.configurationValues.getString(ACEseqConstants.KNOWN_HAPLOTYPES_LEGEND_FILE))
+                (ACEseqConstants.CHR_NR): config.configurationValues.getString(ACEseqConstants.CHR_NR))
     }
 
     static CnvSnpGeneratorResultByType generateCNVSNPs(BamFile tumorBam, BamFile controlBam) {

@@ -61,17 +61,6 @@
         <cvalue name='BEAGLE_GENETIC_MAP' value="${beagleBaseDirectory}/genetic_maps/hg19/plink.chr${CHR_NAME}.GRCh37.map" type="path"/>
         <cvalue name='BEAGLE_GENETIC_MAP_X' value="${beagleBaseDirectory}/genetic_maps/hg19/plink.chrX.GRCh37.map" type="path"/>
 
-
-        <!-- Impute -->
-        <cvalue name='imputeBaseDirectory' value="${baseDirectoryReference}/databases/1000genomes/IMPUTE" type="path"/>
-        <cvalue name='GENETIC_MAP_FILE' value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/genetic_map_chr${CHR_NAME}_combined_b37.txt" type="path"/>
-        <cvalue name='GENETIC_MAP_FILE_X' value="${imputeBaseDirectory}/ALL_1000G_phase1integrated_v3_impute/genetic_map_chrX_nonPAR_combined_b37.txt" type="path"/>
-        <cvalue name='KNOWN_HAPLOTYPES_FILE' value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/ALL.chr${CHR_NAME}.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.nomono.haplotypes.gz" type="path"/>
-        <cvalue name='KNOWN_HAPLOTYPES_LEGEND_FILE' value="${imputeBaseDirectory}/ALL.integrated_phase1_SHAPEIT_16-06-14.nomono/ALL.chr${CHR_NAME}.integrated_phase1_v3.20101123.snps_indels_svs.genotypes.nomono.legend.gz"
-                type="path"/>
-        <cvalue name='KNOWN_HAPLOTYPES_FILE_X' value="${imputeBaseDirectory}/ALL_1000G_phase1integrated_v3_impute/ALL_1000G_phase1integrated_v3_chrX_nonPAR_impute.hap.gz" type="path"/>
-        <cvalue name='KNOWN_HAPLOTYPES_LEGEND_FILE_X' value="${imputeBaseDirectory}/ALL_1000G_phase1integrated_v3_impute/ALL_1000G_phase1integrated_v3_chrX_nonPAR_impute.legend.gz" type="path"/>
-
         <!-- Input and output paths -->
         <cvalue name='outputExecutionDirectory' value='${outputAnalysisBaseDirectory}/exec_${executionTimeString}'/>
         <cvalue name='mergedBamSuffix' value='merged.mdup.bam' type="string" description="A list of all known suffixes for merged bam files. I.e. merged.dupmark.bam, merged.mdup.bam..."/>
@@ -82,14 +71,13 @@
         <cvalue name='svOutputDirectory' value='${outputAnalysisBaseDirectory}/SOPHIA_${tumorSample}_${controlSample}' type="path"/>
         <cvalue name='crestOutputDirectory' value='${outputAnalysisBaseDirectory}/crest' type="path"/>
         <cvalue name='cnvSnpOutputDirectory' value='${aceseqOutputDirectory}/cnv_snp' type="path"/>
-        <cvalue name='imputeOutputDirectory' value='${aceseqOutputDirectory}/phasing' type="path"/>
+        <cvalue name='phasingOutputDirectory' value='${aceseqOutputDirectory}/phasing' type="path"/>
         <cvalue name='plotOutputDirectory' value='${aceseqOutputDirectory}/plots' type="path"/>
 
 
         <!-- ACEseq parameters-->
         <cvalue name='legacyMode' value='true' type='boolean' description="if true, ACEseq can cope with colname 'crest' instead of 'SV.Type'"/>
 
-        <cvalue name="test" value="" type="string" description="value to be set to 'test' in case this is run on a smaller not WGS bamfile to speed up testing, required for impute2"/>
         <cvalue name='isNoControlWorkflow' value='false' type='boolean' description="use control for analysis (false|true)"/>
         <cvalue name='runWithFakeControl' value='false' type='boolean' description="use fake control for analysis (false|true)"/>
         <cvalue name='runQualityCheckOnly' value='false' type='boolean' description="Stop the workflow after the gc correction (false|true)"/>
@@ -121,20 +109,11 @@
         <cvalue name='phasedGenotypesFileSuffix' value='${FILE_VCF_SUF}' type="string" description="suffix for phased genotypes file"/>
         <cvalue name='unphasedGenotypesFileSuffix' value='${FILE_VCF_SUF}' type="string" description="suffix for unphased genotypes file"/>
 
-        <!--impute2 opts-->
+        <!--phasing opts-->
         <cvalue name='BCFTOOLS_OPTS' value='"-vgN "' type="string" description="bcftools options for imputation"/>
-        <cvalue name="FILE_UNPHASED_PRE" value="${imputeOutputDirectory}/${unphasedGenotypesFilePrefix}" type="path"/>
-        <cvalue name="FILE_UNPHASED_GENOTYPE" value="${imputeOutputDirectory}/unphased_genotype_chr" type="path"/>
-        <cvalue name="FILE_PHASED_PRE" value="${imputeOutputDirectory}/${phasedGenotypesFilePrefix}" type="path"/>
-        <cvalue name="FILE_PHASED_GENOTYPE" value="${imputeOutputDirectory}/phased_genotype_chr" type="path"/>
-        <cvalue name="FILE_INFO" value="info" type="string"/>
-        <cvalue name="FILE_INFO_SAMPLE" value="info_by_sample" type="string"/>
-        <cvalue name="FILE_HAPS" value="haps" type="string"/>
-        <cvalue name="FILE_HAPS_CONF" value="haps_confidence" type="string"/>
-        <cvalue name="FILE_SUMMARY" value="summary" type="string"/>
-        <cvalue name="FILE_WARNINGS" value="warnings" type="string"/>
-        <cvalue name="FILE_PART" value="part" type="string"/>
-        <cvalue name="FILE_SAMPLE_G" value="${imputeOutputDirectory}/sample_g.txt" type="path" description="sample_g file used by imputation on X chromosome for females"/>
+        <cvalue name="FILE_UNPHASED_PRE" value="${phasingOutputDirectory}/${unphasedGenotypesFilePrefix}" type="path"/>
+        <cvalue name="FILE_PHASED_GENOTYPE" value="${phasingOutputDirectory}/phased_genotype_chr" type="path"/>
+        <cvalue name="FILE_SAMPLE_G" value="${phasingOutputDirectory}/sample_g.txt" type="path" description="sample_g file used by imputation on X chromosome for females"/>
         <cvalue name="minHT" value="5" type="integer" description="minimum number of consecutive SNPs to be considered for haploblocks"/>
 
         <!--snvMergeFilter Opts-->
@@ -203,7 +182,7 @@
         <cvalue name='min_distance' value='0.05' type="float" description="min_distance"/>
         <cvalue name='haplogroupFilePrefix' value='haploblocks_chr' type="string" description="prefix for file with haplogroups per chromosome"/>
         <cvalue name='haplogroupFileSuffix' value='txt' type="string" description="suffix for file with haplogroups per chromosome"/>
-        <cvalue name='haplogroupFilePath' value='${imputeOutputDirectory}/${haplogroupFilePrefix}' type="path"/>
+        <cvalue name='haplogroupFilePath' value='${phasingOutputDirectory}/${haplogroupFilePrefix}' type="path"/>
 
         <!--estimatePurityPloidy Opts-->
         <cvalue name='minLim' value='0.47' type="float"
@@ -262,7 +241,6 @@
         <tool name="estimateSex" value="getSex.R" basepath="copyNumberEstimationWorkflow"/>
         <tool name="mergeFilterCnv" value="merge_and_filter_cnv.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="getHetSnps" value="getHetSNPs.R" basepath="copyNumberEstimationWorkflow"/>
-        <tool name="impute" value="impute2" basepath="copyNumberEstimationWorkflow"/>
 
         <tool name="beagle" value="beagle.15Aug19.395.jar" basepath="copyNumberEstimationWorkflow"/>
         <tool name="beagleCreateFakeSamples" value="beagle_create_fake_samples.py" basepath="copyNumberEstimationWorkflow"/>
@@ -633,50 +611,50 @@
         <!--<filename class='SNPPositionFile' derivedFrom="BamFile" pattern='${outputAnalysisBaseDirectory}/${aceseqOutputDirectory}/${cnvSnpOutputDirectory}/${pid}.chr${jobParameter,name="PARM_CHR_INDEX"}.snp.tab.gz' />-->
         <filename class='CoverageWindowsFile' derivedFrom="BamFile" pattern='${cnvSnpOutputDirectory}/${pid}.chr${PARM_CHR_INDEX}.${CNV_SUFFIX}'/>
 <!--      <filename class="PhasedGenotypeFile" onScriptParameter="FILENAME_PHASED_GENOTYPES" selectiontag="withChromosomeIndex"
-                  pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
+                  pattern='${phasingOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
         <filename class="HaploblockGroupFile" onTool="imputeGenotypes_noMpileup" selectiontag="withChromosomeIndex"
-                  pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
+                  pattern='${phasingOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
         <filename class="PhasedGenotypeFile" onTool="imputeGenotypes_X_noMpileup" selectiontag="forChromosomeX"
-                  pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}23.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
+                  pattern='${phasingOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}23.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
         <filename class="HaploblockGroupFile" onTool="imputeGenotypes_X_noMpileup" selectiontag="forChromosomeX"
-                  pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}23.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
+                  pattern='${phasingOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}23.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
 
         <filename class="PhasedGenotypeFile" onTool="imputeGenotypes" selectiontag="withChromosomeIndex"
-                  pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
+                  pattern='${phasingOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
         <filename class="HaploblockGroupFile" onTool="imputeGenotypes" selectiontag="withChromosomeIndex"
-                  pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
+                  pattern='${phasingOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
         <filename class="PhasedGenotypeFile" onTool="imputeGenotypes_X" selectiontag="forChromosomeX"
-                  pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}23.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
+                  pattern='${phasingOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}23.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
         <filename class="HaploblockGroupFile" onTool="imputeGenotypes_X" selectiontag="forChromosomeX"
-                  pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}23.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
+                  pattern='${phasingOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}23.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
 -->
         <filename class="TextFile" onMethod="SNPPositionFileGroupByChromosome.mergeAndFilter" pattern='${aceseqOutputDirectory}/${pid}_all.snp.tab.gz'/>
         <filename class="TextFile" onMethod="ACESeqMethods.getGenotypes" pattern='${aceseqOutputDirectory}/${pid}_all.snp.fakeBAF.tab.gz'/>
 
         <filename class="PhasedGenotypeFile" onTool="imputeGenotypes_noMpileup" selectiontag="withChromosomeIndex"
-              pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
+              pattern='${phasingOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
         <filename class="HaploblockGroupFile" onTool="imputeGenotypes_noMpileup" selectiontag="withChromosomeIndex"
-              pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
+              pattern='${phasingOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
         <filename class="PhasedGenotypeFile" onTool="imputeGenotypes_X_noMpileup" selectiontag="forChromosomeX"
-              pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}23.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
+              pattern='${phasingOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}23.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
         <filename class="HaploblockGroupFile" onTool="imputeGenotypes_X_noMpileup" selectiontag="forChromosomeX"
-              pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}23.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
+              pattern='${phasingOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}23.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
 
         <filename class="PhasedGenotypeFile" onTool="imputeGenotypes" selectiontag="withChromosomeIndex"
-              pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
+              pattern='${phasingOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
         <filename class="HaploblockGroupFile" onTool="imputeGenotypes" selectiontag="withChromosomeIndex"
-              pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
+              pattern='${phasingOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}${jobParameter,name="PARM_CHR_INDEX"}.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
         <filename class="PhasedGenotypeFile" onTool="imputeGenotypes_X" selectiontag="forChromosomeX"
-              pattern='${imputeOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}23.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
+              pattern='${phasingOutputDirectory}/${cvalue,name="phasedGenotypesPrefix",default="phased_chr"}23.${cvalue,name="phasedGenotypesSuffix",default="vcf"}'/>
         <filename class="HaploblockGroupFile" onTool="imputeGenotypes_X" selectiontag="forChromosomeX"
-              pattern='${imputeOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}23.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
+              pattern='${phasingOutputDirectory}/${cvalue,name="haplogroupFilePrefix",default="haploblocks_chr"}23.${cvalue,name="FILE_TXT_SUFFIX",default="txt"}'/>
 
 
         <filename class="UnphasedGenotypeFile" derivedFrom="TextFile"
-                  pattern='${imputeOutputDirectory}/${cvalue, name="unphasedGenotypesPrefix", default="unphased_chr"}${fgindex}.${cvalue,name="unphasedGenotypesSuffix",default="vcf"}'/>
+                  pattern='${phasingOutputDirectory}/${cvalue, name="unphasedGenotypesPrefix", default="unphased_chr"}${fgindex}.${cvalue,name="unphasedGenotypesSuffix",default="vcf"}'/>
         <!--
                 <filename class="TextFile" derivedFrom="TextFile" selectiontag="unphasedGenotypeChrXFile"
-                          pattern='${imputeOutputDirectory}/${cvalue, name="unphasedGenotypesPrefix", default="unphased_chr"}X.${cvalue,name="unphasedGenotypesSuffix",default="vcf"}'/>
+                          pattern='${phasingOutputDirectory}/${cvalue, name="unphasedGenotypesPrefix", default="unphased_chr"}X.${cvalue,name="unphasedGenotypesSuffix",default="vcf"}'/>
         -->
         <filename class="TextFile" onMethod="ACESeqMethods.addHaploTypes" pattern='${aceseqOutputDirectory}/${pid}_all.snp.haplo.tab.gz'/>
         <filename class="TextFile" onMethod="ACESeqMethods.createControlBafPlot" pattern='${plotOutputDirectory}/checkpointBaf.txt'/>
