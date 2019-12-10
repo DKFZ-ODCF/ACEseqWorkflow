@@ -43,6 +43,7 @@
 
 
         <!-- Reference files -->
+        <cvalue name="sharedFilesBaseDirectory" value="/icgc/ngs_share" type="path"/>
         <cvalue name="baseDirectoryReference" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes" type="path"/>
         <cvalue name="referenceGenome_1KGRef" value="${baseDirectoryReference}/sequence/1KGRef/hs37d5.fa" type="path"/>
         <cvalue name='REFERENCE_GENOME' value="${referenceGenome_1KGRef}" type="string"/>
@@ -55,11 +56,10 @@
         <cvalue name='annotatePlotsWithGenes' value='false' type="boolean"/>
 
         <!-- Beagle references-->
-        <cvalue name='beagleBaseDirectory' value="/icgc/dkfzlsdf/analysis/mmml/kaufmanntom/Beagle_references/hg19" type="path"/>
-        <cvalue name='BEAGLE_REFERENCE_FILE' value="${beagleBaseDirectory}/chr${CHR_NAME}.1kg.phase3.v5a.b37.bref3" type="path"/>
-        <cvalue name='BEAGLE_REFERENCE_FILE_X' value="${beagleBaseDirectory}/chrX.1kg.phase3.v5a.b37.bref3" type="path"/>
-        <cvalue name='BEAGLE_GENETIC_MAP' value="${beagleBaseDirectory}/genetic_maps/hg19/plink.chr${CHR_NAME}.GRCh37.map" type="path"/>
-        <cvalue name='BEAGLE_GENETIC_MAP_X' value="${beagleBaseDirectory}/genetic_maps/hg19/plink.chrX.GRCh37.map" type="path"/>
+        <cvalue name='BEAGLE_REFERENCE_FILE' value="${baseDirectoryReference}/tools_data/Beagle/chr${CHR_NAME}.1kg.phase3.v5a.b37.bref3" type="path"/>
+        <cvalue name='BEAGLE_REFERENCE_FILE_X' value="${baseDirectoryReference}/tools_data/Beagle/chrX.1kg.phase3.v5a.b37.bref3" type="path"/>
+        <cvalue name='BEAGLE_GENETIC_MAP' value="${baseDirectoryReference}/tools_data/genetic_maps/genetic_maps/plink.chr${CHR_NAME}.GRCh37.map" type="path"/>
+        <cvalue name='BEAGLE_GENETIC_MAP_X' value="${baseDirectoryReference}/tools_data/genetic_maps/genetic_maps/plink.chrX.GRCh37.map" type="path"/>
 
         <!-- Input and output paths -->
         <cvalue name='outputExecutionDirectory' value='${outputAnalysisBaseDirectory}/exec_${executionTimeString}'/>
