@@ -58,6 +58,10 @@ mkdir_cd hg19_GRCh37_1000genomes
 	# As a whole for a specific build (use this!) : "Database of Single Nucleotide Polymorphisms (dbSNP). Bethesda (MD): National Center for Biotechnology Information, National Library of Medicine. (dbSNP Build ID: 141 ). Available from: http://www.ncbi.nlm.nih.gov/SNP/"
 	# A single or a range of Submitted SNP (ss) or Reference SNP (rs) entries: "Database of Single Nucleotide Polymorphisms (dbSNP). Bethesda (MD): National Center for Biotechnology Information, National Library of Medicine. dbSNP accession:{ss1 or ss1 – ss100}, (dbSNP Build ID: 141). Available from: http://www.ncbi.nlm.nih.gov/SNP/"
 
+    # NOTE ON VERSIONING
+    # The dbSNP database only maintains the newest version and has no archives of older versions. Therefore this download script will always download the newest version and subsequently filter entries according to `$DBSNP_VERSION`. However, as newer dbSNP versions might drop certain entries, the database might still change in the future. This has to be kept in mind with respect to the reproducibility of the whole workflow.
+    # Furthermore, newer versions will have a changed header which will break the MD5 sum.
+
 	# DOWNLOAD
 	DBSNP_BASE_URL="ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b150_GRCh37p13/VCF"
 	wget -c "$DBSNP_BASE_URL/README.txt"
