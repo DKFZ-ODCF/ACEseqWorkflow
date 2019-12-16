@@ -49,8 +49,6 @@ fi
 echo -n > "${UNPHASED_TWOSAMPLES}"
 echo -n > "${tmpPhased}"
 echo -n > "${tmpHaploblocks}"
-echo -n > "${FILENAME_HAPLOBLOCK_GROUPS}"
-echo -n > "${FILENAME_PHASED_GENOTYPES}"
 
 ${PYTHON_BINARY} "${TOOL_BEAGLE_CREATE_FAKE_SAMPLES}" \
     --in_file "${UNPHASED}" \
