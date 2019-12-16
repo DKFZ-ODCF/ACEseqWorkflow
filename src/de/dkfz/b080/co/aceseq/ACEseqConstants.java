@@ -23,10 +23,10 @@ public final class ACEseqConstants {
     public static final String TOOL_ANNOTATE_COV_WIN = "annotateCnvFiles";
     public static final String TOOL_GET_GENOTYPES = "getGenotypes";
     public static final String TOOL_CREATE_UNPHASED_GENOTYPE = "createUnphasedGenotype";
-    public static final String TOOL_IMPUTE_GENOTYPES = "imputeGenotypes";
-    public static final String TOOL_IMPUTE_GENOTYPES_NOMPILEUP = "imputeGenotypes_noMpileup";
-    public static final String TOOL_IMPUTE_GENOTYPEX = "imputeGenotypes_X";
-    public static final String TOOL_IMPUTE_GENOTYPEX_NOMPILEUP = "imputeGenotypes_X_noMpileup";
+    public static final String TOOL_PHASE_GENOTYPES = "phaseGenotypes";
+    public static final String TOOL_PHASE_GENOTYPES_NOMPILEUP = "phaseGenotypes_noMpileup";
+    public static final String TOOL_PHASE_GENOTYPEX = "phaseGenotypes_X";
+    public static final String TOOL_PHASE_GENOTYPEX_NOMPILEUP = "phaseGenotypes_X_noMpileup";
     public static final String TOOL_ADD_HAPLOTYPES_TO_SNP_FILE = "addHaplotypesToSnpFile";
     public static final String TOOL_CREATE_CONTROL_BAF_PLOTS = "createControlBafPlots";
     public static final String TOOL_CORRECT_GC_BIAS = "correctGcBias";
