@@ -1,6 +1,10 @@
- #!/usr/bin/python
+#!/usr/bin/python
 
 import argparse
+
+def is_comment_line(line):
+    return line.startswith("#")
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--in_file', help='Input .vcf file')
 parser.add_argument('--out_file', help='Out .vcf file')
@@ -11,8 +15,8 @@ outfile    = open( args.out_file, "w" )
 
 for vcf_line in vcf_infile:
     
-    if vcf_line[0] == "#":
-        if "#CHROM" in vcf_line:
+    if is_comment_line(vcf_line):
+        if vcf_line.startswith("#CHROM"):
             vcf_line = vcf_line.rstrip().split("\t")
             vcf_line.append('sample0')
             vcf_line = "\t".join( vcf_line )+"\n"

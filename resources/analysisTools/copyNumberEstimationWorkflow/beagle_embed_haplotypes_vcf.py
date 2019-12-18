@@ -1,6 +1,10 @@
- #!/usr/bin/python
+#!/usr/bin/python
 import argparse
 import gzip
+
+def is_comment_line(line):
+    return line.startswith("#")
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--hap_file', help='Input file with phased haplotypes (i.e. output from Beagle)')
 parser.add_argument('--vcf_file', help='Input .vcf file')
@@ -15,7 +19,7 @@ vcf_file = open( args.vcf_file, "r" )
 outfile = open( args.out_file, "w" )
 
 hap_line = hap_file.readline()
-while hap_line[0] == "#":
+while is_comment_line(hap_line):
     hap_line = hap_file.readline()
 
 if hap_line:
@@ -23,7 +27,7 @@ if hap_line:
 
 for vcf_line in vcf_file:
     
-    if vcf_line[0] != "#":
+    if not is_comment_line(vcf_line):
         
         vcf_line = vcf_line.rstrip().split("\t")
         vcf_line[0] = vcf_line[0].replace('chr', '')
