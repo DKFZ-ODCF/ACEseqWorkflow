@@ -52,7 +52,7 @@
         <cvalue name="CHROMOSOME_LENGTH_FILE" value="${baseDirectoryReference}/stats/chrlengths.txt" type="path"/>
         <cvalue name="REPLICATION_TIME_FILE" value="${baseDirectoryReference}/databases/ENCODE/ReplicationTime_10cellines_mean_10KB.Rda" type="path"/>
         <cvalue name="GC_CONTENT_FILE" value="${baseDirectoryReference}/stats/hg19_GRch37_100genomes_gc_content_10kb.txt" type="path"/>
-        <cvalue name='GENE_ANNOTATION_FILE' value='/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/tools_data/ACEseq/INFORM_druggable_genes.csv' type="path"/>
+        <cvalue name='GENE_ANNOTATION_FILE' value='${baseDirectoryReference}/tools_data/ACEseq/INFORM_druggable_genes.csv' type="path"/>
         <cvalue name='annotatePlotsWithGenes' value='false' type="boolean"/>
 
         <!-- Beagle references-->
@@ -122,9 +122,9 @@
         <cvalue name='SNP_SUFFIX' value='snp.tab.gz' type="string"/>
         <cvalue name='snp_min_coverage' value='5' type="integer"/>
 
-        <cvalue name='MALE_FAKE_CONTROL_PRE' value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/LocalControls/ACEseq_GenericMaleControl/GenericMaleControl.chr" type='path'
+        <cvalue name='MALE_FAKE_CONTROL_PRE' value="${baseDirectoryReference}/databases/LocalControls/ACEseq_GenericMaleControl/GenericMaleControl.chr" type='path'
                 description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for male patients" />
-        <cvalue name='FEMALE_FAKE_CONTROL_PRE' value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/LocalControls/ACEseq_GenericFemaleControl/GenericFemaleControl.chr" type='path'
+        <cvalue name='FEMALE_FAKE_CONTROL_PRE' value="${baseDirectoryReference}/databases/LocalControls/ACEseq_GenericFemaleControl/GenericFemaleControl.chr" type='path'
                 description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for female patients" />
         <cvalue name='FAKE_CONTROL_POST' value=".cnv.anno.tab.gz" type='string' description="suffix for chromosome wise 1kb coverage files used for fake control workflow"/>
         <cvalue name='PATIENTSEX' value="unknown" type='string' description="patient sex used in case of no control workflow (male|female|klinefelter)" />
@@ -159,7 +159,7 @@
         <cvalue name='FILE_DENSITYBETA' value='${aceseqOutputDirectory}/densityBeta.pdf' type="path"/>
         <cvalue name='min_DDI_length' value='1000' type="integer" description="minimum length for DEL/DUP/INV to be considered for breakpoint integration"/>
         <cvalue name='selSVColumn' value='eventScore' type="string" description="column from bedpe file to be recored in ${pid}_sv_points.txt file"/>
-        <cvalue name="FILENAME_CENTROMERES" value='/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/stats/hg19_gaps.txt' type="string"/>
+        <cvalue name="FILENAME_CENTROMERES" value='${baseDirectoryReference}/stats/hg19_gaps.txt' type="string"/>
 
         <!--getSegmentsAndSnps/pscbsAll Opts-->
         <cvalue name='min_seg_width' value='2000' type="integer" description="segmentByPairedPSCBS() minwidth parameter in PSCBS R package"/>
@@ -211,7 +211,7 @@
 
         <!--generateVCF opts-->
         <cvalue name="blacklistFileName" value='artifact.homoDels.potentialArtifacts.txt' type="string"/>
-        <cvalue name="cytobandsFile" value='/icgc/ngs_share/annovar/annovar_common_humandb/hg19_cytoBand.txt' type="string"/>
+        <cvalue name="cytobandsFile" value='${sharedFilesBaseDirectory}/annovar/annovar_common_humandb/hg19_cytoBand.txt' type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_PRE' value="${pid}_most_important_info" type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_POST' value=".txt" type="string"/>
         <cvalue name='FILE_SEGMENT_VCF_PRE' value="${aceseqOutputDirectory}/${pid}" type="path"/>
