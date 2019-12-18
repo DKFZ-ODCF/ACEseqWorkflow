@@ -3,6 +3,13 @@
 # Copyright (c) 2017 The ACEseq workflow developers.
 # Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 
+dieWith() {
+  local msg="${1:?No error message}"
+  local ec="${2:-$?}"
+  echo "$msg: exit code $ec" >> /dev/stderr
+  exit "$ec"
+}
+
 if [[ ${isNoControlWorkflow} == false ]]; then
     source ${TOOL_ANALYZE_BAM_HEADER}
     getRefGenomeAndChrPrefixFromHeader ${FILE_CONTROL_BAM} # Sets CHR_PREFIX and REFERENCE_GENOME
@@ -37,13 +44,9 @@ then
         	    "${FILE_CONTROL_BAM}" \
         	    | \
         	    ${BCFTOOLS_BINARY} view ${BCFTOOLS_OPTS} - \
-        	    > "${UNPHASED}"
+        	    > "${UNPHASED}" \
+                || dieWith "Non zero exit status for mpileup in phasing_X.sh" $?
         
-        if [[ "$?" != 0 ]]
-        then
-        	echo "Non zero exit status for mpileup in phasing_X.sh"
-        	exit 2
-        fi
 fi
 
 echo -n > "${UNPHASED_TWOSAMPLES}"
@@ -52,13 +55,8 @@ echo -n > "${tmpHaploblocks}"
 
 ${PYTHON_BINARY} "${TOOL_BEAGLE_CREATE_FAKE_SAMPLES}" \
     --in_file "${UNPHASED}" \
-    --out_file "${UNPHASED_TWOSAMPLES}"
-
-if [[ "$?" != 0 ]]
-then
-    echo "Non zero exit status while creating 2nd sample in vcf-file in phasing_X.sh" >> /dev/stderr
-	exit 2
-fi
+    --out_file "${UNPHASED_TWOSAMPLES}" \
+    || dieWith "Non zero exit status while creating 2nd sample in vcf-file in phasing_X.sh" $?
 
 #create sample_g file
 echo "ID_1 ID_2 missing sex" > "${FILE_SAMPLE_G}"
@@ -72,36 +70,23 @@ ${JAVA_BINARY} \
     out="${PHASED_TWOSAMPLES}" \
     map="${BEAGLE_GENETIC_MAP_X}" \
     impute=false \
-    seed=25041988
+    seed=25041988 \
+    || dieWith "Non zero exit status while phasing with Beagle in phasing_X.sh" $?
 
-if [[ "$?" != 0 ]]
-then
-    echo "Non zero exit status while phasing with Beagle in phasing_X.sh" >> /dev/stderr
-    exit 2
-fi
 
 ${PYTHON_BINARY} "${TOOL_BEAGLE_EMBED_HAPLOTYPES_VCF}" \
     --hap_file "${PHASED_TWOSAMPLES}.vcf.gz" \
     --vcf_file "${UNPHASED}" \
-    --out_file  "${tmpPhased}"
+    --out_file  "${tmpPhased}" \
+    || dieWith "Non zero exit status while embedding haplotypes in phasing_X.sh" $?
 
-
-if [[ "$?" != 0 ]]
-then
-    echo "Non zero exit status while embedding haplotypes in phasing_X.sh" >> /dev/stderr
-	exit 2
-fi
 
 ${PYTHON_BINARY} "${TOOL_GROUP_HAPLOTYPES}" \
 	--infile "${tmpphased}" \
 	--out "${tmphaploblocks}" \
-	--minHT ${minHT}
+	--minHT ${minHT} \
+    || dieWith "Non zero exit status while grouping haplotypes in phasing_X.sh" $?
 	
-if [[ "$?" != 0 ]]
-then
-	echo "Non zero exit status while grouping haplotypes in phasing_X.sh"
-	exit 2
-fi
 
 mv ${tmpphased} ${FILENAME_PHASED_GENOTYPES}
 mv ${tmphaploblocks} ${FILENAME_HAPLOBLOCK_GROUPS}
