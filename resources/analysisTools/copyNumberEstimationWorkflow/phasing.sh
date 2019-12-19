@@ -3,12 +3,7 @@
 # Copyright (c) 2017 The ACEseq workflow developers.
 # Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 
-dieWith() {
-  local msg="${1:?No error message}"
-  local ec="${2:-$?}"
-  echo "$msg: exit code $ec" >> /dev/stderr
-  exit "$ec"
-}
+source "$TOOL_BASH_LIB"
 
 #DEFINE FILE NAMES
 UNPHASED="${FILE_UNPHASED_PRE}${CHR_NAME}.${FILE_VCF_SUF}"
@@ -32,7 +27,7 @@ then
          	    | \
          	    ${BCFTOOLS_BINARY} view ${BCFTOOLS_OPTS} - \
          	    > "${UNPHASED}" \
-                || dieWith "Non zero exit status for mpileup in phasing.sh" $?
+                || dieWith "Non zero exit status for mpileup in phasing.sh"
          
 fi
 
@@ -43,7 +38,7 @@ echo -n > "${tmpHaploblocks}"
 ${PYTHON_BINARY} "${TOOL_BEAGLE_CREATE_FAKE_SAMPLES}" \
     --in_file "${UNPHASED}" \
     --out_file "${UNPHASED_TWOSAMPLES}" \
-    || dieWith "Non zero exit status while creating 2nd sample in vcf-file in phasing.sh" $?
+    || dieWith "Non zero exit status while creating 2nd sample in vcf-file in phasing.sh"
 
 ${JAVA_BINARY} \
     -jar ${TOOL_BEAGLE} \
@@ -53,19 +48,19 @@ ${JAVA_BINARY} \
     map="${BEAGLE_GENETIC_MAP}" \
     impute=false \
     seed=25041988 \
-    || dieWith "Non zero exit status while phasing with Beagle in phasing.sh" $?
+    || dieWith "Non zero exit status while phasing with Beagle in phasing.sh"
 
 ${PYTHON_BINARY} "${TOOL_BEAGLE_EMBED_HAPLOTYPES_VCF}" \
     --hap_file "${PHASED_TWOSAMPLES}.vcf.gz" \
     --vcf_file "${UNPHASED}" \
     --out_file  "${tmpPhased}" \
-    || dieWith "Non zero exit status while embedding haplotypes in phasing.sh" $?
+    || dieWith "Non zero exit status while embedding haplotypes in phasing.sh"
 
 ${PYTHON_BINARY} "${TOOL_GROUP_HAPLOTYPES}" \
 	--infile "${tmpPhased}" \
 	--out "${tmpHaploblocks}" \
 	--minHT ${minHT} \
-    || dieWith "Non zero exit status while grouping haplotypes in phasing.sh" $?
+    || dieWith "Non zero exit status while grouping haplotypes in phasing.sh"
 	
 mv $tmpPhased ${FILENAME_PHASED_GENOTYPES}
 mv $tmpHaploblocks ${FILENAME_HAPLOBLOCK_GROUPS}

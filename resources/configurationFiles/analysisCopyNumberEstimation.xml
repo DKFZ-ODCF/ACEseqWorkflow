@@ -233,6 +233,7 @@
         <!--<tool name="correctGcBiasEnvironment_conda" value="correctGCBias_conda.sh" basepath="copyNumberEstimationWorkflow/environments"/>-->
 
         <!-- cnvSnpGeneration = TOOL_SNP_CNV_GENERATION -->
+        <tool name="bashLib" value="bashLib.sh" basepath="copyNumberEstimationWorkflow"/>
         <tool name="snpPosCnvWinGenerator" value="snp_cnv.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="mergeFilterSnp" value="merge_and_filter_snp.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="annotateCnvVcf" value="annotate_vcf.pl" basepath="copyNumberEstimationWorkflow"/>

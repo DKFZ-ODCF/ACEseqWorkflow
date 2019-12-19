@@ -3,12 +3,7 @@
 # Copyright (c) 2017 The ACEseq workflow developers.
 # Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 
-dieWith() {
-  local msg="${1:?No error message}"
-  local ec="${2:-$?}"
-  echo "$msg: exit code $ec" >> /dev/stderr
-  exit "$ec"
-}
+source "$TOOL_BASH_LIB"
 
 if [[ ${isNoControlWorkflow} == false ]]; then
     source ${TOOL_ANALYZE_BAM_HEADER}
@@ -45,7 +40,7 @@ then
         	    | \
         	    ${BCFTOOLS_BINARY} view ${BCFTOOLS_OPTS} - \
         	    > "${UNPHASED}" \
-                || dieWith "Non zero exit status for mpileup in phasing_X.sh" $?
+                || dieWith "Non zero exit status for mpileup in phasing_X.sh"
         
 fi
 
@@ -56,7 +51,7 @@ echo -n > "${tmpHaploblocks}"
 ${PYTHON_BINARY} "${TOOL_BEAGLE_CREATE_FAKE_SAMPLES}" \
     --in_file "${UNPHASED}" \
     --out_file "${UNPHASED_TWOSAMPLES}" \
-    || dieWith "Non zero exit status while creating 2nd sample in vcf-file in phasing_X.sh" $?
+    || dieWith "Non zero exit status while creating 2nd sample in vcf-file in phasing_X.sh"
 
 #create sample_g file
 echo "ID_1 ID_2 missing sex" > "${FILE_SAMPLE_G}"
@@ -71,21 +66,21 @@ ${JAVA_BINARY} \
     map="${BEAGLE_GENETIC_MAP_X}" \
     impute=false \
     seed=25041988 \
-    || dieWith "Non zero exit status while phasing with Beagle in phasing_X.sh" $?
+    || dieWith "Non zero exit status while phasing with Beagle in phasing_X.sh"
 
 
 ${PYTHON_BINARY} "${TOOL_BEAGLE_EMBED_HAPLOTYPES_VCF}" \
     --hap_file "${PHASED_TWOSAMPLES}.vcf.gz" \
     --vcf_file "${UNPHASED}" \
     --out_file  "${tmpPhased}" \
-    || dieWith "Non zero exit status while embedding haplotypes in phasing_X.sh" $?
+    || dieWith "Non zero exit status while embedding haplotypes in phasing_X.sh"
 
 
 ${PYTHON_BINARY} "${TOOL_GROUP_HAPLOTYPES}" \
 	--infile "${tmpphased}" \
 	--out "${tmphaploblocks}" \
 	--minHT ${minHT} \
-    || dieWith "Non zero exit status while grouping haplotypes in phasing_X.sh" $?
+    || dieWith "Non zero exit status while grouping haplotypes in phasing_X.sh"
 	
 
 mv ${tmpphased} ${FILENAME_PHASED_GENOTYPES}
