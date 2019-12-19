@@ -6,61 +6,61 @@
 source "$TOOL_BASH_LIB"
 
 #DEFINE FILE NAMES
-UNPHASED="${FILE_UNPHASED_PRE}${CHR_NAME}.${FILE_VCF_SUF}"
-UNPHASED_TWOSAMPLES="${FILE_UNPHASED_PRE}${CHR_NAME}_2samples.${FILE_VCF_SUF}"
-PHASED_TWOSAMPLES="${FILE_PHASED_GENOTYPE}${CHR_NAME}_2samples"
-tmpPhased="${FILENAME_PHASED_GENOTYPES}_tmp"
-tmpHaploblocks="${FILENAME_HAPLOBLOCK_GROUPS}_tmp"
+UNPHASED="$FILE_UNPHASED_PRE$CHR_NAME.$FILE_VCF_SUF"
+UNPHASED_TWOSAMPLES="$FILE_UNPHASED_PRE${CHR_NAME}_2samples.$FILE_VCF_SUF"
+PHASED_TWOSAMPLES="$FILE_PHASED_GENOTYPE${CHR_NAME}_2samples"
+tmpPhased="$FILENAME_PHASED_GENOTYPES}_tmp"
+tmpHaploblocks="$FILENAME_HAPLOBLOCK_GROUPS}_tmp"
 
-if [[ ${isNoControlWorkflow} == false ]]
+if [[ "$isNoControlWorkflow" == false ]]
 then
 
-    source ${TOOL_ANALYZE_BAM_HEADER}
-    getRefGenomeAndChrPrefixFromHeader ${FILE_CONTROL_BAM} # Sets CHR_PREFIX and REFERENCE_GENOME
+    source "$TOOL_ANALYZE_BAM_HEADER"
+    getRefGenomeAndChrPrefixFromHeader "$FILE_CONTROL_BAM" # Sets CHR_PREFIX and REFERENCE_GENOME
 
-    CHR_NR=${CHR_PREFIX}${CHR_NAME:?CHR_NAME is not set}
+    CHR_NR="$CHR_PREFIX${CHR_NAME:?CHR_NAME is not set}"
 
-         ${SAMTOOLS_BINARY} mpileup ${CNV_MPILEUP_OPTS} -u \
-         	    -f "${REFERENCE_GENOME}" \
-         	    -r ${CHR_NR} \
-         	    "${FILE_CONTROL_BAM}" \
-         	    | \
-         	    ${BCFTOOLS_BINARY} view ${BCFTOOLS_OPTS} - \
-         	    > "${UNPHASED}" \
-                || dieWith "Non zero exit status for mpileup in phasing.sh"
+    $SAMTOOLS_BINARY mpileup "$CNV_MPILEUP_OPTS" -u \
+        -f "$REFERENCE_GENOME" \
+        -r "$CHR_NR" \
+        "$FILE_CONTROL_BAM" \
+        | \
+        $BCFTOOLS_BINARY view "$BCFTOOLS_OPTS" - \
+        > "$UNPHASED" \
+        || dieWith "Non zero exit status for mpileup in phasing.sh"
          
 fi
 
-echo -n > "${UNPHASED_TWOSAMPLES}"
-echo -n > "${tmpPhased}"
-echo -n > "${tmpHaploblocks}"
+echo -n > "$UNPHASED_TWOSAMPLES"
+echo -n > "$tmpPhased"
+echo -n > "$tmpHaploblocks"
 
-${PYTHON_BINARY} "${TOOL_BEAGLE_CREATE_FAKE_SAMPLES}" \
-    --in_file "${UNPHASED}" \
-    --out_file "${UNPHASED_TWOSAMPLES}" \
+$PYTHON_BINARY "$TOOL_BEAGLE_CREATE_FAKE_SAMPLES" \
+    --in_file "$UNPHASED" \
+    --out_file "$UNPHASED_TWOSAMPLES" \
     || dieWith "Non zero exit status while creating 2nd sample in vcf-file in phasing.sh"
 
-${JAVA_BINARY} \
-    -jar ${TOOL_BEAGLE} \
-    gt="${UNPHASED_TWOSAMPLES}" \
-    ref="${BEAGLE_REFERENCE_FILE}" \
-    out="${PHASED_TWOSAMPLES}" \
-    map="${BEAGLE_GENETIC_MAP}" \
+$JAVA_BINARY \
+    -jar "$TOOL_BEAGLE" \
+    gt="$UNPHASED_TWOSAMPLES" \
+    ref="$BEAGLE_REFERENCE_FILE" \
+    out="$PHASED_TWOSAMPLES" \
+    map="$BEAGLE_GENETIC_MAP" \
     impute=false \
     seed=25041988 \
     || dieWith "Non zero exit status while phasing with Beagle in phasing.sh"
 
-${PYTHON_BINARY} "${TOOL_BEAGLE_EMBED_HAPLOTYPES_VCF}" \
-    --hap_file "${PHASED_TWOSAMPLES}.vcf.gz" \
-    --vcf_file "${UNPHASED}" \
-    --out_file  "${tmpPhased}" \
+$PYTHON_BINARY "$TOOL_BEAGLE_EMBED_HAPLOTYPES_VCF" \
+    --hap_file "$PHASED_TWOSAMPLES.vcf.gz" \
+    --vcf_file "$UNPHASED" \
+    --out_file  "$tmpPhased" \
     || dieWith "Non zero exit status while embedding haplotypes in phasing.sh"
 
-${PYTHON_BINARY} "${TOOL_GROUP_HAPLOTYPES}" \
-	--infile "${tmpPhased}" \
-	--out "${tmpHaploblocks}" \
-	--minHT ${minHT} \
+$PYTHON_BINARY "$TOOL_GROUP_HAPLOTYPES" \
+	--infile "$tmpPhased" \
+	--out "$tmpHaploblocks" \
+	--minHT "$minHT" \
     || dieWith "Non zero exit status while grouping haplotypes in phasing.sh"
 	
-mv $tmpPhased ${FILENAME_PHASED_GENOTYPES}
-mv $tmpHaploblocks ${FILENAME_HAPLOBLOCK_GROUPS}
+mv "$tmpPhased" "$FILENAME_PHASED_GENOTYPES"
+mv "$tmpHaploblocks" "$FILENAME_HAPLOBLOCK_GROUPS"
