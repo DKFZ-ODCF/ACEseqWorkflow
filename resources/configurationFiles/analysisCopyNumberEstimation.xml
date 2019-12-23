@@ -243,7 +243,7 @@
         <tool name="mergeFilterCnv" value="merge_and_filter_cnv.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="getHetSnps" value="getHetSNPs.R" basepath="copyNumberEstimationWorkflow"/>
 
-        <tool name="beagle" value="beagle.15Aug19.395.jar" basepath="copyNumberEstimationWorkflow"/>
+        <tool name="beagle" value="beagle.25Nov19.28d.jar" basepath="copyNumberEstimationWorkflow"/>
         <tool name="beagleCreateFakeSamples" value="beagle_create_fake_samples.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="beagleEmbedHaplotypesVcf" value="beagle_embed_haplotypes_vcf.py" basepath="copyNumberEstimationWorkflow"/>
 
