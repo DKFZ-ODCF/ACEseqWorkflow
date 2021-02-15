@@ -20,12 +20,12 @@ then
 
     CHR_NR="$CHR_PREFIX${CHR_NAME:?CHR_NAME is not set}"
 
-    $SAMTOOLS_BINARY mpileup "$CNV_MPILEUP_OPTS" -u \
+    $SAMTOOLS_BINARY mpileup $CNV_MPILEUP_OPTS -u \
         -f "$REFERENCE_GENOME" \
         -r "$CHR_NR" \
         "$FILE_CONTROL_BAM" \
         | \
-        $BCFTOOLS_BINARY view "$BCFTOOLS_OPTS" - \
+        $BCFTOOLS_BINARY view $BCFTOOLS_OPTS - \
         > "$UNPHASED" \
         || dieWith "Non zero exit status for mpileup in phasing.sh"
          
