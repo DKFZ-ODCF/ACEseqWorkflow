@@ -287,7 +287,7 @@
 
         <tool name="cnvSnpGeneration" value="cnv_snvMpileup.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="2" cores="2" nodes="1" walltime="15"/>
+                <rset size="l" memory="10" cores="2" nodes="1" walltime="15"/>
             </resourcesets>
             <input type="file" typeof="BamFile" scriptparameter="FILE_TUMOR_BAM"/>
             <input type="file" typeof="BamFile" scriptparameter="FILE_CONTROL_BAM"/>
@@ -513,7 +513,7 @@
 
         <tool name="markHomozygousDeletions" value="homozygDel.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="1" cores="1" nodes="1" walltime="1"/>
+                <rset size="l" memory="5" cores="1" nodes="1" walltime="1"/>
             </resourcesets>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEGMENTS"/>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_SV_POINTS"/>
@@ -522,7 +522,7 @@
 
         <tool name="segmentsToSnpDataHomodel" value="segmentsDataHomoDel.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="1" cores="2" nodes="1" walltime="2"/>
+                <rset size="l" memory="5" cores="2" nodes="1" walltime="2"/>
             </resourcesets>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEGMENTS_W_HOMDEL"/>
             <input type="file" typeof="TextFile" scriptparameter="FILE_PSCBS_DATA"/>
@@ -545,7 +545,7 @@
 
         <tool name="segmentsToSnpDataPruned" value="segmentsPrunedNormal.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="1" cores="2" nodes="1" walltime="2"/>
+                <rset size="l" memory="5" cores="2" nodes="1" walltime="2"/>
             </resourcesets>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_CLUSTERED_SEGMENTS"/>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE2"/>
