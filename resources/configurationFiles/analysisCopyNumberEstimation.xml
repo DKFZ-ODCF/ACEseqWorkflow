@@ -13,13 +13,14 @@
     <configurationvalues>
 
         <!--BINARIES-->
-        <cvalue name="HTSLIB_VERSION" value="0.2.5" type="string"/>
+        <cvalue name="HTSLIB_VERSION" value="1.9" type="string"/>
         <cvalue name="PERL_VERSION" value="5.20.2" type="string"/>
         <cvalue name="PYTHON_VERSION" value="2.7.9" type="string"/>
         <cvalue name="RSCRIPT_VERSION" value="3.3.1" type="string"/>
         <cvalue name='BEDTOOLS_VERSION' value='2.16.2' type='string'/>
         <cvalue name="VCFTOOLS_VERSION" value="0.1.10" type="string"/>
-        <cvalue name="SAMTOOLS_VERSION" value="0.1.19" type="string"/>
+        <cvalue name="SAMTOOLS_VERSION" value="1.9" type="string"/>
+        <cvalue name="BCFTOOLS_VERSION" value="1.9" type="string"/>
         <cvalue name="JAVA_VERSION" value="1.8.0_131" type="string"/> 
 
         <cvalue name='runInDebugMode' value='false' type='boolean' description='additional files will be produced to allow for easier debugging (true|false)'/>
@@ -98,7 +99,7 @@
 
         <!--cnv_snpMpileup Opts-->
         <cvalue name="mpileup_qual" value="0" type="integer" description="quality used for parameter 'Q' in samtools mpileup"/>
-        <cvalue name='CNV_MPILEUP_OPTS' value='"-A -R -B -Q ${mpileup_qual} -q 1 -I "' type="string" description="options for mpileup to determine which bases/reads to use"/>
+        <cvalue name='CNV_MPILEUP_OPTS' value='"-A --ignore-RG -B -Q ${mpileup_qual} -q 1 -I "' type="string" description="options for mpileup to determine which bases/reads to use"/>
 
         <!--addHaplotypes Opts-->
         <cvalue name="FILE_VCF_SUF" value="vcf" type="string" description="suffix for vcf files"/>
@@ -109,7 +110,7 @@
         <cvalue name='unphasedGenotypesFileSuffix' value='${FILE_VCF_SUF}' type="string" description="suffix for unphased genotypes file"/>
 
         <!--phasing opts-->
-        <cvalue name='BCFTOOLS_OPTS' value='"-vgN "' type="string" description="bcftools options for imputation"/>
+        <cvalue name='BCFTOOLS_OPTS' value='"-vc "' type="string" description="bcftools options for imputation"/>
         <cvalue name="FILE_UNPHASED_PRE" value="${phasingOutputDirectory}/${unphasedGenotypesFilePrefix}" type="path"/>
         <cvalue name="FILE_PHASED_GENOTYPE" value="${phasingOutputDirectory}/phased_genotype_chr" type="path"/>
         <cvalue name="FILE_SAMPLE_G" value="${phasingOutputDirectory}/sample_g.txt" type="path" description="sample_g file used by imputation on X chromosome for females"/>

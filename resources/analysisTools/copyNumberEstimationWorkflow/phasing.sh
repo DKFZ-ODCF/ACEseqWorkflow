@@ -25,7 +25,7 @@ then
         -r "$CHR_NR" \
         "$FILE_CONTROL_BAM" \
         | \
-        $BCFTOOLS_BINARY view $BCFTOOLS_OPTS - \
+        $BCFTOOLS_BINARY call $BCFTOOLS_OPTS - \
         > "$UNPHASED" \
         || dieWith "Non zero exit status for mpileup in phasing.sh"
          

@@ -32,8 +32,10 @@ module load "vcftools/$VCFTOOLS_VERSION"
 export VCFTOOLS_SORT_BINARY=vcf-sort
 
 module load "samtools/$SAMTOOLS_VERSION"
-export BCFTOOLS_BINARY=bcftools
 export SAMTOOLS_BINARY=samtools
+
+module load "bcftools/$BCFTOOLS_VERSION"
+export BCFTOOLS_BINARY=bcftools
 
 module load "java/$JAVA_VERSION"
 export JAVA_BINARY=java
