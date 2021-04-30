@@ -45,21 +45,21 @@
 
         <!-- Reference files -->
         <!-- sharedFilesBaseDirectory, inputBaseDirectory and outputBaseDirectory have to be set in the project.xml file -->
-        <!-- <cvalue name="baseDirectoryReference" value="/icgc/ngs_share/assemblies/hg_GRCh38" type="path"/> -->
-        <cvalue name="referenceGenome_1KGRef" value="${baseDirectoryReference}/sequence/hg38_UCSC_chr.fa" type="path"/>
+        <cvalue name="baseDirectoryReference" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes" type="path"/>
+        <cvalue name="referenceGenome_1KGRef" value="${baseDirectoryReference}/sequence/1KGRef/hs37d5.fa" type="path"/>
         <cvalue name='REFERENCE_GENOME' value="${referenceGenome_1KGRef}" type="string"/>
-        <cvalue name="dbSNP_FILE" value="${baseDirectoryReference}/databases/dbSNP/00-All.SNV.vcf.gz" type="path"/>
-        <cvalue name="MAPPABILITY_FILE" value="${baseDirectoryReference}/stats/mappability/GRCh38_Mappability_Align_100mer.bedGraph.gz" type="path"/>
+        <cvalue name="dbSNP_FILE" value="${baseDirectoryReference}/databases/dbSNP/dbSNP_135/00-All.SNV.vcf.gz" type="path"/>
+        <cvalue name="MAPPABILITY_FILE" value="${baseDirectoryReference}/databases/UCSC/wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz" type="path"/>
         <cvalue name="CHROMOSOME_LENGTH_FILE" value="${baseDirectoryReference}/stats/chrlengths.txt" type="path"/>
-        <cvalue name="REPLICATION_TIME_FILE" value="${baseDirectoryReference}/databases/ENCODE/RepliSeq/time_mean_10KB.Rda" type="path"/>
-        <cvalue name="GC_CONTENT_FILE" value="${baseDirectoryReference}/stats/gc_content_hg38.txt" type="path"/>
+        <cvalue name="REPLICATION_TIME_FILE" value="${baseDirectoryReference}/databases/ENCODE/ReplicationTime_10cellines_mean_10KB.Rda" type="path"/>
+        <cvalue name="GC_CONTENT_FILE" value="${baseDirectoryReference}/stats/hg19_GRch37_100genomes_gc_content_10kb.txt" type="path"/>
         <cvalue name='annotatePlotsWithGenes' value='false' type="boolean"/>
 
         <!-- Beagle references-->
-        <cvalue name='BEAGLE_REFERENCE_FILE' value="${baseDirectoryReference}/tools_data/Beagle/1000genomes/ALL.chr${CHR_NAME}.shapeit2_integrated_snvindels_v2a_27022019.GRCh38.phased.vcf.gz" type="path"/>
-        <cvalue name='BEAGLE_REFERENCE_FILE_X' value="${baseDirectoryReference}/tools_data/Beagle/1000genomes/ALL.chrX.shapeit2_integrated_snvindels_v2a_27022019.GRCh38.phased.vcf.gz" type="path"/>
-        <cvalue name='BEAGLE_GENETIC_MAP' value="${baseDirectoryReference}/databases/beagle_genetic_maps/plink.chr${CHR_NAME}.GRCh38.map" type="path"/>
-        <cvalue name='BEAGLE_GENETIC_MAP_X' value="${baseDirectoryReference}/databases/beagle_genetic_maps/plink.chrX.GRCh38.map" type="path"/>
+        <cvalue name='BEAGLE_REFERENCE_FILE' value="${baseDirectoryReference}/tools_data/Beagle/chr${CHR_NAME}.1kg.phase3.v5a.b37.bref3" type="path"/>        
+        <cvalue name='BEAGLE_REFERENCE_FILE_X' value="${baseDirectoryReference}/tools_data/Beagle/chrX.1kg.phase3.v5a.b37.bref3" type="path"/>        
+        <cvalue name='BEAGLE_GENETIC_MAP' value="${baseDirectoryReference}/tools_data/genetic_maps/plink.chr${CHR_NAME}.GRCh37.map" type="path"/>
+        <cvalue name='BEAGLE_GENETIC_MAP_X' value="${baseDirectoryReference}/tools_data/genetic_maps/plink.chrX.GRCh37.map" type="path"/>
 
         <!-- Input and output paths -->
         <cvalue name='outputExecutionDirectory' value='${outputAnalysisBaseDirectory}/exec_${executionTimeString}'/>
@@ -122,10 +122,10 @@
         <cvalue name='SNP_SUFFIX' value='snp.tab.gz' type="string"/>
         <cvalue name='snp_min_coverage' value='5' type="integer"/>
 
-        <!--cvalue name='MALE_FAKE_CONTROL_PRE' value="TODO /icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/LocalControls/ACEseq_GenericMaleControl/GenericMaleControl.chr" type='path'
+        <cvalue name='MALE_FAKE_CONTROL_PRE' value="${baseDirectoryReference}/databases/LocalControls/ACEseq_GenericMaleControl/GenericMaleControl.chr" type='path'
                 description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for male patients" />
-        <cvalue name='FEMALE_FAKE_CONTROL_PRE' value="TODO /icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/LocalControls/ACEseq_GenericFemaleControl/GenericFemaleControl.chr" type='path'
-                description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for female patients" /-->
+        <cvalue name='FEMALE_FAKE_CONTROL_PRE' value="${baseDirectoryReference}/databases/LocalControls/ACEseq_GenericFemaleControl/GenericFemaleControl.chr" type='path'
+                description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for female patients" />
         <cvalue name='FAKE_CONTROL_POST' value=".cnv.anno.tab.gz" type='string' description="suffix for chromosome wise 1kb coverage files used for fake control workflow"/>
         <cvalue name='PATIENTSEX' value="unknown" type='string' description="patient sex used in case of no control workflow (male|female|klinefelter)" />
 
@@ -159,7 +159,7 @@
         <cvalue name='FILE_DENSITYBETA' value='${aceseqOutputDirectory}/densityBeta.pdf' type="path"/>
         <cvalue name='min_DDI_length' value='1000' type="integer" description="minimum length for DEL/DUP/INV to be considered for breakpoint integration"/>
         <cvalue name='selSVColumn' value='eventScore' type="string" description="column from bedpe file to be recored in ${pid}_sv_points.txt file"/>
-        <cvalue name="FILENAME_CENTROMERES" value='${baseDirectoryReference}/stats/gap_with_centromeres.header.txt' type="string"/>
+        <cvalue name="FILENAME_CENTROMERES" value='${baseDirectoryReference}/stats/hg19_gaps.txt' type="string"/>
 
         <!--getSegmentsAndSnps/pscbsAll Opts-->
         <cvalue name='min_seg_width' value='2000' type="integer" description="segmentByPairedPSCBS() minwidth parameter in PSCBS R package"/>
@@ -211,7 +211,7 @@
 
         <!--generateVCF opts-->
         <cvalue name="blacklistFileName" value='artifact.homoDels.potentialArtifacts.txt' type="string"/>
-        <cvalue name="cytobandsFile" value='/icgc/ngs_share/assemblies/hg_GRCh38/stats/hg38_cytoBand.txt' type="string"/>
+        <cvalue name="cytobandsFile" value='/icgc/ngs_share/annovar/annovar_common_humandb/hg19_cytoBand.txt' type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_PRE' value="${pid}_most_important_info" type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_POST' value=".txt" type="string"/>
         <cvalue name='FILE_SEGMENT_VCF_PRE' value="${aceseqOutputDirectory}/${pid}" type="path"/>
