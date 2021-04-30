@@ -33,12 +33,12 @@ if grep -Pv 'female|klinefelter'  "$FILENAME_SEX"
 if [[ "$isNoControlWorkflow" == false ]]
 then
 
-    $SAMTOOLS_BINARY mpileup "$CNV_MPILEUP_OPTS" -u \
+    $BCFTOOLS_BINARY mpileup $CNV_MPILEUP_OPTS -O u \
             -f "$REFERENCE_GENOME" \
             -r "$CHR_NR" \
             "$FILE_CONTROL_BAM" \
             | \
-            $BCFTOOLS_BINARY view "$BCFTOOLS_OPTS" - \
+            $BCFTOOLS_BINARY call $BCFTOOLS_OPTS - \
             > "$UNPHASED" \
             || dieWith "Non zero exit status for mpileup in phasing_X.sh"
         

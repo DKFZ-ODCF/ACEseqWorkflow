@@ -20,7 +20,7 @@ then
 
     CHR_NR="$CHR_PREFIX${CHR_NAME:?CHR_NAME is not set}"
 
-    $SAMTOOLS_BINARY mpileup $CNV_MPILEUP_OPTS -u \
+    $BCFTOOLS_BINARY mpileup $CNV_MPILEUP_OPTS -O u \
         -f "$REFERENCE_GENOME" \
         -r "$CHR_NR" \
         "$FILE_CONTROL_BAM" \
