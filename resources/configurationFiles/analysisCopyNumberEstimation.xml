@@ -376,7 +376,7 @@
 
         <tool name="phaseGenotypes_noMpileup" value="phasing.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="10" cores="1" nodes="1" walltime="10"/>
+                <rset size="l" memory="10" cores="3" nodes="1" walltime="10"/>
             </resourcesets>
             <input type="file" typeof="UnphasedGenotypeFile" scriptparameter="FILENAME_UNPHASED_GENOTYPE"/>
             <output type="tuple">
@@ -387,7 +387,7 @@
 
         <tool name="phaseGenotypes_X_noMpileup" value="phasing_X.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="10" cores="1" nodes="1" walltime="10"/>
+                <rset size="l" memory="10" cores="3" nodes="1" walltime="10"/>
             </resourcesets>
             <input type="file" typeof="UnphasedGenotypeFile" scriptparameter="FILENAME_UNPHASED_GENOTYPE"/>
             <input type="file" typeof="GenderFile" scriptparameter="FILENAME_SEX"/>
