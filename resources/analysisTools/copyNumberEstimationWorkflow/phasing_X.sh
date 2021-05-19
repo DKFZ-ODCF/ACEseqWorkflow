@@ -58,7 +58,7 @@ echo "ID_1 ID_2 missing sex" > "$FILE_SAMPLE_G"
 echo "0 0 0 D" >> "$FILE_SAMPLE_G"
 echo "$PID $PID 0 2" >> "$FILE_SAMPLE_G"
 
-$JAVA_BINARY -Xmx9g \
+$JAVA_BINARY "$BEAGLE_JAVA_MEM" \
     -jar "$TOOL_BEAGLE" \
     gt="$UNPHASED_TWOSAMPLES" \
     ref="$BEAGLE_REFERENCE_FILE_X" \
@@ -66,7 +66,7 @@ $JAVA_BINARY -Xmx9g \
     map="$BEAGLE_GENETIC_MAP_X" \
     impute=false \
     seed=25041988 \
-    nthreads=3 \
+    nthreads="$BEAGLE_NUM_THREAD" \
     || dieWith "Non zero exit status while phasing with Beagle in phasing_X.sh"
 
 

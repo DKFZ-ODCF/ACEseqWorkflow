@@ -40,7 +40,7 @@ $PYTHON_BINARY "$TOOL_BEAGLE_CREATE_FAKE_SAMPLES" \
     --out_file "$UNPHASED_TWOSAMPLES" \
     || dieWith "Non zero exit status while creating 2nd sample in vcf-file in phasing.sh"
 
-$JAVA_BINARY -Xmx9g \
+$JAVA_BINARY "$BEAGLE_JAVA_MEM" \
     -jar "$TOOL_BEAGLE" \
     gt="$UNPHASED_TWOSAMPLES" \
     ref="$BEAGLE_REFERENCE_FILE" \
@@ -48,7 +48,7 @@ $JAVA_BINARY -Xmx9g \
     map="$BEAGLE_GENETIC_MAP" \
     impute=false \
     seed=25041988 \
-    nthreads=3 \
+    nthreads="$BEAGLE_NUM_THREAD" \
     || dieWith "Non zero exit status while phasing with Beagle in phasing.sh"
 
 $PYTHON_BINARY "$TOOL_BEAGLE_EMBED_HAPLOTYPES_VCF" \
