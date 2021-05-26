@@ -20,12 +20,12 @@ then
 
     CHR_NR="$CHR_PREFIX${CHR_NAME:?CHR_NAME is not set}"
 
-    $SAMTOOLS_BINARY mpileup "$CNV_MPILEUP_OPTS" -u \
+    $BCFTOOLS_BINARY mpileup $CNV_MPILEUP_OPTS -O u \
         -f "$REFERENCE_GENOME" \
         -r "$CHR_NR" \
         "$FILE_CONTROL_BAM" \
         | \
-        $BCFTOOLS_BINARY view "$BCFTOOLS_OPTS" - \
+        $BCFTOOLS_BINARY call $BCFTOOLS_OPTS - \
         > "$UNPHASED" \
         || dieWith "Non zero exit status for mpileup in phasing.sh"
          
@@ -40,7 +40,7 @@ $PYTHON_BINARY "$TOOL_BEAGLE_CREATE_FAKE_SAMPLES" \
     --out_file "$UNPHASED_TWOSAMPLES" \
     || dieWith "Non zero exit status while creating 2nd sample in vcf-file in phasing.sh"
 
-$JAVA_BINARY \
+$JAVA_BINARY "$BEAGLE_JAVA_MEM" \
     -jar "$TOOL_BEAGLE" \
     gt="$UNPHASED_TWOSAMPLES" \
     ref="$BEAGLE_REFERENCE_FILE" \
@@ -48,6 +48,7 @@ $JAVA_BINARY \
     map="$BEAGLE_GENETIC_MAP" \
     impute=false \
     seed=25041988 \
+    nthreads="$BEAGLE_NUM_THREAD" \
     || dieWith "Non zero exit status while phasing with Beagle in phasing.sh"
 
 $PYTHON_BINARY "$TOOL_BEAGLE_EMBED_HAPLOTYPES_VCF" \

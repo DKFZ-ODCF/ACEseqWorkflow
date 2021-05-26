@@ -17,7 +17,7 @@ CHR_NR="$CHR_PREFIX$CHR_NAME"
 UNPHASED="$FILE_UNPHASED_PRE$CHR_NAME.$FILE_VCF_SUF"
 UNPHASED_TWOSAMPLES="$FILE_UNPHASED_PRE${CHR_NAME}_2samples.$FILE_VCF_SUF"
 PHASED_TWOSAMPLES="$FILE_PHASED_GENOTYPE${CHR_NAME}_2samples"
-tmpphased="${FILENAME_PHASED_GENOTYPES}_tmp" #These two files should have 23 as chromosomes name rather than 'X'
+tmpPhased="${FILENAME_PHASED_GENOTYPES}_tmp" #These two files should have 23 as chromosomes name rather than 'X'
 tmphaploblocks="${FILENAME_HAPLOBLOCK_GROUPS}_tmp"
 
 
@@ -33,12 +33,12 @@ if grep -Pv 'female|klinefelter'  "$FILENAME_SEX"
 if [[ "$isNoControlWorkflow" == false ]]
 then
 
-    $SAMTOOLS_BINARY mpileup "$CNV_MPILEUP_OPTS" -u \
+    $BCFTOOLS_BINARY mpileup $CNV_MPILEUP_OPTS -O u \
             -f "$REFERENCE_GENOME" \
             -r "$CHR_NR" \
             "$FILE_CONTROL_BAM" \
             | \
-            $BCFTOOLS_BINARY view "$BCFTOOLS_OPTS" - \
+            $BCFTOOLS_BINARY call $BCFTOOLS_OPTS - \
             > "$UNPHASED" \
             || dieWith "Non zero exit status for mpileup in phasing_X.sh"
         
@@ -58,7 +58,7 @@ echo "ID_1 ID_2 missing sex" > "$FILE_SAMPLE_G"
 echo "0 0 0 D" >> "$FILE_SAMPLE_G"
 echo "$PID $PID 0 2" >> "$FILE_SAMPLE_G"
 
-$JAVA_BINARY \
+$JAVA_BINARY "$BEAGLE_JAVA_MEM" \
     -jar "$TOOL_BEAGLE" \
     gt="$UNPHASED_TWOSAMPLES" \
     ref="$BEAGLE_REFERENCE_FILE_X" \
@@ -66,6 +66,7 @@ $JAVA_BINARY \
     map="$BEAGLE_GENETIC_MAP_X" \
     impute=false \
     seed=25041988 \
+    nthreads="$BEAGLE_NUM_THREAD" \
     || dieWith "Non zero exit status while phasing with Beagle in phasing_X.sh"
 
 
@@ -77,11 +78,11 @@ $PYTHON_BINARY "$TOOL_BEAGLE_EMBED_HAPLOTYPES_VCF" \
 
 
 $PYTHON_BINARY "$TOOL_GROUP_HAPLOTYPES" \
-	--infile "$tmpphased" \
+	--infile "$tmpPhased" \
 	--out "$tmphaploblocks" \
 	--minHT "$minHT" \
     || dieWith "Non zero exit status while grouping haplotypes in phasing_X.sh"
 	
 
-mv "$tmpphased" "$FILENAME_PHASED_GENOTYPES"
+mv "$tmpPhased" "$FILENAME_PHASED_GENOTYPES"
 mv "$tmphaploblocks" "$FILENAME_HAPLOBLOCK_GROUPS"

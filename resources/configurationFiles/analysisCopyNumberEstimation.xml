@@ -13,13 +13,14 @@
     <configurationvalues>
 
         <!--BINARIES-->
-        <cvalue name="HTSLIB_VERSION" value="0.2.5" type="string"/>
+        <cvalue name="HTSLIB_VERSION" value="1.9" type="string"/>
         <cvalue name="PERL_VERSION" value="5.20.2" type="string"/>
         <cvalue name="PYTHON_VERSION" value="2.7.9" type="string"/>
         <cvalue name="RSCRIPT_VERSION" value="3.3.1" type="string"/>
         <cvalue name='BEDTOOLS_VERSION' value='2.16.2' type='string'/>
         <cvalue name="VCFTOOLS_VERSION" value="0.1.10" type="string"/>
-        <cvalue name="SAMTOOLS_VERSION" value="0.1.19" type="string"/>
+        <cvalue name="SAMTOOLS_VERSION" value="1.9" type="string"/>
+        <cvalue name="BCFTOOLS_VERSION" value="1.9" type="string"/>
         <cvalue name="JAVA_VERSION" value="1.8.0_131" type="string"/> 
 
         <cvalue name='runInDebugMode' value='false' type='boolean' description='additional files will be produced to allow for easier debugging (true|false)'/>
@@ -44,21 +45,23 @@
 
         <!-- Reference files -->
         <!-- sharedFilesBaseDirectory, inputBaseDirectory and outputBaseDirectory have to be set in the project.xml file -->
-        <!-- <cvalue name="baseDirectoryReference" value="/icgc/ngs_share/assemblies/hg_GRCh38" type="path"/> -->
-        <cvalue name="referenceGenome_1KGRef" value="${baseDirectoryReference}/sequence/hg38_UCSC_chr.fa" type="path"/>
+        <cvalue name="baseDirectoryReference" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes" type="path"/>
+        <cvalue name="referenceGenome_1KGRef" value="${baseDirectoryReference}/sequence/1KGRef/hs37d5.fa" type="path"/>
         <cvalue name='REFERENCE_GENOME' value="${referenceGenome_1KGRef}" type="string"/>
-        <cvalue name="dbSNP_FILE" value="${baseDirectoryReference}/databases/dbSNP/00-All.SNV.vcf.gz" type="path"/>
-        <cvalue name="MAPPABILITY_FILE" value="${baseDirectoryReference}/tats/mappability/GRCh38_Mappability_Align_100mer.bedGraph.gz" type="path"/>
+        <cvalue name="dbSNP_FILE" value="${baseDirectoryReference}/databases/dbSNP/dbSNP_135/00-All.SNV.vcf.gz" type="path"/>
+        <cvalue name="MAPPABILITY_FILE" value="${baseDirectoryReference}/databases/UCSC/wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz" type="path"/>
         <cvalue name="CHROMOSOME_LENGTH_FILE" value="${baseDirectoryReference}/stats/chrlengths.txt" type="path"/>
-        <cvalue name="REPLICATION_TIME_FILE" value="${baseDirectoryReference}/databases/ENCODE/RepliSeq/time_mean_10KB.Rda" type="path"/>
-        <cvalue name="GC_CONTENT_FILE" value="${baseDirectoryReference}/stats/gc_content_hg38.txt" type="path"/>
+        <cvalue name="REPLICATION_TIME_FILE" value="${baseDirectoryReference}/databases/ENCODE/ReplicationTime_10cellines_mean_10KB.Rda" type="path"/>
+        <cvalue name="GC_CONTENT_FILE" value="${baseDirectoryReference}/stats/hg19_GRch37_100genomes_gc_content_10kb.txt" type="path"/>
         <cvalue name='annotatePlotsWithGenes' value='false' type="boolean"/>
 
         <!-- Beagle references-->
-        <cvalue name='BEAGLE_REFERENCE_FILE' value="${baseDirectoryReference}/tools_data/Beagle/1000genomes/ALL.chr${CHR_NAME}.shapeit2_integrated_snvindels_v2a_27022019.GRCh38.phased.vcf.gz" type="path"/>
-        <cvalue name='BEAGLE_REFERENCE_FILE_X' value="${baseDirectoryReference}/tools_data/Beagle/1000genomes/ALL.chrX.shapeit2_integrated_snvindels_v2a_27022019.GRCh38.phased.vcf.gz" type="path"/>
-        <cvalue name='BEAGLE_GENETIC_MAP' value="${baseDirectoryReference}/databases/genetic_maps/plink.chr${CHR_NAME}.GRCh38.map" type="path"/>
-        <cvalue name='BEAGLE_GENETIC_MAP_X' value="${baseDirectoryReference}/databases/genetic_maps/plink.chrX.GRCh38.map" type="path"/>
+        <cvalue name='BEAGLE_REFERENCE_FILE' value="${baseDirectoryReference}/tools_data/Beagle/chr${CHR_NAME}.1kg.phase3.v5a.b37.bref3" type="path"/>        
+        <cvalue name='BEAGLE_REFERENCE_FILE_X' value="${baseDirectoryReference}/tools_data/Beagle/chrX.1kg.phase3.v5a.b37.bref3" type="path"/>        
+        <cvalue name='BEAGLE_GENETIC_MAP' value="${baseDirectoryReference}/tools_data/genetic_maps/plink.chr${CHR_NAME}.GRCh37.map" type="path"/>
+        <cvalue name='BEAGLE_GENETIC_MAP_X' value="${baseDirectoryReference}/tools_data/genetic_maps/plink.chrX.GRCh37.map" type="path"/>
+        <cvalue name='BEAGLE_JAVA_MEM' value='-Xmx9g' type="string" description="The memory request for Beagle"/>
+        <cvalue name='BEAGLE_NUM_THREAD' value='3' type="integer" description="The number of thread request for Beagle"/>
 
         <!-- Input and output paths -->
         <cvalue name='outputExecutionDirectory' value='${outputAnalysisBaseDirectory}/exec_${executionTimeString}'/>
@@ -98,7 +101,7 @@
 
         <!--cnv_snpMpileup Opts-->
         <cvalue name="mpileup_qual" value="0" type="integer" description="quality used for parameter 'Q' in samtools mpileup"/>
-        <cvalue name='CNV_MPILEUP_OPTS' value='"-A -R -B -Q ${mpileup_qual} -q 1 -I "' type="string" description="options for mpileup to determine which bases/reads to use"/>
+        <cvalue name='CNV_MPILEUP_OPTS' value='"-A --ignore-RG -B -Q ${mpileup_qual} -q 1 -I "' type="string" description="options for mpileup to determine which bases/reads to use"/>
 
         <!--addHaplotypes Opts-->
         <cvalue name="FILE_VCF_SUF" value="vcf" type="string" description="suffix for vcf files"/>
@@ -109,7 +112,7 @@
         <cvalue name='unphasedGenotypesFileSuffix' value='${FILE_VCF_SUF}' type="string" description="suffix for unphased genotypes file"/>
 
         <!--phasing opts-->
-        <cvalue name='BCFTOOLS_OPTS' value='"-vgN "' type="string" description="bcftools options for imputation"/>
+        <cvalue name='BCFTOOLS_OPTS' value='"-vc "' type="string" description="bcftools options for imputation"/>
         <cvalue name="FILE_UNPHASED_PRE" value="${phasingOutputDirectory}/${unphasedGenotypesFilePrefix}" type="path"/>
         <cvalue name="FILE_PHASED_GENOTYPE" value="${phasingOutputDirectory}/phased_genotype_chr" type="path"/>
         <cvalue name="FILE_SAMPLE_G" value="${phasingOutputDirectory}/sample_g.txt" type="path" description="sample_g file used by imputation on X chromosome for females"/>
@@ -121,9 +124,9 @@
         <cvalue name='SNP_SUFFIX' value='snp.tab.gz' type="string"/>
         <cvalue name='snp_min_coverage' value='5' type="integer"/>
 
-        <cvalue name='MALE_FAKE_CONTROL_PRE' value="TODO /icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/LocalControls/ACEseq_GenericMaleControl/GenericMaleControl.chr" type='path'
+        <cvalue name='MALE_FAKE_CONTROL_PRE' value="${baseDirectoryReference}/databases/LocalControls/ACEseq_GenericMaleControl/GenericMaleControl.chr" type='path'
                 description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for male patients" />
-        <cvalue name='FEMALE_FAKE_CONTROL_PRE' value="TODO /icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes/databases/LocalControls/ACEseq_GenericFemaleControl/GenericFemaleControl.chr" type='path'
+        <cvalue name='FEMALE_FAKE_CONTROL_PRE' value="${baseDirectoryReference}/databases/LocalControls/ACEseq_GenericFemaleControl/GenericFemaleControl.chr" type='path'
                 description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for female patients" />
         <cvalue name='FAKE_CONTROL_POST' value=".cnv.anno.tab.gz" type='string' description="suffix for chromosome wise 1kb coverage files used for fake control workflow"/>
         <cvalue name='PATIENTSEX' value="unknown" type='string' description="patient sex used in case of no control workflow (male|female|klinefelter)" />
@@ -158,7 +161,7 @@
         <cvalue name='FILE_DENSITYBETA' value='${aceseqOutputDirectory}/densityBeta.pdf' type="path"/>
         <cvalue name='min_DDI_length' value='1000' type="integer" description="minimum length for DEL/DUP/INV to be considered for breakpoint integration"/>
         <cvalue name='selSVColumn' value='eventScore' type="string" description="column from bedpe file to be recored in ${pid}_sv_points.txt file"/>
-        <cvalue name="FILENAME_CENTROMERES" value='${baseDirectoryReference}/stats/gap_with_centromeres.txt' type="string"/>
+        <cvalue name="FILENAME_CENTROMERES" value='${baseDirectoryReference}/stats/hg19_gaps.txt' type="string"/>
 
         <!--getSegmentsAndSnps/pscbsAll Opts-->
         <cvalue name='min_seg_width' value='2000' type="integer" description="segmentByPairedPSCBS() minwidth parameter in PSCBS R package"/>
@@ -210,7 +213,7 @@
 
         <!--generateVCF opts-->
         <cvalue name="blacklistFileName" value='artifact.homoDels.potentialArtifacts.txt' type="string"/>
-        <cvalue name="cytobandsFile" value='/icgc/ngs_share/annovar/annovar_common_humandb/hg38_cytoBand.txt' type="string"/>
+        <cvalue name="cytobandsFile" value='/icgc/ngs_share/annovar/annovar_common_humandb/hg19_cytoBand.txt' type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_PRE' value="${pid}_most_important_info" type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_POST' value=".txt" type="string"/>
         <cvalue name='FILE_SEGMENT_VCF_PRE' value="${aceseqOutputDirectory}/${pid}" type="path"/>
@@ -287,7 +290,7 @@
 
         <tool name="cnvSnpGeneration" value="cnv_snvMpileup.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="2" cores="2" nodes="1" walltime="15"/>
+                <rset size="l" memory="10" cores="2" nodes="1" walltime="15"/>
             </resourcesets>
             <input type="file" typeof="BamFile" scriptparameter="FILE_TUMOR_BAM"/>
             <input type="file" typeof="BamFile" scriptparameter="FILE_CONTROL_BAM"/>
@@ -375,7 +378,7 @@
 
         <tool name="phaseGenotypes_noMpileup" value="phasing.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="10" cores="1" nodes="1" walltime="10"/>
+                <rset size="l" memory="10" cores="3" nodes="1" walltime="10"/>
             </resourcesets>
             <input type="file" typeof="UnphasedGenotypeFile" scriptparameter="FILENAME_UNPHASED_GENOTYPE"/>
             <output type="tuple">
@@ -386,7 +389,7 @@
 
         <tool name="phaseGenotypes_X_noMpileup" value="phasing_X.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="10" cores="1" nodes="1" walltime="10"/>
+                <rset size="l" memory="10" cores="3" nodes="1" walltime="10"/>
             </resourcesets>
             <input type="file" typeof="UnphasedGenotypeFile" scriptparameter="FILENAME_UNPHASED_GENOTYPE"/>
             <input type="file" typeof="GenderFile" scriptparameter="FILENAME_SEX"/>
@@ -513,7 +516,7 @@
 
         <tool name="markHomozygousDeletions" value="homozygDel.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="1" cores="1" nodes="1" walltime="1"/>
+                <rset size="l" memory="5" cores="1" nodes="1" walltime="1"/>
             </resourcesets>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEGMENTS"/>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_SV_POINTS"/>
@@ -522,7 +525,7 @@
 
         <tool name="segmentsToSnpDataHomodel" value="segmentsDataHomoDel.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="1" cores="2" nodes="1" walltime="2"/>
+                <rset size="l" memory="5" cores="2" nodes="1" walltime="2"/>
             </resourcesets>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_SEGMENTS_W_HOMDEL"/>
             <input type="file" typeof="TextFile" scriptparameter="FILE_PSCBS_DATA"/>
@@ -545,7 +548,7 @@
 
         <tool name="segmentsToSnpDataPruned" value="segmentsPrunedNormal.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="1" cores="2" nodes="1" walltime="2"/>
+                <rset size="l" memory="5" cores="2" nodes="1" walltime="2"/>
             </resourcesets>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_CLUSTERED_SEGMENTS"/>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_ALL_SNP_UPDATE2"/>
