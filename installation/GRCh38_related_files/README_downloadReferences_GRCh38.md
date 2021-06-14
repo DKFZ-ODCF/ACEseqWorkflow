@@ -32,7 +32,7 @@ tabix -p vcf 00-All.SNV.vcf.gz
 The mappability file (GRCh38_Mappability_Align_100mer.bedGraph.gz) is created using the `create_mappability.sh` bash script.
 
 The tools used have to be in the `tools` folder. The tools `gem-2-wig`, `gem-indexer`, `gem-mappability` are from the package *gem-tools* from the Vlaams Instituut voor Biotechnologie (VIB). 
-Information about the tools can be found here: https://wiki.bits.vib.be/index.php/Create_a_mappability_track#Install_and_run_the_GEM_library_tools. The tools were downloaded from https://sourceforge.net/projects/gemlibrary/files/gem-library/Binary%20pre-release%202/. Corresponding paper should be this one: https://www.researchgate.net/publication/221776385_Fast_Computation_and_Applications_of_Genome_Mappability
+Information about the tools can be found here: https://wiki.bits.vib.be/index.php/Create_a_mappability_track#Install_and_run_the_GEM_library_tools. The tools were downloaded from https://sourceforge.net/projects/gemlibrary/files/gem-library/Binary%20pre-release%202/. The corresponding paper should be this one: https://www.researchgate.net/publication/221776385_Fast_Computation_and_Applications_of_Genome_Mappability
 
 The two tools `wigToBigWig` and `BigWigToBedGraph` are downloaded from http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/
 
@@ -46,7 +46,7 @@ Replication time from individual cell lines from GRCh37 ENCODE data were lifted 
 The new R-object is uploaded to the `$repo_root/installation/GRCh38_related_files/time_mean_10KB.Rda`
 
 
-#### Gaps and Centromers
+#### Gaps and centromeres
 - `gap.txt.gz` downloaded from `http://hgdownload.cse.ucsc.edu/goldenpath/hg38/database/gap.txt.gz`
 - `centromeres.txt.gz` downloaded from `http://hgdownload.cse.ucsc.edu/goldenpath/hg38/database/centromeres.txt.gz`
 - `centromeres_merged.txt.gz` created with the following command
@@ -64,7 +64,7 @@ The GC-content (`gc_content_hg38.txt`) is calculated directly from the reference
 ```
 python3 calc_gc_content -v -i ${reference_path}/GRCh38_decoy_ebv_phiX_alt_hla_chr.fa -o gc_content_hg38.txt
 ```
-The -v flag increases vervosity. Note that you have to use python3!
+The -v flag increases verbosity. Note that you have to use python3!
 
 
 #### Beagle reference files
@@ -90,16 +90,16 @@ for chr in `seq 1 22` X ; do cat plink.chr${chr}.GRCh38.map | sed 's/^/chr/' > p
 
 
 #### Local controls for no-control workflow (optional)
-These are lift-over files from the hg19 workflow. New hg38 native files will be generated for next versions.
+These are lift-over files from the hg19 workflow. New hg38 native files will be generated for the next versions.
 
 
-#### Exculsion list or blacklist files
-These are lift-over files from the hg19 workflow. New hg38 native files will be generated for next versions.
+#### Exclusion list or blacklist files
+These are lift-over files from the hg19 workflow. New hg38 native files will be generated for the next versions.
 `ACEseqWorkflow/resources/analysisTools/copyNumberEstimationWorkflow/artifact.homoDels.potentialArtifacts.hg38_liftover.txt`
 
 
 #### Hg38 cytoband
-Cytoband file was copied from ANNOVAR database files. Only the coordinates from Chr1-22, X and Y were kept.
+Cytoband file was copied from ANNOVAR database files. Only the coordinates from Chr1-22, X, and Y were kept.
 ```
 cat ANNOVAR/annovar_April2018/humandb/hg38_cytoBand.txt | grep -v "_" | grep -v "^chrM" > hg38_cytoBand.txt
 ```
