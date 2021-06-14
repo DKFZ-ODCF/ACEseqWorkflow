@@ -4,8 +4,8 @@
 # Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 
 dieWith() {
-  local ec="${2:-$?}"
   local msg="${1:?No error message}"
+  local ec="${2:-$?}"
   echo "$msg: exit code $ec" >> /dev/stderr
   exit "$ec"
 }

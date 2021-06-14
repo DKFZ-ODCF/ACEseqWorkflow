@@ -40,7 +40,7 @@ $PYTHON_BINARY "$TOOL_BEAGLE_CREATE_FAKE_SAMPLES" \
     --out_file "$UNPHASED_TWOSAMPLES" \
     || dieWith "Non zero exit status while creating 2nd sample in vcf-file in phasing.sh"
 
-$JAVA_BINARY "$BEAGLE_JAVA_MEM" \
+$JAVA_BINARY $BEAGLE_JAVA_OPTS \
     -jar "$TOOL_BEAGLE" \
     gt="$UNPHASED_TWOSAMPLES" \
     ref="$BEAGLE_REFERENCE_FILE" \

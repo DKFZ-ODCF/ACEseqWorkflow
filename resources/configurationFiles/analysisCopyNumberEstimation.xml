@@ -60,7 +60,7 @@
         <cvalue name='BEAGLE_REFERENCE_FILE_X' value="${baseDirectoryReference}/tools_data/Beagle/chrX.1kg.phase3.v5a.b37.bref3" type="path"/>        
         <cvalue name='BEAGLE_GENETIC_MAP' value="${baseDirectoryReference}/tools_data/genetic_maps/plink.chr${CHR_NAME}.GRCh37.map" type="path"/>
         <cvalue name='BEAGLE_GENETIC_MAP_X' value="${baseDirectoryReference}/tools_data/genetic_maps/plink.chrX.GRCh37.map" type="path"/>
-        <cvalue name='BEAGLE_JAVA_MEM' value='-Xmx9g' type="string" description="The memory request for Beagle"/>
+        <cvalue name='BEAGLE_JAVA_OPTS' value='-Xmx9g' type="string" description="The memory request for Beagle"/>
         <cvalue name='BEAGLE_NUM_THREAD' value='3' type="integer" description="The number of thread request for Beagle"/>
 
         <!-- Input and output paths -->

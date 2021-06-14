@@ -43,37 +43,6 @@ mkdir_cd hg19_GRCh37_1000genomes
 )
 
 ###############################################################################
-# download Beagle database
-###############################################################################
-(
-    mkdir_cd databases/Beagle_references
-
-    EXPECTED_MD5SUM=529947b78dbedfb7a947b530da510887
-    check_md5sum && exit 0 || echo downloading Beagle reference files....
-
-    for chr in {1..22}; do wget -c "http://bochet.gcc.biostat.washington.edu/beagle/1000_Genomes_phase3_v5a/b37.bref3/chr${chr}.1kg.phase3.v5a.b37.bref3"; done
-    wget -c "http://bochet.gcc.biostat.washington.edu/beagle/1000_Genomes_phase3_v5a/b37.bref3/chrX.1kg.phase3.v5a.b37.bref3"
-
-    check_md5sum
-)
-
-###############################################################################
-# download genetic maps
-###############################################################################
-(
-    mkdir_cd databases/genetic_maps
-
-    EXPECTED_MD5SUM=37a6b0f29695cd87a3249065a1eae420
-    check_md5sum && exit 0 || echo downloading genetic maps....
-
-    wget -c "http://bochet.gcc.biostat.washington.edu/beagle/genetic_maps/plink.GRCh37.map.zip"
-    unzip plink.GRCh37.map.zip
-    rm plink.GRCh37.map.zip
-
-    check_md5sum
-)
-
-###############################################################################
 # download dbSNP database
 ###############################################################################
 (
@@ -151,6 +120,37 @@ mkdir_cd hg19_GRCh37_1000genomes
     rm -f chromInfo.txt.gz
 
     wget -c https://raw.githubusercontent.com/eilslabs/ACEseqWorkflow/github/installation/hg19_GRch37_100genomes_gc_content_10kb.txt
+
+    check_md5sum
+)
+
+###############################################################################
+# download Beagle database
+###############################################################################
+(
+    mkdir_cd databases/Beagle_references
+
+    EXPECTED_MD5SUM=529947b78dbedfb7a947b530da510887
+    check_md5sum && exit 0 || echo downloading Beagle reference files....
+
+    for chr in {1..22}; do wget -c "http://bochet.gcc.biostat.washington.edu/beagle/1000_Genomes_phase3_v5a/b37.bref3/chr${chr}.1kg.phase3.v5a.b37.bref3"; done
+    wget -c "http://bochet.gcc.biostat.washington.edu/beagle/1000_Genomes_phase3_v5a/b37.bref3/chrX.1kg.phase3.v5a.b37.bref3"
+
+    check_md5sum
+)
+
+###############################################################################
+# download genetic maps
+###############################################################################
+(
+    mkdir_cd databases/genetic_maps
+
+    EXPECTED_MD5SUM=37a6b0f29695cd87a3249065a1eae420
+    check_md5sum && exit 0 || echo downloading genetic maps....
+
+    wget -c "http://bochet.gcc.biostat.washington.edu/beagle/genetic_maps/plink.GRCh37.map.zip"
+    unzip plink.GRCh37.map.zip
+    rm plink.GRCh37.map.zip
 
     check_md5sum
 )
