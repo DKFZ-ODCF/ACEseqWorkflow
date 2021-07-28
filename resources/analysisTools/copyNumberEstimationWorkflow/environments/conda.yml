@@ -4,6 +4,9 @@ channels:
 - conda-forge
 - defaults
 - r
+# Packages are lost from some conda channels. To rebuild the environment from scratch you'd need
+# a local conda channel with those packages.
+- ~/local-conda-channel/
 dependencies:
 - bioconductor-annotationdbi=1.38.0=r3.3.2_0
 - bioconductor-annotationhub=2.6.0=r3.3.2_0
@@ -36,7 +39,7 @@ dependencies:
 - bioconductor-xvector=0.14.1=r3.3.2_0
 - bioconductor-zlibbioc=1.20.0=r3.3.2_1
 - perl-vcftools-vcf=0.797=pl5.22.0_0
-- pysam=0.7.7=0
+- pysam=0.7.7
 - r-bh=1.60.0_2=r3.3.2_0
 - r-catools=1.17.1=r3.3.2_1
 - r-checkmate=1.8.2=r3.3.2_0
@@ -82,15 +85,15 @@ dependencies:
 - tabix=0.2.5=0
 - vcftools=0.1.10=0
 - bzip2=1.0.6=1
-- cairo=1.14.6=4
+#- cairo # was 1.14.6=4
 - certifi=2017.4.17=py27_0
-- fontconfig=2.12.1=4
-- freetype=2.7=1
+#- fontconfig # was 2.12.1=4
+#- freetype # was 2.7=1
 - gettext=0.19.7=1
 - glib=2.51.4=0
 - graphite2=1.3.9=0
 - gsl=2.1=2
-- harfbuzz=1.4.3=0
+#- harfbuzz=1 # was =1.4.3=0
 - icu=58.1=1
 - jpeg=9b=0
 - krb5=1.14.2=0
@@ -102,7 +105,7 @@ dependencies:
 - libtiff=4.0.6=7
 - libxml2=2.9.4=4
 - ncurses=5.9=10
-- pango=1.40.4=0
+#- pango=1 # was =1.40.4=0
 - pcre=8.39=0
 - perl=5.22.0.1=0
 - pip=9.0.1=py27_0
@@ -171,17 +174,122 @@ dependencies:
 - r-survival=2.40_1=r3.3.2_0
 - r-xml=3.98_1.6=r3.3.2_0
 - r-xtable=1.8_2=r3.3.2_0
-- readline=6.2=0
-- setuptools=36.2.0=py27_0
-- sqlite=3.16.2=0
+- readline #=6.2=0
+- setuptools #=36.2.0
+- sqlite # upgraded from 3.8.4.1
 - tk=8.5.19=1
-- wheel=0.29.0=py27_0
+- wheel=0.29.0
 - xz=5.2.2=0
 - zlib=1.2.8=3
-- curl=7.38.0=0
-- libgcc=5.2.0=0
-- openssl=1.0.1k=1
-- python=2.7.9=3
-- system=5.8=2
-prefix: /home/kensche/miniconda3/envs/ACEseqWorkflow
-
+- curl
+- libgcc #=5.2.0=0
+- openssl
+- python=2 # upgraded from 2.7.9
+- system # =5.8=2
+- pip
+- bx-python=0.7.3
+- six=1.10.0
+- pkgconfig
+- ncephes=1.0.37
+- build-capi
+- cython=0.24
+- numpy #=1.11.3
+- numpy-sugar # upgraded from ==1.0.41
+- beagle=5.1
+- pip:
+  - alabaster==0.7.10
+  - appdirs==1.4.3
+  - asciitree==0.3.3
+  - Babel==2.5.1
+  - backports.csv==1.0.1
+  - backports.ssl-match-hostname==3.4.0.2
+  - biopython==1.57
+  - brent-search==1.0.18
+  - cachetools==2.0.0
+  - cloudpickle==0.2.2
+  - cobra==0.5.4
+  - colorama==0.3.7
+  - conda==4.3.16
+  - cutadapt==1.13
+  - dask==0.14.3
+  - docopt==0.6.2
+  - docutils==0.14
+  - ecdsa==0.13
+  - elasticsearch==2.3.0
+  - enum34==1.1.6
+  - ete2==2.3.10
+  - flufl.lock==2.4.1
+  - funcsigs==0.4
+  - functools32==3.2.3.post1
+  - future==0.15.2
+  - GPy==0.6.0
+  - HTSeq==0.6.1
+  - imagesize==0.7.1
+  - ipython==3.1.0
+  - iterpipes==0.4
+  - iterutils==0.1.6
+  - Jinja2==2.7.3
+  - joblib==0.9.3
+  - jsonschema==2.5.1
+  - limix-legacy==0.8.12
+  - locket==0.2.0
+  - MarkupSafe==0.23
+  - mistune==0.5.1
+  - matplotlib==1.5.3 # was 1.4.3
+  - mock==1.3.0
+#  - MOFA==0.1
+  - ndarray-listener==1.0.20
+  - netCDF4==1.2.6
+  - nose==1.3.7
+  - numexpr==2.6.1
+  - optimix==1.2.10
+  - packaging==16.8
+  - panama==0.58
+  - pandas==0.16.2
+  - pandas-plink==1.1.7
+  - parabam==1.4
+  - paramiko==1.16.0
+  - partd==0.3.8
+  - patsy==0.4.1
+  - pbr==1.6.0
+  - pip==9.0.1
+  - ply==3.10
+  - psutil==3.1.1
+  - ptyprocess==0.5
+  - pybedtools==0.6.2
+  - pycosat==0.6.1
+  - pycparser==2.14
+  - pycrypto==2.6.1
+  - Pygments==2.0.2
+  - pygp==1.1.10
+  - pymongo==3.2.2
+  - Pyomo==5.1.1
+  - pyparsing==2.0.3
+  - PyPDF2==1.26.0
+  - pysam==0.7.7
+  - pysftp==0.2.8
+  - pytabix==0.1
+  - python-dateutil==2.4.2
+  - pytz==2015.4
+  - PyUtilib==5.4.1
+  - PyVCF==0.0.0
+  - PyYAML==3.11
+  - pyzmq==14.6.0
+  - radical.utils==0.40
+  - requests==2.9.1
+  - ruamel.ordereddict==0.4.9
+  - ruamel.yaml==0.14.12
+  - scikit-learn==0.16.1
+  - scipy==0.12.0
+  - scipy-sugar==1.0.2
+  - setuptools==35.0.2
+  - sklearn==0.0
+  - snowballstemmer==1.2.1
+  - Sphinx==1.6.5
+  - sphinxcontrib-websupport==1.0.1
+  - toolz==0.8.2
+  - tqdm==4.11.2
+  - typing==3.6.2
+  - urllib3==1.15.1
+  - virtualenv==15.1.0
+  - xopen==0.1.1
