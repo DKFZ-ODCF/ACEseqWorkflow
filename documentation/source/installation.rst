@@ -14,11 +14,11 @@ Installation & Run instructions
 To run the ACEseq-workflow multiple components are needed:
 
   * The `Roddy workflow management framework <https://github.com/TheRoddyWMS/Roddy>`_
-  * ACEseq workflow plugin
+  * `ACEseqWorkflow <https://github.com/DKFZ-ODCF/ACEseqWorkflow>`_
   * `COWorkflowsBasePlugin <https://github.com/TheRoddyWMS/COWorkflowsBasePlugin>`_
   * `PluginBase <https://github.com/TheRoddyWMS/Roddy-Base-Plugin>`_
   * `DefaultPlugin <https://github.com/TheRoddyWMS/Roddy-Default-Plugin>`_
-  * Software stack
+  * Bioinformatic software stack
   * Reference data
 
 Section :ref:`manual way` describes how these components are manually installed, which gives you the most flexibility. This is probably mostly relevant if you have to run multiple different Roddy-based workflows and in a development setup.
@@ -39,9 +39,8 @@ There are different variants of these containers:
 The Manual Way
 ----------------
 
-The standard way to install the workflow is the manual installation of all components. The first step is to have a fitting Roddy installation.
-
-If you have not done so yet, please first read a bit about how Roddy requires the plugins to be installed. Please see `here <https://roddy-documentation.readthedocs.io/>`_. In short, the Roddy core component and the "PluginBase" and the "DefaultPlugin" are installed with a specific directory layout that you get by cloning the Roddy repository or from the zip-archive in the Roddy Github Releases ("dist/plugins/" directory).
+Roddy Installation
+^^^^^^^^^^^^^^^^^^
 
 The file ``buildinfo.txt`` in the ACEseq repository shows you the Roddy API version that you need. We suggest you use the Roddy version with a matching major version number and the highest released minor number. For instance, if the plugin requires Roddy 3.0, use e.g. Roddy 3.6.0. To install that Roddy version please follow the instructions at the `Roddy repository <https://github.com/TheRoddyWMS/Roddy>`_ or the documentation. Note that the installation also requires you to install the "PluginBase" plugin and the "DefaulPlugin" in the versions stated in the ``buildinfo.txt`` files of the plugins in the ``dist/plugins/`` directory of Roddy installation.
 
@@ -49,9 +48,13 @@ With a Roddy installation you can install the ACEseq workflow and its dependenci
 
 Note that the ACEseqWorkflow and the COWorkflowBasePlugin can be installed in any directory, as long as all subdirectories there match the pattern for plugin directories of Roddy. So ideally this directory should only contain installations of plugins.
 
-The following two sections show you how to install the Conda-based software stack and the reference data.
+Plugin Installation
+^^^^^^^^^^^^^^^^^^^
 
-.. _install-software-stack:
+1. Download the ACEseqWorkflow https://github.com/DKFZ-ODCF/ACEseqWorkflow/tags. Version 1.2.8-4 is used in our production systems. GRCh38/hg38 support is in development and will be available only with version 6. Extract the archive into a directory called "ACEseqWorkflow_$version" with `$version` being the correct version number.
+2. Look up the version of the COWorkflowsBasePlugin listed in the "buildinfo.txt" at the root of the ACEseqWorkflow plugin that you just downloaded. Download that version from https://github.com/DKFZ-ODCF/COWorkflowsBasePlugin/tags. Create a "COWorkflowsBasePlugin_$version" directory.
+
+You can create the COWorkflowsBasePlugin and ACEseqWorkflow directories in the `dist/plugins` directory, which was extracted with the RoddyEnv ZIP.
 
 Software Stack (Conda)
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -154,11 +157,11 @@ Before running ACEseq a few parameters need to be adjusted in the configuration 
 
 .. code-block:: xml
 
-    <cvalue name='runWithSv' value='true' type="boolean"/>
-    <cvalue name='SV' value='yes' type="boolean"/>
+    <cvalue name='runWithSv' value='false' type="boolean"/>
+    <cvalue name='SV' value='false' type="boolean"/>
 
+If you set these values to "true", then "svOutputDirectory" and the SV bedpe filename in the filenames section need to be set, but the SV calls are then used for improved CNV calling.
 
-Otherwise ``svOutputDirectory`` and the SV bedpe filename in the filenames section need to be set.
 
 .. code-block:: xml
 
@@ -172,7 +175,7 @@ Otherwise ``svOutputDirectory`` and the SV bedpe filename in the filenames secti
                 pattern='${svOutputDirectory}/${pid}_svs.bedpe'/>
     </filenames>
 
-Technical specifications are set in the file ``$PATH_TO_ACEseq_RODDY_VERSION/configurations/applicationProperties.ini``. The path to the project.xml and the path to the plugins (``$PATH_TO_ACEseq_RODDY_VERSION/Roddy/dist/plugins/``) need to be set under configurationDirectories and pluginDirectories. Finally the job manager and execution host need to be set.
+Technical specifications are set in the file ``$PATH_TO_ACEseq_RODDY_VERSION/configurations/applicationProperties.ini``. The path to the project.xml and the path to the plugins (``$PATH_TO_ACEseq_RODDY_VERSION/Roddy/dist/plugins/``) need to be set under ``configurationDirectories`` and ``pluginDirectories``. Finally the job manager and execution host need to be set.
 
 Please have a look at the following default ``applicationProperties.ini`` file:
 
@@ -186,16 +189,20 @@ Please have a look at the following default ``applicationProperties.ini`` file:
     pluginDirectories=[FOLDER_WITH_PLUGINS]
 
     [COMMANDS]
+    # Choose your job-manager. The first one executes the jobs locally.
     jobManagerClass=de.dkfz.roddy.execution.jobs.direct.synchronousexecution.DirectSynchronousExecutionJobManager
     #jobManagerClass=de.dkfz.roddy.execution.jobs.cluster.pbs.PBSJobManager
     #jobManagerClass=de.dkfz.roddy.execution.jobs.cluster.sge.SGEJobManager
     #jobManagerClass=de.dkfz.roddy.execution.jobs.cluster.slurm.SlurmJobManager
     #jobManagerClass=de.dkfz.roddy.execution.jobs.cluster.lsf.rest.LSFRestJobManager
     commandFactoryUpdateInterval=300
-    commandLogTruncate=80                       # Truncate logged commands to this length. If <= 0, then no truncation.
+    commandLogTruncate=0                    # Truncate logged commands to this length. If <= 0, then no truncation.
 
     [COMMANDLINE]
     CLI.executionServiceUser=USERNAME
+    # The execution service determines how commands are exectuted. Locally, or via SSH.
+    # SSHExecution service is needed if the host on which you run Roddy is different from the
+    # submission host that allows executing the bsub/qsub command.
     CLI.executionServiceClass=de.dkfz.roddy.execution.io.LocalExecutionService
     #CLI.executionServiceClass=de.dkfz.roddy.execution.io.SSHExecutionService
     CLI.executionServiceHost=[YOURHOST]
@@ -211,9 +218,9 @@ To execute ACEseq run
 
 .. code-block:: bash
 
-    sh $PATH_TO_ACEseq_RODDY_VERSION//Roddy/roddy.sh rerun ACEseq@copyNumberEstimation $pid \
-    --useconfig=$PATH_TO_ACEseq_RODDY_VERSION/configuration/applicationProperties.ini \
-    --cvalues="bamfile_list:$pathToControlBamFile;$pathToTumorBamFile,sample_list:control;tumor,possibleControlSampleNamePrefixes:control,possibleTumorSampleNamePrefixes:tumor"
+    sh $PATH_TO_ACEseq_RODDY_VERSION/Roddy/roddy.sh rerun ACEseq@copyNumberEstimation $pid \
+        --useconfig=$PATH_TO_ACEseq_RODDY_VERSION/configuration/applicationProperties.ini \
+        --cvalues="bamfile_list:$pathToControlBamFile;$pathToTumorBamFile,sample_list:control;tumor,possibleControlSampleNamePrefixes:control,possibleTumorSampleNamePrefixes:tumor"
 
 
 More information on Roddy can be found `here <https://roddy-documentation.readthedocs.io/>`_.
@@ -224,20 +231,19 @@ More information on Roddy can be found `here <https://roddy-documentation.readth
 Legacy Docker versions
 ^^^^^^^^^^^^^^^^^^^^^^
 
-
 1. Download all reference files as specified in the section below.
 2. Download the Base and ACEseq Docker images from the website: old-server_
 3. Import both files with (names might differ based on supplied version):
 
-::
+.. code-block:: bash
 
 	docker load < BaseDockerContainer.tar.gz
 
-::
+.. code-block:: bash
 
 	docker load < ACEseqDockerContainer.tar.gz
 
-4. Download the control files archive and extract them. The directory contains the file "roddy.sh". Please call this script with: bash roddy.sh. You will see:
+4. Download the control files archive and extract them. The directory contains the file "roddy.sh". Please call this script with: :bash:`bash roddy.sh`. You will see:
 
 ::
 

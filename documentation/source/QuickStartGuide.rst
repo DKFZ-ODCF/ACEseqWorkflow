@@ -5,9 +5,12 @@ To start ACEseq download package from `here <https://LinkToGitHub.html/>`_ and i
 
 ::
 
-    sh $PATH_TO_PLUGIN_DIRECTORY/Roddy/roddy.sh rerun ACEseq@copyNumberEstimation $pid \
-    --useconfig=$PATH_TO_PLUGIN_DIRECTORY/applicationProperties.ini \
-    --cvalues="bamfile_list:$pathToControlBamFile;$pathToTumorBamFile,sample_list:control;tumor,possibleControlSampleNamePrefixes:control,possibleTumorSampleNamePrefixes:tumor"
+    sh $PATH_TO_PLUGIN_DIRECTORY/Roddy/roddy.sh \
+        rerun \
+        ACEseq@copyNumberEstimation \
+        $pid \
+        --useconfig=$PATH_TO_PLUGIN_DIRECTORY/applicationProperties.ini \
+        --cvalues="bamfile_list:$pathToControlBamFile;$pathToTumorBamFile,sample_list:control;tumor,possibleControlSampleNamePrefixes:control,possibleTumorSampleNamePrefixes:tumor"
 
 Following parameters should be changed in the project.xml:
 
