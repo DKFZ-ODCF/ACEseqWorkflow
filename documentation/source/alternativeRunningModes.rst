@@ -4,29 +4,77 @@ Alternative Running Modes
 Multiple alternative running modes are enabled with ACEseq. 
 
 
+Run With "Fake" Control
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+We often observed extremely noisy coverage profiles in matched controls from projects
+outside the ICGC MMML-Seq, possibly due to wrong handling of blood samples, preventing
+accurate copy number calls based on tumor/control ratios. For such samples ACEseq offers
+an option to replace the coverage signal from the matched control with an independent
+control whilst still maintaining the BAFs of the matched control. This control replacement
+option enables full analysis of these sample pairs including reliable discrimination between
+runs of homozygosity (ROH) in the germline and somatic loss of heterozygosity (LOH).
+Furthermore ACEseq can be run without matched control enlarging the spectrum of samples
+that can be processed.
+
+To run the workflow in this mode, the ``runWithFakeControl`` option should be set to "true".
+
+.. code-block:: ini
+
+     <cvalue name="runWithFakeControl" value="true" type="boolean/>
+     <cvalue name='MALE_FAKE_CONTROL_PRE' value="pathToPID/${pid}/ACEseq/cnv_snp/${pid}.chr" type='path'
+             description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for male patients" />
+     <cvalue name='FEMALE_FAKE_CONTROL_PRE' value="pathToPID/${pid}/ACEseq/cnv_snp/${pid}.chr" type='path'
+             description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for female patients" />
+     <cvalue name='FAKE_CONTROL_POST' value=".cnv.anno.tab.gz" type='string'
+             description="suffix for chromosome wise 1kb coverage files used for fake control workflow"/>
+
+The fake control files should thus be located at ``${*_FAKE_CONTROL_PRE}${chromosome}${FAKE_CONTROL_POST}``.
+Each file should be a gzip-compressed TSV with a commented (``#``) header:
+
+.. code-block:: tsv
+
+    #chr    pos     end     normal  tumor   map
+
+Of these columns the ``chr`` and ``pos`` columns are used to combine the analysis results of the tumor
+with the "fake" control file. The ``normal`` value from the "fake" control is inserted into the
+tumor results file (see ``resources/analysisTools/copyNumberEstimationWorkflow/replaceControlACEseq.R``).
+
+If you are operating at the DKFZ you will find a path prefix to a suitable generic control in the
+default configuration of the workflow.
+
+
 Run Without Control
 ^^^^^^^^^^^^^^^^^^^^
 
-If no control sample is available, but ACEseq was already used to process 
-other tumor sample pairs one of their control coverage profile can be
-used for normalization. In this case the patient's sex needs to be set
-with PATIENTSEX="male|female|klinefelter".
+If no control sample is available, but ACEseq was already used to process
+other tumor sample pairs, one of their control coverage profiles can be
+used for normalization. In this case, no BAFs can be used from a matching control sample
+and also the patient's sex is not inferred.
 
-Please specify the path and prefix to a control coverage profile for a male (MALE_FAKE_CONTROL_PRE)
-and a female patient (FEMALE_FAKE_CONTROL_PRE) so it can be matched to the processed sample. To 
-activate this option the value runWithout control needs to be set to 'true',
-either via the command line execution under cvalues or in the project.xml.
+For the configuration you need to specify the path and prefix to a control coverage profile
+for a male and a female patient so it can be matched to the processed sample. To activate this
+option the configuration value ``runWithoutControl`` (for versions < 3)
+or ``isNoControlWorkflow`` (for versions >= 3) needs to be set to 'true',
+either via the command line execution under cvalues or in the project.xml. Furthermore, the
+patient's sex needs to be set explicitly with ``PATIENTSEX="male|female|klinefelter"``.
 
 
 .. code-block:: ini
 
-     <cvalue name="runWithoutControl" value="true" type="boolean" />
-     <cvalue name="PATIENTSEX" value="male|female|klinefelter" type="boolean" />
+     <cvalue name="isNoControlWorkflow" value="true" type="boolean
+             description="since version 3"/>
+     <cvalue name="runWithoutControl" value="true" type="boolean"
+             description="up to and including version 2; better use a more recent version!"/>
+     <cvalue name="PATIENTSEX" value="male|female|klinefelter" />
      <cvalue name='MALE_FAKE_CONTROL_PRE' value="pathToPID/${pid}/ACEseq/cnv_snp/${pid}.chr" type='path'  
-                description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for male patients" />  
+             description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for male patients" />
      <cvalue name='FEMALE_FAKE_CONTROL_PRE' value="pathToPID/${pid}/ACEseq/cnv_snp/${pid}.chr" type='path' 
-                description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for female patients" /> 
-     
+             description="path and prefix to chromosome-wise 1kb coverage file used for fake control workflow for female patients" />
+     <cvalue name='FAKE_CONTROL_POST' value=".cnv.anno.tab.gz" type='string'
+             description="suffix for chromosome wise 1kb coverage files used for fake control workflow"/>
+
+
 
 Run quality check only
 ^^^^^^^^^^^^^^^^^^^^^^^
