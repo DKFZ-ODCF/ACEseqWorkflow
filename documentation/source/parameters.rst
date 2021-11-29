@@ -13,7 +13,8 @@ Multiple parameters can be set with ACEseq though not all are necessary to chang
  cnvSnpOutputDirectory,${aceseqOutputDirectory}/cnv_snp,path,
  imputeOutputDirectory,${aceseqOutputDirectory}/phasing,path,
  plotOutputDirectory,${aceseqOutputDirectory}/plots,path,
- runWithoutControl,false,boolean,use control for analysis (false|true)
+ runWithoutControl,false,boolean,use control for analysis (false|true); up to version 2
+ isNoControlWorkflow,false,boolean,use control for analysis (false|true); since version 3
  minHT,5,integer,minimum number of consecutive SNPs to be considered for haploblocks
  snp_min_coverage,5,integer,"minimum coverage in control for SNP"
  cnv_min_coverage,5000,integer,"minimum coverage for 1kb windows to be considered for merging in 10kb windows"

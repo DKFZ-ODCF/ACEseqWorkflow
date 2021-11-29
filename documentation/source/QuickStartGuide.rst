@@ -17,5 +17,5 @@ Following parameters should be changed in the project.xml:
 
 Alternative running modes:
 
-- runWithoutControl (in case it should be run without control)
-- runwithFakeControl (in case the coverage should be taken from a different control)
+- runWithoutControl/isNoControlWorkflow (in case it should be run without control)
+- runWithFakeControl (in case the coverage should be taken from a different control)
