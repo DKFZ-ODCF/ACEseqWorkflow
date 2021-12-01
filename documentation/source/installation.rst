@@ -1,3 +1,11 @@
+.. _old-server: https://hub.dkfz.de/s/XjxXEgCTjjfyMJD
+.. _ppcg-server: https://ppcg.dkfz.de/pipelines/
+
+.. role:: bash(code)
+   :language: bash
+.. role:: xml(code)
+   :language: xml
+
 .. _installation:
 
 Installation & Run instructions
@@ -13,20 +21,31 @@ To run the ACEseq-workflow multiple components are needed:
   * Software stack
   * Reference data
 
-The :ref:`standard way` to install the workflow is described below and involves the installation of each of these components. For the older 1.2.10 release we currently also provide prepackaged files and a Docker container. See :ref:`prepackaged-installation` below for instructions.
+Section :ref:`manual way` describes how these components are manually installed, which gives you the most flexibility. This is probably mostly relevant if you have to run multiple different Roddy-based workflows and in a development setup.
 
-.. _standard way:
+There is an installation with pre-packaged files of ACEseqWorkflow 1.2.10 (see :ref:`here <aceseq_1.2.10-installation>`). This installation is mostly interesting for historical reasons and considered "legacy". We can probably not help you much with this installation, if you encounter problems.
 
-The Standard Way
+Finally, it is possible to run ACEseq in a container. Currently, all available containers wrap the complete workflow including the workflow manager Roddy and even a batch processing system (Sun GridEngine) in a single container. This is done because the workflow manager Roddy does not support submitting containerized cluster jobs. The disadvantage is that the one-size-fits all container for all the cluster jobs may have the wrong size for much of the ACEseq analysis.
+
+There are different variants of these containers:
+
+  * There is a set of containers using versions 1.2.8 and 1.2.10, as described in the ACEseq article. See section :ref:`old-containers`.
+  * An updated set of containers based on the Conda environment (see :ref:`here <new-containers>`).
+  * ACEseq v1.0.189 was used in the `PanCancer Analysis of Whole Genomes (PCAWG) <https://doi.org/10.1038/s41586-020-1969-6>`_ and is part of the `PCAWG container <https://dockstore.org/containers/quay.io/pancancer/pcawg-dkfz-workflow:2.2.0>`_.
+
+
+.. _manual way:
+
+The Manual Way
 ----------------
 
-The standard way to install the workflow is the manual installation of all components (sorry). The first step is to have a matching Roddy installation.
+The standard way to install the workflow is the manual installation of all components. The first step is to have a fitting Roddy installation.
 
 If you have not done so yet, please first read a bit about how Roddy requires the plugins to be installed. Please see `here <https://roddy-documentation.readthedocs.io/>`_. In short, the Roddy core component and the "PluginBase" and the "DefaultPlugin" are installed with a specific directory layout that you get by cloning the Roddy repository or from the zip-archive in the Roddy Github Releases ("dist/plugins/" directory).
 
-The file "buildinfo.txt" in the ACEseq repository shows you the Roddy API version that you need. We suggest you use the Roddy version with a matching major version number and the highest released minor number. For instance, if the plugin requires Roddy 3.0, use e.g. Roddy 3.5.1. To install that Roddy version please follow the instructions at the `Roddy repository <https://github.com/TheRoddyWMS/Roddy>`_ or documentation. Note that the installation also requires you to install the "PluginBase" plugin and the "DefaulPlugin" in the versions stated in the buildinfo.txt files of the plugins in the "dist/plugins/" directory of Roddy installation.
+The file ``buildinfo.txt`` in the ACEseq repository shows you the Roddy API version that you need. We suggest you use the Roddy version with a matching major version number and the highest released minor number. For instance, if the plugin requires Roddy 3.0, use e.g. Roddy 3.6.0. To install that Roddy version please follow the instructions at the `Roddy repository <https://github.com/TheRoddyWMS/Roddy>`_ or the documentation. Note that the installation also requires you to install the "PluginBase" plugin and the "DefaulPlugin" in the versions stated in the ``buildinfo.txt`` files of the plugins in the ``dist/plugins/`` directory of Roddy installation.
 
-With a Roddy installation you can install the ACEseq workflow and its dependencies. To manually resolve the plugin's versions you again need to look at the "buildinfo.txt". You start from the ACEseqWorkflow plugin and recurse to its dependencies. Usually, you will probably want to install the released versions of these plugins from the zip-archives that can be found in the Github-Releases of the respective plugin or component, but you can also use the cloned repositories with the correct release tag (or just commit) checked out.
+With a Roddy installation you can install the ACEseq workflow and its dependencies. To manually resolve the plugin's versions you again need to look at the ``buildinfo.txt``. You start from the ACEseqWorkflow plugin and recurse to its dependencies. Usually, you will probably want to install the released versions of these plugins from the zip-archives that can be found in the Github repositories (e.g. for `ACEseq <https://github.com/DKFZ-ODCF/ACEseqWorkflow/releases>`_) of the respective plugin or component, but you can also use the cloned repositories with the correct release tag (or just commit) checked out.
 
 Note that the ACEseqWorkflow and the COWorkflowBasePlugin can be installed in any directory, as long as all subdirectories there match the pattern for plugin directories of Roddy. So ideally this directory should only contain installations of plugins.
 
@@ -37,80 +56,111 @@ The following two sections show you how to install the Conda-based software stac
 Software Stack (Conda)
 ^^^^^^^^^^^^^^^^^^^^^^
 
-The workflow contains a description of a `Conda <https://conda.io/docs/>`_ environment. A number of Conda packages from `BioConda <https://bioconda.github.io/index.html>`_ are required. You should set up the Conda environment at a centralized position available from all compute hosts.
+The software stack is the software that the workflow jobs need to do the bioinformatic work. If you run the workflow on a cluster you need to ensure that the software stack is also available on all cluster nodes that execute jobs. Unfortunately, we do not have ACEseq in a workflow manager that supports job execution in containers.
 
-First install the BioConda channels:
+You can try to rebuild the Conda environment based on the ``resources/analysisTools/copyNumberEstimationWorkflow/environments/conda.yml`` file. Note, however, that some packages may not be available in the referenced Conda channels anymore. Consequently, the following setup based on the YAML file is really more for the developer:
 
-::
 
-    conda config --add channels r
+1. Set up the required channels:
 
-::
+    .. code-block:: bash
 
-    conda config --add channels defaults
+        conda config --add channels r
+        conda config --add channels defaults
+        conda config --add channels conda-forge
+        conda config --add channels bioconda
 
-::
+2. Rebuild the environment
 
-    conda config --add channels conda-forge
+   .. code-block:: bash
 
-::
+        cd $PATH_TO_PLUGIN_DIRECTORY
+        conda env create \
+            -n ACEseqWorkflow_1.2.8-4 \
+            -f resources/analysisTools/copyNumberEstimationWorkflow/environments/conda.yml
 
-    conda config --add channels bioconda
+The name of the Conda environment is arbitrary but needs to be consistent with the ``condaEnvironmentName`` variable. You can set the ``condaEnvironmentName`` variable in any of the loaded configuration files (see `Roddy documentation <http://roddy-documentation.readthedocs.io/>`_) or even directly in your Roddy call via ``--cvalues="condaEnvironmentName:$value"``.
 
-Then install the environment
 
-::
+Given the problems with old packages in some Conda channels, we offer a work-around. For reproducibility the software stack has been stored with `Conda Pack <https://github.com/conda/conda-pack>`_ in an `archive <old-server>`_.
 
-    conda env create -n ACEseqWorkflow -f $PATH_TO_PLUGIN_DIRECTORY/resources/analysisTools/copyNumberEstimationWorkflow/environments/conda.yml
+1. Download the appropriate archive from old-server_ (e.g. ``ACEseqWorkflow_1.2.8-4_conda_4.10.3_x86.tgz``)
+2. Unpack and set up the environment
+    .. code-block:: bash
 
-The name of the Conda environment is arbitrary but needs to be consistent with the `condaEnvironmentName` variable. You can set the `condaEnvironmentName` variable in any of the loaded configuration files (see `Roddy documentation <http://roddy-documentation.readthedocs.io/>`_) or even directly in your Roddy call via `--cvalues="condaEnvironmentName:$value"`.
+        mkdir $envBaseDir/ACEseqWorkflow_1.2.8-4    # The directory name is the environment name.
+        cd $envBaseDir/ACEseqWorkflow_1.2.8-4
+        source bin/activate
+        conda unpack
 
-If you do not want to use Conda, you can get a complete list of all packages and package versions Conda would install from the  `$PATH_TO_PLUGIN_DIRECTORY/resources/analysisTools/copyNumberEstimationWorkflow/environments/conda.yml`.
+Now, if you do ``conda env list`` the environment should be listed. If not make sure you installed the environment into ``$CONDA_PREFIX/envs/`` or another `environments directory <https://docs.conda.io/projects/conda/en/latest/user-guide/configuration/use-condarc.html#specify-environment-directories-envs-dirs>`_ can be configured for your Conda installation.
+
+
+.. _new-containers:
+
+Docker version
+--------------
+
+Different versions of the ACE-seq workflow have been packaged with other workflows and the reference data. These containers have the required software-stacks installed but run all workflow jobs within the same container. To download these pipelines and reference data see ppcg-server_. Instructions for the installation are given in the archives.
+
 
 .. _install-reference-files:
 
 Reference files
-^^^^^^^^^^^^^^^
+---------------
 
-The workflow uses various files as reference files, such as a reference genome or annotation files. Depending on the contents of these files also the outcome of your analysis may change. We provide installation scripts in the `installation/` directory (currently only in the `github` branch of the repository). To download and prepare the reference files please check out the ACEseq repository and do
+The workflow uses various files as reference files, such as a reference genome or annotation files. We provide installation scripts in the `installation/` directory. To download and prepare the reference files please check out the ACEseq repository and do
 
-::
+.. code-block:: bash
 
-   bash $PATH_TO_PLUGIN_DIRECTORY/installation/downloadRefrences $targetDirectory
+   bash $PATH_TO_PLUGIN_DIRECTORY/installation/downloadReferences $targetDirectory
 
 with `$targetDirectory` being the directory into which you want to install the files. The variable `baseDirectoryReference` in your configurations needs to be set to the `$targetDirectory` path.
 
 Note that the current plugin version is tuned to be run on the hg19 human assembly, but a liftover of all files should probably enable a run on GRch38.
 
-.. _prepackaged-installation:
+
+Alternative reference files
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The reference data can also be downloaded from the ppcg-server_.
+
+
+
+Legacy Installations
+--------------------
+
+The following installation approaches are kept in the documentation for historical reasons.
+
+
+.. _aceseq_1.2.10-installation:
 
 Prepackaged files (ACEseq 1.2.10 only)
---------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-On http://bfg-nfs3.ipmb.uni-heidelberg.de you can find archives for the 1.2.10 plugin version. The prepackaged zip files contains a full Roddy / Plugin setup and include different scripts to install all necessary software and download the required reference files. Currently, we do not intent to update these prepackaged installation files or the Docker version. Note that the Roddy version packaged not capable of submitting to LSF.
+On old-server_ you can find archives for the 1.2.10 plugin version. The prepackaged zip files contains a full Roddy / Plugin setup and include different scripts to install all necessary software and download the required reference files. Currently, we do not intent to update these prepackaged installation files or the Docker version. Note that the Roddy version packaged is not capable of submitting to LSF. Only Torque/PBS is supported.
 
-Please see the standard way to install recent workflow versions.
 
 Stand-alone Roddy for Execution on HTC Cluster
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To run the Roddy-based version of ACEseq please download the pre-packed zip file from http://bfg-nfs3.ipmb.uni-heidelberg.de. Three steps are required to ensure running of ACEseq.
+To run the Roddy-based version of ACEseq please download the pre-packed zip file from the old-server_. Three steps are required to ensure running of ACEseq.
 
-1. Run the "prepareRoddyInstallation.sh" script.
+1. Run the ``prepareRoddyInstallation.sh`` script.
 2. Download all reference files as specified in the section "Reference files" (below).
 3. Set up the Conda environment or install the necessary software as specified in the section "Software" (below).
 
-Before running ACEseq a few parameters need to be adjusted in the configuration files. The output directory is specified in $PATH_TO_ACEseq_RODDY_VERSION/configurations/projectsACEseqTest.xml. Here the variables "baseDirectoryReference", "inputBaseDirectory", "outputBaseDirectory", "outputAnalysisBaseDirectory" need to be set. If no SVs should be included the following configuration values (cvalues) should be included:
+Before running ACEseq a few parameters need to be adjusted in the configuration files. The output directory is specified in ``$PATH_TO_ACEseq_RODDY_VERSION/configurations/projectsACEseqTest.xml``. Here the variables ``baseDirectoryReference``, ``inputBaseDirectory``, ``outputBaseDirectory``, ``outputAnalysisBaseDirectory`` need to be set. If no SVs should be included the following configuration values (``cvalues``) should be included:
 
-.. code-block:: ini
+.. code-block:: xml
 
     <cvalue name='runWithSv' value='true' type="boolean"/>
     <cvalue name='SV' value='yes' type="boolean"/>
 
 
-Otherwise "svOutputDirectory" and the SV bedpe filename in the filenames section need to be set.
+Otherwise ``svOutputDirectory`` and the SV bedpe filename in the filenames section need to be set.
 
-.. code-block:: ini
+.. code-block:: xml
 
     <configurationvalues>
       <cvalue name='svOutputDirectory' value='${outputAnalysisBaseDirectory}/nameOfDirectoryWithSVResults' type="path"/>
@@ -122,9 +172,9 @@ Otherwise "svOutputDirectory" and the SV bedpe filename in the filenames section
                 pattern='${svOutputDirectory}/${pid}_svs.bedpe'/>
     </filenames>
 
-Technical specifications are set in the file $PATH_TO_ACEseq_RODDY_VERSION/configurations/applicationProperties.ini. The path to the project.xml and the path to the plugins ($PATH_TO_ACEseq_RODDY_VERSION/Roddy/dist/plugins/) need to be set under configurationDirectories and pluginDirectories. Finally the job manager and execution host need to be set.
+Technical specifications are set in the file ``$PATH_TO_ACEseq_RODDY_VERSION/configurations/applicationProperties.ini``. The path to the project.xml and the path to the plugins (``$PATH_TO_ACEseq_RODDY_VERSION/Roddy/dist/plugins/``) need to be set under configurationDirectories and pluginDirectories. Finally the job manager and execution host need to be set.
 
-Please have a look at the following default applicationProperties.ini file:
+Please have a look at the following default ``applicationProperties.ini`` file:
 
 .. code-block:: ini
 
@@ -159,7 +209,7 @@ Please have a look at the following default applicationProperties.ini file:
 
 To execute ACEseq run
 
-::
+.. code-block:: bash
 
     sh $PATH_TO_ACEseq_RODDY_VERSION//Roddy/roddy.sh rerun ACEseq@copyNumberEstimation $pid \
     --useconfig=$PATH_TO_ACEseq_RODDY_VERSION/configuration/applicationProperties.ini \
@@ -168,11 +218,15 @@ To execute ACEseq run
 
 More information on Roddy can be found `here <https://roddy-documentation.readthedocs.io/>`_.
 
-Docker version
-^^^^^^^^^^^^^^
+
+.. _old-containers
+
+Legacy Docker versions
+^^^^^^^^^^^^^^^^^^^^^^
+
 
 1. Download all reference files as specified in the section below.
-2. Download the Base and ACEseq Docker images from the website: http://bfg-nfs3.ipmb.uni-heidelberg.de
+2. Download the Base and ACEseq Docker images from the website: old-server_
 3. Import both files with (names might differ based on supplied version):
 
 ::
@@ -202,13 +256,17 @@ Docker version
 
 An example call is:
 
-::
+.. code-block:: bash
 
-        bash roddy.sh run ACEseq ./config/ stds /home/roddy/someproject/control_MB99_merged.mdup.bam /home/roddy/someproject/tumor_MB99_merged.mdup.bam control tumor /icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes ./output
+        bash roddy.sh run ACEseq \
+            ./config/ \
+            stds \
+            /home/roddy/someproject/control_MB99_merged.mdup.bam \
+            /home/roddy/someproject/tumor_MB99_merged.mdup.bam \
+            control \
+            tumor \
+            /icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes \
+            ./output
 
 Here you tell roddy to run the ACEseq configuration using the config folder in the current directory with a control and tumor bam. Also you tell Roddy the samples for both files namely control and tumor. Finally, you supply the path to the reference files and the folder where you will store your output data.
-
-
-
-.. _Github-Releases: https://github.com/eilslabs/ACEseqWorkflow/releases
 
