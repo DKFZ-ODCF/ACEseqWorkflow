@@ -32,7 +32,7 @@ To run the workflow in this mode, the ``runWithFakeControl`` option should be se
 The fake control files should thus be located at ``${*_FAKE_CONTROL_PRE}${chromosome}${FAKE_CONTROL_POST}``.
 Each file should be a gzip-compressed TSV with a commented (``#``) header:
 
-.. code-block:: tsv
+::
 
     #chr    pos     end     normal  tumor   map
 
@@ -74,7 +74,7 @@ patient's sex needs to be set explicitly with ``PATIENTSEX="male|female|klinefel
      <cvalue name='FAKE_CONTROL_POST' value=".cnv.anno.tab.gz" type='string'
              description="suffix for chromosome wise 1kb coverage files used for fake control workflow"/>
 
-
+Note that if run in no-control mode with SV input (you have ``svOutputDirectory`` set), then ACEseq does not expect the SV file to be named ``svs_${PID}_filtered_somatic_minEventScore3.tsv``, like for the tumor/control case, but ``svs_${PID}_filtered_minEventScore3.tsv``. If you use an output directory of the `Sophia workflow <https://github.com/DKFZ-ODCF/SophiaWorkflow>`_ in no-control mode, you can simply symlink the ``svs_${PID}_filtered_minEventScore3.tsv`` to create the "somatic".
 
 Run quality check only
 ^^^^^^^^^^^^^^^^^^^^^^^
