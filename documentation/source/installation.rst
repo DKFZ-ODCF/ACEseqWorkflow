@@ -122,7 +122,6 @@ with `$targetDirectory` being the directory into which you want to install the f
 
 Note that the current plugin version is tuned to be run on the hg19 human assembly, but a liftover of all files should probably enable a run on GRch38.
 
-
 Alternative reference files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
