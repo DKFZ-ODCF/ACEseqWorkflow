@@ -45,7 +45,7 @@
 
         <!-- Reference files -->
         <!-- sharedFilesBaseDirectory, inputBaseDirectory and outputBaseDirectory have to be set in the project.xml file -->
-        <cvalue name="baseDirectoryReference" value="/icgc/ngs_share/assemblies/hg19_GRCh37_1000genomes" type="path"/>
+        <cvalue name="baseDirectoryReference" value="/omics/odcf/reference_data/legacy/ngs_share/assemblies/hg19_GRCh37_1000genomes" type="path"/>
         <cvalue name="referenceGenome_1KGRef" value="${baseDirectoryReference}/sequence/1KGRef/hs37d5.fa" type="path"/>
         <cvalue name='REFERENCE_GENOME' value="${referenceGenome_1KGRef}" type="string"/>
         <cvalue name="dbSNP_FILE" value="${baseDirectoryReference}/databases/dbSNP/dbSNP_135/00-All.SNV.vcf.gz" type="path"/>
@@ -213,7 +213,7 @@
 
         <!--generateVCF opts-->
         <cvalue name="blacklistFileName" value='artifact.homoDels.potentialArtifacts.txt' type="string"/>
-        <cvalue name="cytobandsFile" value='/icgc/ngs_share/annovar/annovar_common_humandb/hg19_cytoBand.txt' type="string"/>
+        <cvalue name="cytobandsFile" value='/omics/odcf/reference_data/legacy/ngs_share/annovar/annovar_common_humandb/hg19_cytoBand.txt' type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_PRE' value="${pid}_most_important_info" type="string"/>
         <cvalue name='FILE_MOST_IMPORTANT_INFO_SEG_POST' value=".txt" type="string"/>
         <cvalue name='FILE_SEGMENT_VCF_PRE' value="${aceseqOutputDirectory}/${pid}" type="path"/>
@@ -315,7 +315,7 @@
 
         <tool name="annotateCnvFiles" value="vcfAnno.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="0.2" cores="2" nodes="1" walltime="4"/>
+                <rset size="l" memory="2" cores="2" nodes="1" walltime="4"/>
             </resourcesets>
             <input type="file" typeof="CoverageWindowsFile" scriptparameter="IGNORETHIS"/>
             <input type="filegroup" typeof="GenericFileGroup" scriptparameter="COV_WIN_FILES" passas="array"/>
@@ -327,7 +327,7 @@
 
         <tool name="replaceBadControl" value="replaceControl.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="0.2" cores="2" nodes="1" walltime="5"/>
+                <rset size="l" memory="2" cores="2" nodes="1" walltime="5"/>
             </resourcesets>
             <input type="file" typeof="GenderFile" scriptparameter="FILENAME_SEX"/>
             <output type="file" typeof="TextFile" scriptparameter="FILENAME_CHECKPOINT_FAKECONTROL"/>
@@ -335,7 +335,7 @@
 
         <tool name="mergeAndFilterCnvFiles" value="cnvMergeFilter.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="0.2" cores="2" nodes="1" walltime="5"/>
+                <rset size="l" memory="2" cores="2" nodes="1" walltime="5"/>
             </resourcesets>
             <input type="file" typeof="TextFile" scriptparameter="IGNORETHIS"/>
             <input type="filegroup" typeof="de.dkfz.roddy.knowledge.files.GenericFileGroup" scriptparameter="COV_WIN_FILES" passas="array"/>
@@ -344,7 +344,7 @@
 
         <tool name="mergeAndFilterCnvFiles_withReplaceBadControl" value="cnvMergeFilter.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="0.2" cores="2" nodes="1" walltime="5"/>
+                <rset size="l" memory="2" cores="2" nodes="1" walltime="5"/>
             </resourcesets>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_CHECKPOINT_FAKE_CONTROL"/>
             <input type="filegroup" typeof="de.dkfz.roddy.knowledge.files.GenericFileGroup" scriptparameter="COV_WIN_FILES" passas="array"/>
@@ -353,7 +353,7 @@
 
         <tool name="mergeAndFilterSnpFiles" value="snvMergeFilter.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="0.2" cores="2" nodes="1" walltime="5"/>
+                <rset size="l" memory="6" cores="2" nodes="1" walltime="5"/>
             </resourcesets>
             <input type="file" typeof="BamFile" scriptparameter="FILE_TUMOR_BAM"/>
             <input type="filegroup" typeof="SNPPositionFileGroupByChromosome" scriptparameter="SNP_POS_FILES" passas="array"/>
@@ -370,7 +370,7 @@
 
         <tool name="createUnphasedGenotype" value="createUnphasedFiles.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="0.2" cores="1" nodes="1" walltime="5"/>
+                <rset size="l" memory="2" cores="1" nodes="1" walltime="5"/>
             </resourcesets>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_SNP_POSITIONS_WG_FAKE"/>
             <output type="filegroup" typeof="UnphasedGenotypeFileGroupByChromosome" fileclass="UnphasedGenotypeFile" scriptparameter="FILENAME_UNPHASED_GENOTYPE" passas="array"/>
@@ -425,7 +425,7 @@
 
         <tool name="addHaplotypesToSnpFile" value="haplotypes.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="0.2" cores="2" nodes="1" walltime="10"/>
+                <rset size="l" memory="2" cores="2" nodes="1" walltime="10"/>
             </resourcesets>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_SNP_POSITIONS_WG"/>
             <input type="filegroup" typeof="PhasedGenotypeFileGroupByChromosome" scriptparameter="PHASED_GENOTYPE_FILES" passas="array"/>
@@ -471,7 +471,7 @@
 
         <tool name="mergeBreakpointsAndSv" value="PSCBSgaps_SV.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="0.2" cores="2" nodes="1" walltime="1"/>
+                <rset size="l" memory="2" cores="2" nodes="1" walltime="1"/>
             </resourcesets>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
             <input type="file" typeof="SVFile" scriptparameter="FILENAME_SV"/>
@@ -483,7 +483,7 @@
 
         <tool name="mergeBreakpointsWithoutSv" value="PSCBSgaps_SV.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="0.2" cores="2" nodes="1" walltime="1"/>
+                <rset size="l" memory="2" cores="2" nodes="1" walltime="1"/>
             </resourcesets>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
             <output type="tuple">
@@ -494,7 +494,7 @@
 
         <tool name="mergeBreakpointsAndSvCrest" value="mergePSCBSCrest.sh" basepath="copyNumberEstimationWorkflow">
             <resourcesets>
-                <rset size="l" memory="0.2" cores="2" nodes="1" walltime="1"/>
+                <rset size="l" memory="2" cores="2" nodes="1" walltime="1"/>
             </resourcesets>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_KNOWNSEGMENTS"/>
             <input type="file" typeof="TextFile" scriptparameter="FILENAME_CREST_DELDUPINV"/>
