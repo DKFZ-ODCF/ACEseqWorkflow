@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module version="4">
+  <component name="FacetManager">
+    <facet type="Python" name="Python">
+      <configuration sdkName="Python 2.7 (ACEseqWorkflow_6c)" />
+    </facet>
+  </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
@@ -12,9 +17,11 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="COWorkflowsBasePlugin_1.2.1" />
     <orderEntry type="module" module-name="PluginBase_1.2.1" />
-    <orderEntry type="module" module-name="BatchEuphoria" />
-    <orderEntry type="module" module-name="Roddy" />
-    <orderEntry type="module" module-name="RoddyToolLib" />
     <orderEntry type="library" name="Gradle: org.codehaus.groovy:groovy-all:2.4.9" level="project" />
+    <orderEntry type="library" name="groovy-2.4.19" level="application" />
+    <orderEntry type="module" module-name="BatchEuphoria.main" />
+    <orderEntry type="module" module-name="Roddy.main" />
+    <orderEntry type="module" module-name="RoddyToolLib.main" />
+    <orderEntry type="library" name="Python 2.7 (ACEseqWorkflow_6c) interpreter library" level="application" />
   </component>
 </module>

@@ -49,18 +49,22 @@ mkdir_cd hg19_GRCh37_1000genomes
     DBSNP_VERSION=135
     mkdir_cd databases/dbSNP/dbSNP_$DBSNP_VERSION
 
-    EXPECTED_MD5SUM=fed2a31b5a5d8fe12e072576c0c17199
-    check_md5sum && exit 0 || echo downloading dbSNP file....
+	EXPECTED_MD5SUM=4a93e8130b24b9c8ec6411b76fd2b76a
+	check_md5sum && exit 0 || echo downloading dbSNP file....
 
     # CITATION
     # As a NCBI Resource: "Sherry ST, Ward MH, Kholodov M, Baker J, Phan L, Smigielski EM, Sirotkin K. dbSNP: the NCBI database of genetic variation. Nucleic Acids Res. 2001 Jan 1;29(1):308-11."
     # As a whole for a specific build (use this!) : "Database of Single Nucleotide Polymorphisms (dbSNP). Bethesda (MD): National Center for Biotechnology Information, National Library of Medicine. (dbSNP Build ID: 141 ). Available from: http://www.ncbi.nlm.nih.gov/SNP/"
     # A single or a range of Submitted SNP (ss) or Reference SNP (rs) entries: "Database of Single Nucleotide Polymorphisms (dbSNP). Bethesda (MD): National Center for Biotechnology Information, National Library of Medicine. dbSNP accession:{ss1 or ss1 – ss100}, (dbSNP Build ID: 141). Available from: http://www.ncbi.nlm.nih.gov/SNP/"
 
-    # DOWNLOAD
-    DBSNP_BASE_URL="ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b150_GRCh37p13/VCF"
-    wget -c "$DBSNP_BASE_URL/README.txt"
-    wget -c "$DBSNP_BASE_URL/00-All.vcf.gz"
+    # NOTE ON VERSIONING
+    # The dbSNP database only maintains the newest version and has no archives of older versions. Therefore this download script will always download the newest version and subsequently filter entries according to `$DBSNP_VERSION`. However, as newer dbSNP versions might drop certain entries, the database might still change in the future. This has to be kept in mind with respect to the reproducibility of the whole workflow.
+    # Furthermore, newer versions will have a changed header which will break the MD5 sum.
+
+	# DOWNLOAD
+	DBSNP_BASE_URL="ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b150_GRCh37p13/VCF"
+	wget -c "$DBSNP_BASE_URL/README.txt"
+	wget -c "$DBSNP_BASE_URL/00-All.vcf.gz"
 
     # POST PROCESSING
     # extract SNPs from dbSNP version 135 and older
@@ -81,8 +85,8 @@ mkdir_cd hg19_GRCh37_1000genomes
 (
     mkdir_cd databases/UCSC
 
-    EXPECTED_MD5SUM=3d12d0a4d7afdb52cfd10f886d48b5f0
-    check_md5sum && exit 0 || echo downloading mappability file....
+    EXPECTED_MD5SUM=4c735c9bc4f6ebb7d7609acedc785290
+	check_md5sum && exit 0 || echo downloading mappability file....
 
     wget -c http://hgdownload.soe.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeMapability/wgEncodeCrgMapabilityAlign100mer.bigWig
     bigWigToBedGraph wgEncodeCrgMapabilityAlign100mer.bigWig /dev/stdout | bgzip > wgEncodeCrgMapabilityAlign100mer_chr.bedGraph.gz
@@ -101,7 +105,7 @@ mkdir_cd hg19_GRCh37_1000genomes
     EXPECTED_MD5SUM=2a63b34a737383af2a3f7eb32801a5fa
     check_md5sum && exit 0 || echo downloading replication timing file....
 
-    wget -c https://raw.githubusercontent.com/eilslabs/ACEseqWorkflow/github/installation/ReplicationTime_10cellines_mean_10KB.Rda
+	wget -c "https://github.com/DKFZ-ODCF/ACEseqWorkflow/blob/master/installation/ReplicationTime_10cellines_mean_10KB.Rda?raw=true" -O ReplicationTime_10cellines_mean_10KB.Rda
 
     check_md5sum
 )
@@ -119,7 +123,7 @@ mkdir_cd hg19_GRCh37_1000genomes
     zcat chromInfo.txt.gz | grep -Pv "(_)|(chrM)" | sed -e '1i\#chrom\tsize\tfileName' > chrlengths.txt
     rm -f chromInfo.txt.gz
 
-    wget -c https://raw.githubusercontent.com/eilslabs/ACEseqWorkflow/github/installation/hg19_GRch37_100genomes_gc_content_10kb.txt
+	wget -c "https://github.com/DKFZ-ODCF/ACEseqWorkflow/blob/master/installation/hg19_GRch37_100genomes_gc_content_10kb.txt?raw=true" -O hg19_GRch37_100genomes_gc_content_10kb.txt
 
     check_md5sum
 )
