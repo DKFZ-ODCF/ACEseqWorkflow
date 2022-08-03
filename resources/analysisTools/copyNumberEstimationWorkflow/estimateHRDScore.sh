@@ -19,9 +19,7 @@ do
 		eval $item
 	done
 	combProFile=${aceseqOutputDirectory}/${pid}_comb_pro_extra${ploidyFactor}_${tcc}.txt
-	HRDFile=${aceseqOutputDirectory}/${pid}_HRDscore_${ploidyFactor}_${tcc}.txt
-	HRD_DETAILS_FILE=${aceseqOutputDirectory}/${pid}_HRDscore_contributingSegments_${ploidyFactor}_${tcc}.txt
-	echo $combProFile
+
 
 	mostImportantFile=${aceseqOutputDirectory}/${pid}_comb_pro_extra${ploidyFactor}_${tcc}.txt
 	##remove artifact regions
@@ -92,19 +90,25 @@ do
 		exit 2
 	fi
 
+	HRDFile=${aceseqOutputDirectory}/${pid}_HRDscore_${ploidyFactor}_${tcc}.txt
+	HRD_DETAILS_FILE=${aceseqOutputDirectory}/${pid}_HRDscore_contributingSegments_${ploidyFactor}_${tcc}.txt
+	LST_DETAILS_FILE=${aceseqOutputDirectory}/${pid}_LSTscore_contributingSegments_${ploidyFactor}_${tcc}.CentromerReduced.txt
+	MERGED_REDUCED_FILE=${aceseqOutputDirectory}/${pid}_comb_pro_extra${ploidyFactor}_${tcc}.smoothed.CentromerReduced.txt
 
 	${RSCRIPT_BINARY} ${TOOL_HRD_ESTIMATION} \
 		 $combProFileNoArtifacts \
-		 $combProFile.tmp \
+		 ${combProFile}.tmp \
 		 $patientsex \
 		 $ploidy \
 		 $tcc \
 		 $pid \
-		 $HRDFile.tmp \
+		 ${HRDFile}.tmp \
 		 ${HRD_DETAILS_FILE}.tmp \
+		 ${LST_DETAILS_FILE}.tmp \
+		 ${MERGED_REDUCED_FILE}.tmp \
 		 ${FILENAME_CENTROMERES} \
 		 ${cytobandsFile} \
-		 $PIPELINE_DIR
+		 ${PIPELINE_DIR}
 
 
 	if [[ "$?" != 0 ]]
@@ -122,9 +126,11 @@ do
 		exit 2
 	fi
 
-	mv $HRDFile.tmp $HRDFile
+	mv ${HRDFile}.tmp ${HRDFile}
 	mv ${HRD_DETAILS_FILE}.tmp ${HRD_DETAILS_FILE}
-	rm $combProFile.tmp
+	mv ${LST_DETAILS_FILE}.tmp ${LST_DETAILS_FILE}
+	mv ${MERGED_REDUCED_FILE}.tmp ${MERGED_REDUCED_FILE}
+	rm ${combProFile}.tmp
 done
 if [[ "$?" != 0 ]]
 then
@@ -132,4 +138,4 @@ then
 	exit 2
 fi
 rm ${FILENAME_PARAMETER_JSON}.tmp 
-touch $FILENAME_CHECKPOINT_HRD 
+touch ${FILENAME_CHECKPOINT_HRD}

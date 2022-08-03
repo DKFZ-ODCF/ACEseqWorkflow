@@ -310,6 +310,11 @@ for (ploidy in posPloidies) {
 	    		if (length(big) >0){
 				dh_matrix[, i] = max(as.numeric(DHmatrix[big, i]), na.rm=TRUE)
 			}
+        } else if (dh_Stop == "quantile") {
+            big = which(TCNmatrix[, 1] == 2 & DHmatrix[, 1] >= min_length_dh_stop)
+            if (length(big) >0){
+              dh_matrix[, i] = quantile(as.numeric(DHmatrix[big, i]), na.rm=TRUE, 0.975)
+            }
 		} else if (dh_Stop == "mean") {
 			dh_matrix[, i] = mean(as.numeric(DHmatrix[pos, i]), na.rm=TRUE)
 		}
@@ -530,11 +535,12 @@ Ndist_TCN = matrix(data = NMEANmatrix[1, (2:Nmatrix_col)], nrow = length(posPloi
 colnames(Ndist_TCN) = posPurities
 rownames(Ndist_TCN) = posPloidies
 
-NTCN = matrix(data = Ntcn_matrix[1, 2:matrix_col], nrow = length(posPloidies), ncol = length(posPurities), byrow = TRUE, dimnames = NULL)             
+NTCN = matrix(data = Ntcn_matrix[1, 2:matrix_col], nrow = length(posPloidies), ncol = length(posPurities), byrow = TRUE, dimnames = NULL)
 
+limitDHOrig = limitDH
 
   # max(which(NTCN)) because it is the first value to be >1 no lower purities than that should be allowed
-# that means the distance has bee significantly different from 0
+# that means the distance has been significantly different from 0
 limitNTCN = rep(NA, length(posPloidies))
 for (i in seq_along(posPloidies)) {
   if (any(NTCN>(1+1e-8))){
@@ -624,6 +630,11 @@ data[, ncol(data)] = 6
 data[seq(2, nrow(data) - 1, 1), seq(2, ncol(data) - 1, 1)] = data_limit
 data[which(is.na(data))] = 6
 
+
+  if (all(data==6)) {
+    cat("\n\nERROR: Did not find a single solution due to 'high purity issue'\n\n")
+    quit(save = "no", status = 13)
+  }
 
 count = 0
 ploidy_idx = c()
@@ -750,10 +761,20 @@ for (l in seq_along(limitDH)) {
 	plotPurities[l] = posPurities[limitDH[l]]
 }
 
+plotPurities_DH = c()
+for (l in seq_along(limitDHOrig)) {
+  plotPurities_DH[l] = posPurities[limitDHOrig[l]]
+}
+
+plotPurities_NTCN = c()
+for (l in seq_along(limitNTCN)) {
+  plotPurities_NTCN[l] = posPurities[limitNTCN[l]]
+}
+
 testPlot = melt(data.frame(COMBI_DIST_TCN))
 ploi = rep(posPloidies, length(posPurities))
 testPlot$ploidy = ploi
-df.lines = data.frame(ploidy = ploi, purity = plotPurities)
+df.lines = data.frame(ploidy = ploi, purity = plotPurities, purity_DH=plotPurities_DH, purity_NTCN=plotPurities_NTCN)
 names(testPlot) = c("purity", "distance", "ploidy")
 testPlot$purity = substring(testPlot$purity, 2, 5)
 testPlot$purity = as.numeric(testPlot$purity)
@@ -792,7 +813,9 @@ erupt = ggplot(testPlot, aes(purity, ploidy, z = distance)) +
 	scale_y_continuous(expand = c(0, 0)) 
 print( erupt + scale_fill_gradient2(limits = c(0, mean(testPlot$distance[which(!is.na(testPlot$distance))])), midpoint = mean(testPlot$distance[which(!is.na(testPlot$distance))]) / 2, low = "darkred", high = "darkblue", na.value = "darkblue") + 
 	theme(axis.text.x = element_text(vjust = 0.5, size = 14, color = "black"), axis.text.y = element_text(vjust = 0.5, size = 14, color = "black"), axis.title.x = element_text(color = "black", size = 16, vjust = 2, face = "bold"), axis.title.y = element_text(color = "black", size = 16, face = "bold")) +
-	geom_point(x = df.lines$purity, y = df.lines$ploidy, size = 1.2, color = "darkred") +
+	# geom_point(x = df.lines$purity, y = df.lines$ploidy, size = 1.2, color = "darkred") +
+	  geom_point(x = df.lines$purity_NTCN, y = df.lines$ploidy, size = 1.2, color = "green") +
+	  geom_point(x = df.lines$purity_DH, y = df.lines$ploidy, size = 1.2, color = "yellow") +
 	geom_point(x = df.opt$purity, y = df.opt$ploidy, size = 6, color = "black", shape = 8) + xlab("tumor cell content") +
 	theme(legend.text = element_text(colour = "black", size = 16), legend.title = element_text(colour = "black", size = 16, face = "bold"))
 )

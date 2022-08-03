@@ -19,8 +19,27 @@ isNoControlWorkflow	        false   Run analysis with matching control and estim
 - Changed the phasing routine. The program "impute2" was replaced by "Beagle". Files and tools were renamed accordingly.
 - Generally renamed all tools and files from "imputeGenotype" to "phaseGenotype" (and so on) as the subroutine does not actually perform imputation but rather phasing.
 
+* Todo
+- after segment merging: assign proper SNP values (majority vote)``
+- LST score: gap centromere region even if A/B levels are not identical, or relax neighboring-condition
+- LST score: decide transition on A/B counts (and not only TCN change) (example: WGS H021-RF6GGV Chr10)
+						 discuss in beforehand: Shall changes in A/B values (with identical TCN counts) contribute to LST score or not?
+						 e.g. 2/2 -> 3/1 or 4/0
+				if so, A/B column can contain "sub". Hence, we cannot distinguish between e.g. c1Mean=3.45 (->sub(3)) and c1Mean=8.55 (->sub(8)), as they
+are both called "sub" only. Idea: call them "sub([floor(c1Mean)])". (same holds for c2Mean)
+discuss with Matthias: use c1Mean or A? Why did we decide to take A (round(c1Mean)) and not c1Mean directly? (answer: biological interpretation)
+
+
+* Version update to 5.1.0
+- added contributing segments file for LST
+- implemented gene annotation in TCN chromosome plots
+- fixed minor bugs
+
 * Version update to 5.0.1
 - fixed density(NA) bug and index bug for frequencies (as.character) in clustering step
+- fixed empty line bug (newline) in smoothData script
+- switched to COWorkflowsBasePlugin:1.2.1 (sample name handling)
+- star plot: green (NCTN) and yellow (DH>1) line instead of common red line
 
 * Version update to 5.0.0
 - introduced CNA.type 'AMP' (TCN>=2*ploidy + 1)
