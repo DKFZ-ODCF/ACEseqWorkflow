@@ -25,7 +25,7 @@
     
     <!--Databases and annotation files-->
     <cvalue name="dbSNP_FILE" value="${baseDirectoryReference}/databases/dbSNP/00-All.SNV.vcf.gz" type="path"/>
-    <cvalue name="MAPPABILITY_FILE" value="${baseDirectoryReference}/stats/mappability/GRCh38_Mappability_Align_100mer.bedGraph.gz" type="path"/>
+    <cvalue name="MAPPABILITY_FILE" value="${baseDirectoryReference}/stats/mappability_m2e2/GRCh38_Mappability_Align_100mer_m2e2.ALT_HLA.bedGraph.gz" type="path"/>
     <cvalue name="CHROMOSOME_LENGTH_FILE" value="${baseDirectoryReference}/stats/GRCh38_decoy_ebv_phiX_alt_hla_chr.fa.chrLength.tsv" type="path"/>
     <cvalue name="REPLICATION_TIME_FILE" value="${baseDirectoryReference}/databases/ENCODE/RepliSeq/time_mean_10KB.Rda" type="path"/>
     <cvalue name="GC_CONTENT_FILE" value="${baseDirectoryReference}/stats/gc_content_hg38.txt" type="path"/>
