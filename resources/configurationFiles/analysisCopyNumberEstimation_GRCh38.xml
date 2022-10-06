@@ -28,7 +28,8 @@
     <cvalue name="MAPPABILITY_FILE" value="${baseDirectoryReference}/stats/mappability/GRCh38_Mappability_Align_100mer.bedGraph.gz" type="path"/>
     <cvalue name="CHROMOSOME_LENGTH_FILE" value="${baseDirectoryReference}/stats/GRCh38_decoy_ebv_phiX_alt_hla_chr.fa.chrLength.tsv" type="path"/>
     <cvalue name="REPLICATION_TIME_FILE" value="${baseDirectoryReference}/databases/ENCODE/RepliSeq/time_mean_10KB.Rda" type="path"/>
-    <cvalue name="GC_CONTENT_FILE" value="${baseDirectoryReference}/stats/gc_content_hg38.txt" type="path"/>    
+    <cvalue name="GC_CONTENT_FILE" value="${baseDirectoryReference}/stats/gc_content_hg38.txt" type="path"/>
+    <cvalue name='GENE_ANNOTATION_FILE' value='${baseDirectoryReference}/tools_data/ACEseq/INFORM_druggable_genes.hg38.tsv' type="path"/>
 
     <!-- Beagle references-->
     <cvalue name='BEAGLE_REFERENCE_FILE' value="${baseDirectoryReference}/tools_data/Beagle/1000genomes/ALL.chr${CHR_NAME}.shapeit2_integrated_snvindels_v2a_27022019.GRCh38.phased.CHR.bref3" type="path"/>
