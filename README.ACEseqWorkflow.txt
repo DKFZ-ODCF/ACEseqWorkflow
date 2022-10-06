@@ -16,19 +16,14 @@ isNoControlWorkflow	        false   Run analysis with matching control and estim
 == Changelist
 
 * Version update 6.0.0
-- Changed the phasing routine. The program "impute2" was replaced by "Beagle". Files and tools were renamed accordingly.
-- Generally renamed all tools and files from "imputeGenotype" to "phaseGenotype" (and so on) as the subroutine does not actually perform imputation but rather phasing.
-
-* Todo
-- after segment merging: assign proper SNP values (majority vote)``
-- LST score: gap centromere region even if A/B levels are not identical, or relax neighboring-condition
-- LST score: decide transition on A/B counts (and not only TCN change) (example: WGS H021-RF6GGV Chr10)
-						 discuss in beforehand: Shall changes in A/B values (with identical TCN counts) contribute to LST score or not?
-						 e.g. 2/2 -> 3/1 or 4/0
-				if so, A/B column can contain "sub". Hence, we cannot distinguish between e.g. c1Mean=3.45 (->sub(3)) and c1Mean=8.55 (->sub(8)), as they
-are both called "sub" only. Idea: call them "sub([floor(c1Mean)])". (same holds for c2Mean)
-discuss with Matthias: use c1Mean or A? Why did we decide to take A (round(c1Mean)) and not c1Mean directly? (answer: biological interpretation)
-
+- major: Changed the phasing routine. The program "impute2" was replaced by "Beagle". Files and tools were renamed accordingly.
+-- Generally renamed all tools and files from "imputeGenotype" to "phaseGenotype" (and so on) as the subroutine does not actually perform imputation but rather phasing.
+- major: htslib,samtools and bcftoosl are updated to 1.9
+- minor: `ngs_share` paths are updated to `/omics/odcf/reference_data/legacy/ngs_share`
+- major: Added the hg38 support
+-- new mappability with `-m2 -e2` option
+-- new exclusion list from the ICGC medulloblastoma samples
+-- new dbSNP version 151
 
 * Version update to 5.1.0
 - added contributing segments file for LST
