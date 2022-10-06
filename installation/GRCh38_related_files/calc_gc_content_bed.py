@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 import argparse
 import re
@@ -35,7 +36,7 @@ for i in range(len(chr_names)):
     if not re.match("^(chr)?[0-9,X,Y]{1,2}$", chr_names[i]):
         continue
 
-    if args.verbose: print('Calculating Chromosome {} - length = {} aa'.format(chr_names[i], 61*(chr_borders[i+1] - chr_borders[i])))
+    if args.verbose: print('Calculating Chromosome {} - length = {} bp'.format(chr_names[i], 61*(chr_borders[i+1] - chr_borders[i])))
     current_chr = data[chr_borders[i]:chr_borders[i+1]][1:]
                 
     current_chr = ''.join(current_chr)
