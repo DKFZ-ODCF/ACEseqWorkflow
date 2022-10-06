@@ -29,10 +29,13 @@ tabix -p vcf 00-All.SNV.vcf.gz
 ```
 
 #### Generating mappability track
-The mappability file (GRCh38_Mappability_Align_100mer.bedGraph.gz) is created using the `create_mappability.sh` bash script.
+The mappability file (`GRCh38_Mappability_Align_100mer_m2e2.ALT_HLA.bedGraph.gz`) is created using the `create_mappability.sh` bash script.
 
-The tools used have to be in the `tools` folder. The tools `gem-2-wig`, `gem-indexer`, `gem-mappability` are from the package *gem-tools* from the Vlaams Instituut voor Biotechnologie (VIB). 
+The tools used have to be in the `tools` folder. The tools `gem-2-wig`, `gem-indexer`, `gem-mappability` are from the package *gem-tools* from the Vlaams Instituut voor Biotechnologie (VIB).
 Information about the tools can be found here: https://wiki.bits.vib.be/index.php/Create_a_mappability_track#Install_and_run_the_GEM_library_tools. The tools were downloaded from https://sourceforge.net/projects/gemlibrary/files/gem-library/Binary%20pre-release%202/. The corresponding paper should be this one: https://www.researchgate.net/publication/221776385_Fast_Computation_and_Applications_of_Genome_Mappability
+
+The comptatible gemtools version (1.7.1-i3) was downloaded from "http://barnaserver.com/gemtools/releases/GEMTools-static-i3-1.7.1.tar.gz".
+For hg38 `gem-mappability` an option of `-m2 -e2` were added to keep the score compatabiltble with the hg19 versions downloaded from UCSC.
 
 The two tools `wigToBigWig` and `BigWigToBedGraph` are downloaded from http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/
 
@@ -94,9 +97,8 @@ These are lift-over files from the hg19 workflow. New hg38 native files will be 
 
 
 #### Exclusion list or blacklist files
-These are lift-over files from the hg19 workflow. New hg38 native files will be generated for the next versions.
-`ACEseqWorkflow/resources/analysisTools/copyNumberEstimationWorkflow/artifact.homoDels.potentialArtifacts.hg38_liftover.txt`
-
+The exclusion list contains the 'homodel' region present in almost all of the 216 samples in the ICGC medulloblastoma project.
+`artifact.homoDels.potentialArtifacts.hg38.txt`
 
 #### Hg38 cytoband
 Cytoband file was copied from ANNOVAR database files. Only the coordinates from Chr1-22, X, and Y were kept.

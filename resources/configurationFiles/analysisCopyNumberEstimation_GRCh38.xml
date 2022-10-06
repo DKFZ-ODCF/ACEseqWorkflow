@@ -47,7 +47,7 @@
     <cvalue name="FILENAME_CENTROMERES" value='${baseDirectoryReference}/stats/gap_with_centromeres.header.txt' type="string"/>
 
     <!--generateVCF opts-->
-    <cvalue name="blacklistFileName" value='artifact.homoDels.potentialArtifacts.hg38_liftover.txt' type="string"/>
+    <cvalue name="blacklistFileName" value='artifact.homoDels.potentialArtifacts.hg38.txt' type="string"/>
     <cvalue name="cytobandsFile" value='${baseDirectoryReference}/stats/hg38_cytoBand.txt' type="string"/>
 
   </configurationvalues>
