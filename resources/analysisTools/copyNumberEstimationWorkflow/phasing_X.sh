@@ -58,8 +58,8 @@ echo "ID_1 ID_2 missing sex" > "$FILE_SAMPLE_G"
 echo "0 0 0 D" >> "$FILE_SAMPLE_G"
 echo "$PID $PID 0 2" >> "$FILE_SAMPLE_G"
 
-$JAVA_BINARY $BEAGLE_JAVA_OPTS \
-    -jar "$TOOL_BEAGLE" \
+export JAVA_OPTIONS=$BEAGLE_JAVA_OPTS
+$BEAGLE_BINARY \
     gt="$UNPHASED_TWOSAMPLES" \
     ref="$BEAGLE_REFERENCE_FILE_X" \
     out="$PHASED_TWOSAMPLES" \

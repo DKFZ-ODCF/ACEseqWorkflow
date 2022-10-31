@@ -10,6 +10,7 @@ module load "R/$RSCRIPT_VERSION"
 module load "bedtools/$BEDTOOLS_VERSION"
 module load "samtools/$SAMTOOLS_VERSION"
 module load "vcftools/$VCFTOOLS_VERSION"
+module load "beagle/$BEAGLE_VERSION"
 
 source /dkfz/cluster/virtualenvs/warsow/python_2.7.9_SNVCalling_1.2.166-1/bin/activate
 

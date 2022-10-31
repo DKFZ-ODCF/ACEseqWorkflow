@@ -22,6 +22,7 @@
         <cvalue name="SAMTOOLS_VERSION" value="1.9" type="string"/>
         <cvalue name="BCFTOOLS_VERSION" value="1.9" type="string"/>
         <cvalue name="JAVA_VERSION" value="1.8.0_131" type="string"/> 
+        <cvalue name="BEAGLE_VERSION" value="5.2" type="string"/>
 
         <cvalue name='runInDebugMode' value='false' type='boolean' description='additional files will be produced to allow for easier debugging (true|false)'/>
 
@@ -52,6 +53,7 @@
         <cvalue name='annotatePlotsWithGenes' value='false' type="boolean"/>
 
         <!-- Beagle references-->
+        <cvalue name='BEAGLE_BINARY' value='beagle' type='string' />
         <cvalue name='BEAGLE_REFERENCE_FILE' value="${baseDirectoryReference}/tools_data/Beagle/chr${CHR_NAME}.1kg.phase3.v5a.b37.bref3" type="path"/>        
         <cvalue name='BEAGLE_REFERENCE_FILE_X' value="${baseDirectoryReference}/tools_data/Beagle/chrX.1kg.phase3.v5a.b37.bref3" type="path"/>        
         <cvalue name='BEAGLE_GENETIC_MAP' value="${baseDirectoryReference}/tools_data/genetic_maps/plink.chr${CHR_NAME}.GRCh37.map" type="path"/>
@@ -241,7 +243,6 @@
         <tool name="mergeFilterCnv" value="merge_and_filter_cnv.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="getHetSnps" value="getHetSNPs.R" basepath="copyNumberEstimationWorkflow"/>
 
-        <tool name="beagle" value="beagle.25Nov19.28d.jar" basepath="copyNumberEstimationWorkflow"/>
         <tool name="beagleCreateFakeSamples" value="beagle_create_fake_samples.py" basepath="copyNumberEstimationWorkflow"/>
         <tool name="beagleEmbedHaplotypesVcf" value="beagle_embed_haplotypes_vcf.py" basepath="copyNumberEstimationWorkflow"/>
 
