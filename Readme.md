@@ -8,7 +8,7 @@ g.warsow@dkfz-heidelberg.de
 
 ## Description
 
-ACEseq (Allele-specific copy number estimation with whole genome sequencing) is a tool to estimate allele-specific copy numbers from WGS data and comes along with a variety of features:
+ACEseq (Allele-specific copy number estimation with whole genome sequencing) is a tool to estimate allele-specific copy numbers from human WGS data, and comes along with a variety of features:
 * GC/replication timing Bias correction
 * quality check
 * SV breakpoint inclusion
