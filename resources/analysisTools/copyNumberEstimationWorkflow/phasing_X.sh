@@ -18,7 +18,7 @@ UNPHASED="$FILE_UNPHASED_PRE$CHR_NAME.$FILE_VCF_SUF"
 UNPHASED_TWOSAMPLES="$FILE_UNPHASED_PRE${CHR_NAME}_2samples.$FILE_VCF_SUF"
 PHASED_TWOSAMPLES="$FILE_PHASED_GENOTYPE${CHR_NAME}_2samples"
 tmpPhased="${FILENAME_PHASED_GENOTYPES}_tmp" #These two files should have 23 as chromosomes name rather than 'X'
-tmphaploblocks="${FILENAME_HAPLOBLOCK_GROUPS}_tmp"
+tmpHaploblocks="${FILENAME_HAPLOBLOCK_GROUPS}_tmp"
 
 
 #check for patient sex and exit if male
@@ -79,10 +79,10 @@ $PYTHON_BINARY "$TOOL_BEAGLE_EMBED_HAPLOTYPES_VCF" \
 
 $PYTHON_BINARY "$TOOL_GROUP_HAPLOTYPES" \
 	--infile "$tmpPhased" \
-	--out "$tmphaploblocks" \
+	--out "$tmpHaploblocks" \
 	--minHT "$minHT" \
     || dieWith "Non zero exit status while grouping haplotypes in phasing_X.sh"
 	
 
 mv "$tmpPhased" "$FILENAME_PHASED_GENOTYPES"
-mv "$tmphaploblocks" "$FILENAME_HAPLOBLOCK_GROUPS"
+mv "$tmpHaploblocks" "$FILENAME_HAPLOBLOCK_GROUPS"
