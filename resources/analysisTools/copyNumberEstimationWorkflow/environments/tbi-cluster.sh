@@ -10,8 +10,9 @@ module load "R/$RSCRIPT_VERSION"
 module load "bedtools/$BEDTOOLS_VERSION"
 module load "samtools/$SAMTOOLS_VERSION"
 module load "vcftools/$VCFTOOLS_VERSION"
+module load "beagle/$BEAGLE_VERSION"
 
-source /odcf/cluster/virtualenvs/warsow/python_2.7.9_SNVCalling_1.2.166-1/bin/activate
+source /dkfz/cluster/virtualenvs/warsow/python_2.7.9_SNVCalling_1.2.166-1/bin/activate
 
 export BGZIP_BINARY=bgzip
 export TABIX_BINARY=tabix
@@ -32,5 +33,10 @@ module load "vcftools/$VCFTOOLS_VERSION"
 export VCFTOOLS_SORT_BINARY=vcf-sort
 
 module load "samtools/$SAMTOOLS_VERSION"
-export BCFTOOLS_BINARY=bcftools
 export SAMTOOLS_BINARY=samtools
+
+module load "bcftools/$BCFTOOLS_VERSION"
+export BCFTOOLS_BINARY=bcftools
+
+module load "java/$JAVA_VERSION"
+export JAVA_BINARY=java

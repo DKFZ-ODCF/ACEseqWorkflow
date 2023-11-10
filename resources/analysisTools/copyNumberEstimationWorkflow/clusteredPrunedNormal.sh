@@ -38,9 +38,13 @@ then
 fi
 
 mv ${tmpClusteredSeg} ${FILENAME_CLUSTERED_SEGMENTS}
-mv ${tmpSnpsOut} ${FILENAME_ALL_SNP_UPDATE2}
 
-$TABIX_BINARY -f -s 1 -b 2 -e 2 ${FILENAME_ALL_SNP_UPDATE2}
+# Not sure why there is a NULL line in the end of the segments file
+zcat ${tmpSnpsOut} | grep -v NULL | bgzip -f > ${tmpSnpsOut}.2
+mv ${tmpSnpsOut}.2 ${FILENAME_ALL_SNP_UPDATE2}
+rm ${tmpSnpsOut}
+
+$TABIX_BINARY -f -s 1 -b 2 -e 2 --comment chromosome ${FILENAME_ALL_SNP_UPDATE2}
 
 if [[ "$?" != 0 ]]
 then

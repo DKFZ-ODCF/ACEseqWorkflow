@@ -6,16 +6,22 @@ require(ggbio)
 require(ggplot2)
 require(gridExtra)
 require(grid)
+library(GenomicRanges)
 
 #plot TCNs
 #chr is the chromosome number
 #ratio: data.frame; subset (chromosome) of dataAll dataframe containing all SNPs
 #seg: data.frame; subset of combi which contains all segments for sample
-plotTCN = function (chromosome, ratio, seg, Ploidy, tcc, fullPloidy, chrLen, ymaxcov, plots='single', svSub=NULL, p = NULL, ymaxcov_threshold) {
+plotTCN = function (chromosome, ratio, seg, Ploidy, tcc, fullPloidy, chrLen, ymaxcov, plots='single', svSub=NULL, p = NULL, ymaxcov_threshold, geneAnnotations = NA, unconditionalGeneLabeling = F, annotatePlotsWithGenes=F) {
 		
 		ymaxDH	= 1 
 		xtotal	= chrLen/ 10
 		len	= chrLen/1000000
+		
+		if (plots == 'single' & is.data.frame(geneAnnotations)){
+		  seg.gr = makeGRangesFromDataFrame(seg, keep.extra.columns = T)
+		}
+		
 
 		# scale values
 		seg$start    	<- (seg$start/10)/xtotal
@@ -40,14 +46,14 @@ plotTCN = function (chromosome, ratio, seg, Ploidy, tcc, fullPloidy, chrLen, yma
 					colScale + theme_bw()
 		}
 		# allele specific and total copy numbers: c1Mean, c2Mean and tcnMean
-	        p <- p + geom_segment( data=seg, aes( x=start, xend=end, y=c1Mean, yend=c1Mean ), colour="#00BFFFFF", size = 1, na.rm=TRUE )
-		p <- p + geom_segment( data=seg, aes( x=start,xend=end, y=c2Mean, yend=c2Mean ), colour="#00BFFFFF", size = 1, na.rm =TRUE )
-		p <- p + geom_segment( data=seg, aes( x=start,y=tcnMean, xend=end, yend=tcnMean ), colour="#0000CDFF", size = 1 )
+		p <- p + geom_segment( data=seg, aes( x=start, xend=end, y=c1Mean, yend=c1Mean ), colour="#00BFFFFF", size = 1, na.rm=TRUE )
+		p <- p + geom_segment( data=seg, aes( x=start, xend=end, y=c2Mean, yend=c2Mean ), colour="#00BFFFFF", size = 1, na.rm =TRUE )
+		p <- p + geom_segment( data=seg, aes( x=start, y=tcnMean, xend=end, yend=tcnMean ), colour="#0000CDFF", size = 1 )
 
 		# labs, title, boundaries
 		p <- p + theme( legend.position="none", panel.grid=element_blank() )
 		p <- p + xlab('') + ylab('TCN') + xlim( c(0,1) )
-    		p <- p + scale_y_continuous(limits=c(0, ymaxcov + 1.2), breaks=seq(0, ymaxcov+1.2, 2), labels=as.character( seq( 0, (ymaxcov+1.2), 2 ) ) )
+		p <- p + scale_y_continuous(limits=c(0, ymaxcov + 1.2), breaks=seq(0, ymaxcov+1.2, 2), labels=as.character( seq( 0, (ymaxcov+1.2), 2 ) ) )
 
 		p <- p + theme( title = element_text(size=15), axis.title = element_text(size=12) ) 
 
@@ -69,10 +75,47 @@ plotTCN = function (chromosome, ratio, seg, Ploidy, tcc, fullPloidy, chrLen, yma
 		if (plots == 'single'){
 			# segment boundaries
 			p <- p + geom_vline( xintercept=seg$start, col = "#000000DD", lty=5, lwd =0.2 )
-      			p <- p + geom_vline( xintercept=seg$end, col = "#000000DD", lty=5, lwd =0.2 )
+			p <- p + geom_vline( xintercept=seg$end, col = "#000000DD", lty=5, lwd =0.2 )
 			# add axis
 			p <- p + scale_x_continuous( breaks=pretty(1:len, n=10)/len, labels=pretty(1:len, n=10) ) 
 
+			# gene annotation
+			if (annotatePlotsWithGenes & is.data.frame(geneAnnotations)) {
+			  genesSubset = geneAnnotations[geneAnnotations$chr==chromosome,]
+			  genesSubset = genesSubset[order(genesSubset$start),]
+
+			  if (nrow(genesSubset)>0) {
+			    genesSubset$yOffset = 0
+			    # determine yPos offset
+			    if (nrow(genesSubset)>1) {
+			      genesSubset$distance = c(NA,sapply(2:nrow(genesSubset), function(j) {
+			        genesSubset[(j),"start"] - genesSubset[(j-1),"start"]
+			      }))
+			      genesSubset$yHasOffset = genesSubset$distance < 13e6
+			      genesSubset$yHasOffset[is.na(genesSubset$yHasOffset)] = F
+			      for (j in 2:nrow(genesSubset)) {
+			        if (genesSubset[j,"yHasOffset"]) {
+			          genesSubset[j,"yOffset"] = genesSubset[j-1,"yOffset"]+1
+			        }
+			      }
+			    }
+			    
+			    genesSubset$position = (genesSubset$start+(genesSubset$end - genesSubset$start)/2)/10/xtotal
+
+			    if (!unconditionalGeneLabeling) {
+			      genesSubset.gr = makeGRangesFromDataFrame(genesSubset, keep.extra.columns = T)
+			      merged = mergeByOverlaps(genesSubset.gr, seg.gr)
+			      eventsPerGene.list = aggregate(merged$CNA.type, by=list(merged$gene), FUN=paste)$x
+			      index.affectedSegments = grep(pattern = "DEL|LOH|DUP|HomoDel", x = eventsPerGene.list, perl = T)
+			      genesSubset = as.data.frame(genesSubset[index.affectedSegments,])
+			    }
+			    if (nrow(genesSubset)>0) {
+			      p <- p + geom_vline( xintercept=genesSubset$position, col = "grey80", lty=5, lwd =0.2 )
+			      p <- p + geom_text(data=genesSubset, aes(x=position, y=ymaxcov+0.2-0.08*ymaxcov*yOffset, label = gene), cex = 4, col = "red")
+			    }
+			  }
+			}
+			
 			# sv segments
 			if ( is.data.frame(svSub) ) {
 

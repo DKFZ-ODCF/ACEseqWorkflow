@@ -1,9 +1,12 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 # Copyright (c) 2017 The ACEseq workflow developers.
 # Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 
 from python_modules import Options
+
+def is_comment_line(line):
+    return line.startswith("#")
 
 options = Options.parse( { "vcf_file"   : str,   "outfile" : str  } )
 if options:
@@ -12,7 +15,7 @@ if options:
 	outfile    = open( options["outfile" ], "w" )
 	
 	for line in vcf_infile:
-		if line[0] != "#":
+		if not is_comment_line(line):
 			line = line.rstrip("\n").split("\t")
 			if len(line) > 9:
 				gt_index = line[8].split(":").index("GT")

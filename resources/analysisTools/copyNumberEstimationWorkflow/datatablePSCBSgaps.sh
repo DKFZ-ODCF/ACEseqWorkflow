@@ -27,7 +27,7 @@ fi
 
 mv ${tmp_pscbsData} ${FILE_PSCBS_DATA}
 
-${TABIX_BINARY} -f -s 2 -b 1 ${FILE_PSCBS_DATA}
+${TABIX_BINARY} -f -s 2 -b 1 --comment a ${FILE_PSCBS_DATA}
 
 if [[ "$?" != 0 ]]
 then

@@ -360,7 +360,12 @@ if (clustering_YN == "yes") {
         cat(paste0("cluster_matrix nrow: ",nrow(cluster_matrix),"\n"))
         cat(paste0("cluster_matrix ncol: ",ncol(cluster_matrix),"\n"))
         cat(paste0("min_num_cluster: ",min_num_cluster,"\n"))
-        d_clust <- Mclust(cluster_matrix, G=min_num_cluster:20)
+        if (runInDebugMode == "true") {
+          beVerbose = T
+        } else {
+          beVerbose = F
+        }
+        d_clust <- Mclust(cluster_matrix, G=min_num_cluster:20, verbose = beVerbose)
         cat(paste0(Sys.time(),": finished Mclust...\n"))
         m.best  <- dim(d_clust$z)[2]
 

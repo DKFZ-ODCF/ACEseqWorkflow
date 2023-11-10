@@ -25,7 +25,7 @@ then
 	exit 2
 fi
 
-${TABIX_BINARY} -s 1 -b 2 -e 2 $tmp_snp_filename
+${TABIX_BINARY} -s 1 -b 2 -e 2 --comment chr $tmp_snp_filename
 
 if [[ "$?" != 0 ]]
 then

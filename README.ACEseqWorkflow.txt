@@ -15,8 +15,26 @@ isNoControlWorkflow	        false   Run analysis with matching control and estim
 
 == Changelist
 
+* Version update 6.0.0
+- major: Changed the phasing routine. The program "impute2" was replaced by "Beagle". Files and tools were renamed accordingly.
+-- Generally renamed all tools and files from "imputeGenotype" to "phaseGenotype" (and so on) as the subroutine does not actually perform imputation but rather phasing.
+- major: htslib,samtools and bcftoosl are updated to 1.9
+- minor: `ngs_share` paths are updated to `/omics/odcf/reference_data/legacy/ngs_share`
+- major: Added the hg38 support
+-- new mappability with `-m2 -e2` option
+-- new exclusion list from the ICGC medulloblastoma samples
+-- new dbSNP version 151
+
+* Version update to 5.1.0
+- added contributing segments file for LST
+- implemented gene annotation in TCN chromosome plots
+- fixed minor bugs
+
 * Version update to 5.0.1
 - fixed density(NA) bug and index bug for frequencies (as.character) in clustering step
+- fixed empty line bug (newline) in smoothData script
+- switched to COWorkflowsBasePlugin:1.2.1 (sample name handling)
+- star plot: green (NCTN) and yellow (DH>1) line instead of common red line
 
 * Version update to 5.0.0
 - introduced CNA.type 'AMP' (TCN>=2*ploidy + 1)

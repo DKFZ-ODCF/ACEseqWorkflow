@@ -44,7 +44,7 @@ fi
 
 mv ${tmpSegsHomDel} ${FILENAME_SEGMENTS_W_HOMDEL}
 
-$TABIX_BINARY -f -s 1 -b 2 -e 3 "${FILENAME_SEGMENTS_W_HOMDEL}"
+$TABIX_BINARY -f -s 1 -b 2 -e 3 --comment chromosome "${FILENAME_SEGMENTS_W_HOMDEL}"
  
 #
 #if [[ "$?" != 0 ]]

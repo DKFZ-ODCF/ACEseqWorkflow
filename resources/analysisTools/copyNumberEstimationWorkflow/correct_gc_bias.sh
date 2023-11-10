@@ -4,25 +4,25 @@
 # Distributed under the MIT License (license terms are at https://www.github.com/eilslabs/ACEseqWorkflow/LICENSE.txt).
 
 
-tmp_corrected_windowfile="$FILENAME_GC_CORRECTED_WINDOWS.tmp"
-tmp_corrected_table="$FILENAME_GC_CORRECTED_QUALITY.tmp"
-corrected_table_slim="$FILENAME_GC_CORRECTED_QUALITY.slim.txt"
+tmp_corrected_windowfile=${FILENAME_GC_CORRECTED_WINDOWS}.tmp
+tmp_corrected_table=${FILENAME_GC_CORRECTED_QUALITY}.tmp
+corrected_table_slim=${FILENAME_GC_CORRECTED_QUALITY}.slim.txt
 
-$RSCRIPT_BINARY "$TOOL_CORRECT_GC_BIAS_R" \
-	--windowFile	"$FILENAME_COV_WINDOWS_WG" \
-	--timefile	"$REPLICATION_TIME_FILE" \
-	--chrLengthFile	"$CHROMOSOME_LENGTH_FILE" \
-	--pid		"$PID" \
-	--email		"$EMAIL" \
-	--outfile	"$tmp_corrected_windowfile" \
-	--corPlot	"$FILENAME_GC_CORRECT_PLOT" \
-	--corTab	"$tmp_corrected_table" \
-	--qcTab		"$corrected_table_slim" \
-	--gcFile	"$GC_CONTENT_FILE" \
-	--outDir	"$aceseqOutputDirectory" \
-	--lowess_f	"$LOWESS_F" \
-	--scaleFactor	"$SCALE_FACTOR" \
-	--coverageYlims "$COVERAGEPLOT_YLIMS"
+${RSCRIPT_BINARY} "${TOOL_CORRECT_GC_BIAS_R}" \
+	--windowFile	"${FILENAME_COV_WINDOWS_WG}" \
+	--timefile	"${REPLICATION_TIME_FILE}" \
+	--chrLengthFile	"${CHROMOSOME_LENGTH_FILE}" \
+	--pid		"${PID}" \
+	--email		"${EMAIL}" \
+	--outfile	"${tmp_corrected_windowfile}" \
+	--corPlot	"${FILENAME_GC_CORRECT_PLOT}" \
+	--corTab	"${tmp_corrected_table}" \
+	--qcTab		"${corrected_table_slim}" \
+	--gcFile	"${GC_CONTENT_FILE}" \
+	--outDir	"${aceseqOutputDirectory}" \
+	--lowess_f	"${LOWESS_F}" \
+	--scaleFactor	"${SCALE_FACTOR}" \
+	--coverageYlims "${COVERAGEPLOT_YLIMS}"
 
 
 
